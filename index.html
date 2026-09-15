@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="el">
 <head>
   <meta charset="UTF-8">
@@ -70,10 +70,30 @@
       from { opacity: 0; transform: scale(0.8) translateY(30px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
-    .welcome-emoji { font-size: 4rem; margin-bottom: 12px; animation: bounce 1.2s ease infinite; }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
+    .logo-spin-wrap {
+      width: 160px; height: 160px; margin: 0 auto 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .welcome-logo {
+      width: 150px; height: 150px; border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+      animation: logoSpinStop 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    /* Περιστρέφεται γρήγορα και σταματάει απότομα */
+    @keyframes logoSpinStop {
+      0%   { transform: rotate(0deg) scale(0.6); opacity: 0; }
+      15%  { opacity: 1; }
+      70%  { transform: rotate(720deg) scale(1.05); }
+      85%  { transform: rotate(740deg) scale(1); }
+      100% { transform: rotate(720deg) scale(1); }
+    }
+    .welcome-logo.spinning {
+      animation: logoSpinFast 0.35s linear infinite;
+    }
+    @keyframes logoSpinFast {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
     .welcome-card h1 { font-size: 1.7rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; line-height: 1.3; }
     .welcome-card p { color: var(--text-muted); font-size: 1rem; margin-bottom: 28px; }
@@ -300,7 +320,9 @@
 <body>
   <div class="welcome-overlay" id="welcomeOverlay">
     <div class="welcome-card">
-      <div class="welcome-emoji">🎉</div>
+      <div class="logo-spin-wrap">
+        <img src="/logo.png" alt="Θες Δουλειά! Βρες Δουλειά" class="welcome-logo" id="welcomeLogo">
+      </div>
       <h1>Θες Δουλειά;<br>Βρες Δουλειά!</h1>
       <p>Η τοπική πλατφόρμα αγγελιών εργασίας της Θεσσαλίας.<br>Δωρεάν, γρήγορα και κοντά σου.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
@@ -371,6 +393,13 @@
           <h3>Ψάχνω Προσωπικό</h3>
           <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
         </div>
+      </div>
+
+      <div style="margin-top:28px;text-align:center;">
+        <button class="btn btn-secondary" onclick="shareSite()" style="gap:10px;">
+          📤 Κοινοποίησε τη σελίδα
+        </button>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">Θα εμφανιστεί το λογότυπο και ο τίτλος «Θες Δουλειά! Βρες Δουλειά»</p>
       </div>
     </div>
 
@@ -781,9 +810,19 @@
     }
 
     function shareAd(name, spec) {
-      const text = `Δες αυτή την αγγελία: ${name} – ${spec} στο Θες Δουλειά; Βρες Δουλειά!`;
-      if (navigator.share) navigator.share({ title: "Θες Δουλειά; Βρες Δουλειά", text, url: window.location.href });
-      else navigator.clipboard.writeText(window.location.href).then(() => alert("Ο σύνδεσμος αντιγράφηκε!"));
+      const title = "Θες Δουλειά! Βρες Δουλειά";
+      const text = name
+        ? `Δες αυτή την αγγελία: ${name} – ${spec || ""} στο Θες Δουλειά! Βρες Δουλειά!`
+        : "Θες Δουλειά; Βρες Δουλειά – Τοπικές αγγελίες εργασίας στη Θεσσαλία!";
+      if (navigator.share) {
+        navigator.share({ title, text, url: window.location.origin + "/" }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.origin + "/").then(() => alert("Ο σύνδεσμος αντιγράφηκε!\nΌταν κοινοποιηθεί θα εμφανίζεται το λογότυπο και ο τίτλος."));
+      }
+    }
+
+    function shareSite() {
+      shareAd("", "");
     }
 
     function openFoundModal(id, type, label) {
