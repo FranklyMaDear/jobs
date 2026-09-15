@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
-  <meta name="description" content="Θες Δλεια - Βρες Δλεια | Τοπικές αγγελίες εργασίας Νομού Τρικάλων">
-  <title>Θες Δλεια - Βρες Δλεια | Τρίκαλα</title>
+  <meta name="description" content="Εργασία στον Νομό Τρικάλων - Βρείτε δουλειά ή προσωπικό τοπικά">
+  <title>Εργασία Τρικάλων | Τοπικές Αγγελίες Εργασίας</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #0f172a;
+      --primary-light: #1e293b;
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
       --accent-soft: #dbeafe;
       --success: #059669;
       --danger: #dc2626;
+      --warning: #d97706;
       --bg: #f1f5f9;
       --card: #ffffff;
       --text: #334155;
@@ -24,6 +27,7 @@
       --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
       --shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.1);
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -33,734 +37,1226 @@
       min-height: 100vh;
     }
 
-    /* POPUP */
-    .popup-overlay {
-      position: fixed; inset: 0;
-      background: rgba(15, 23, 42, 0.75);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999; padding: 20px;
-    }
-    .popup-overlay.hidden { display: none; }
-    .popup {
-      background: white; border-radius: 24px;
-      padding: 36px 28px; max-width: 420px; width: 100%;
-      text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-      position: relative;
-    }
-    .popup-logo { font-size: 3.6rem; margin-bottom: 10px; animation: bounce 2s infinite; }
-    .popup h1 { font-size: 1.85rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
-    .popup h1 span { color: var(--accent); }
-    .popup .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 26px; }
-    .popup-btns { display: flex; flex-direction: column; gap: 12px; }
-    .popup-btns .btn { padding: 16px; font-size: 1.05rem; border-radius: 14px; }
-    .popup-close { position: absolute; top: 14px; right: 18px; background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
+    /* Header */
     .top-bar {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
-      color: white; padding: 12px 20px; text-align: center;
-      font-size: 0.85rem; font-weight: 500;
+      color: white;
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
-    .container { max-width: 820px; margin: 0 auto; padding: 20px 16px 60px; }
-    .header { text-align: center; margin-bottom: 12px; }
-    .header .brand { font-size: 1.7rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
-    .header .brand span { color: var(--accent); }
-    .header p { color: var(--text-muted); margin-top: 4px; font-size: 0.95rem; }
+    .top-bar a { color: #93c5fd; text-decoration: none; }
 
-    .coming-banners {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      margin: 16px 0 24px;
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
     }
-    @media (max-width: 560px) { .coming-banners { grid-template-columns: 1fr; } }
-    .coming-banner {
-      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-      border: 1.5px dashed #94a3b8; border-radius: 12px;
-      padding: 13px 10px; text-align: center;
-      font-size: 0.82rem; color: var(--text-muted); font-weight: 600;
-    }
-    .coming-banner strong { display: block; color: var(--primary); font-size: 0.9rem; margin-bottom: 2px; }
 
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* Screens */
     .screen { display: none; animation: fadeIn 0.25s ease; }
     .screen.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
+    /* Buttons */
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 14px 22px; border: none; border-radius: 12px;
-      font-weight: 600; font-size: 0.95rem; cursor: pointer;
-      transition: all 0.2s; font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
     }
-    .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--border); }
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--border);
+    }
     .btn-secondary:hover { border-color: var(--accent); background: #f8fafc; }
-    .btn-success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+    .btn-danger {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+    .btn-danger:hover { background: #fee2e2; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+    .btn-ghost:hover { color: var(--primary); }
     .btn-full { width: 100%; }
     .btn-sm { padding: 8px 14px; font-size: 0.85rem; border-radius: 8px; }
 
+    /* Home Action Cards */
     .section-title {
-      font-size: 1.05rem; font-weight: 700; color: var(--primary);
-      margin: 26px 0 14px; display: flex; align-items: center; gap: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 520px) {
+      .action-grid { grid-template-columns: 1fr; }
+    }
 
     .action-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 22px 18px; cursor: pointer; transition: all 0.22s;
-      text-align: left; box-shadow: var(--shadow);
-      display: flex; flex-direction: column; gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      cursor: pointer;
+      transition: all 0.22s;
+      text-align: left;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .action-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .action-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+    }
     .action-card .icon {
-      width: 48px; height: 48px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.6rem;
+      background: var(--accent-soft);
     }
-    .action-card.post-worker .icon { background: #fef3c7; }
-    .action-card.post-employer .icon { background: #fce7f3; }
     .action-card.workers .icon { background: #ecfdf5; }
     .action-card.employers .icon { background: #eff6ff; }
-    .action-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
-    .action-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+    .action-card.post-worker .icon { background: #fef3c7; }
+    .action-card.post-employer .icon { background: #fce7f3; }
+    .action-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .action-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
 
+    /* Back button */
     .back-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: none; border: none; color: var(--text-muted);
-      font-size: 0.95rem; font-weight: 500; cursor: pointer;
-      margin-bottom: 18px; padding: 0; font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 18px;
+      padding: 0;
+      font-family: inherit;
     }
     .back-btn:hover { color: var(--accent); }
 
+    /* Forms */
     .form-card {
-      background: var(--card); border-radius: var(--radius);
-      padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
     }
     fieldset {
-      border: 1px solid var(--border); border-radius: 12px;
-      padding: 18px; margin-bottom: 20px; background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      background: #f8fafc;
     }
     legend {
-      font-weight: 700; color: var(--accent); background: white;
-      padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: white;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
     }
     .form-group { margin-bottom: 16px; }
     .form-group:last-child { margin-bottom: 0; }
-    label.main-label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary); font-size: 0.9rem; }
-    input[type="text"], input[type="tel"], input[type="email"], select, textarea {
-      width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
-      border-radius: 10px; font-size: 16px; font-family: inherit; background: white;
+    label.main-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 0.9rem;
+    }
+    input[type="text"], input[type="tel"], input[type="email"], input[type="password"],
+    select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      background: white;
     }
     input:focus, select:focus, textarea:focus {
-      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
     textarea { min-height: 90px; resize: vertical; }
 
     .checkbox-row {
-      display: flex; align-items: center; gap: 12px;
-      background: #fef2f2; padding: 12px 14px; border-radius: 10px;
-      border: 1px solid #fecaca; color: #991b1b; font-weight: 600; font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fef2f2;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      font-weight: 600;
+      font-size: 0.95rem;
     }
-    .checkbox-row input { width: 20px; height: 20px; accent-color: var(--danger); }
+    .checkbox-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--danger);
+    }
 
+    /* Location selector */
     .location-selector {
-      border: 1.5px solid var(--border); border-radius: 10px;
-      background: white; max-height: 260px; overflow-y: auto; padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 10px;
     }
-    .municipality-group { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
+    .municipality-group {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
     .municipality-group:last-child { border-bottom: none; margin-bottom: 0; }
-    .municipality-header { display: flex; justify-content: space-between; align-items: center; }
-    .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; flex-grow: 1; padding: 4px 0; }
-    .toggle-btn { background: #e2e8f0; border: none; border-radius: 6px; padding: 5px 11px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
-    .communities-list { display: none; flex-direction: column; gap: 6px; padding: 8px 0 4px 28px; }
-
-    .photo-upload {
-      border: 2px dashed var(--border); border-radius: 12px; padding: 20px;
-      text-align: center; cursor: pointer; transition: all 0.2s; background: #f8fafc;
+    .municipality-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .photo-upload:hover, .photo-upload.dragover { border-color: var(--accent); background: var(--accent-soft); }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      flex-grow: 1;
+      padding: 4px 0;
+    }
+    .toggle-btn {
+      background: #e2e8f0;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .communities-list {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 0 4px 28px;
+    }
+
+    /* Photo upload */
+    .photo-upload {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+    .photo-upload:hover, .photo-upload.dragover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
     .photo-upload input { display: none; }
-    .photo-preview { margin-top: 12px; display: none; }
-    .photo-preview img { max-width: 140px; max-height: 140px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); }
+    .photo-preview {
+      margin-top: 12px;
+      display: none;
+    }
+    .photo-preview img {
+      max-width: 140px;
+      max-height: 140px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
     .photo-preview.active { display: block; }
 
-    .tabs { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 5px; border-radius: 12px; }
-    .tab-btn {
-      flex: 1; padding: 12px; background: transparent; border: none; border-radius: 9px;
-      font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--text-muted);
-      transition: all 0.2s; font-family: inherit;
+    /* Tabs & Filters */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: #e2e8f0;
+      padding: 5px;
+      border-radius: 12px;
     }
-    .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tab-btn.active {
+      background: white;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
 
     .filter-bar {
-      background: var(--card); padding: 16px; border-radius: var(--radius);
-      margin-bottom: 18px; border: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 12px;
+      background: var(--card);
+      padding: 16px;
+      border-radius: var(--radius);
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .filter-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
     .filter-row input, .filter-row select {
-      flex: 1; min-width: 140px; padding: 11px 12px;
-      border: 1.5px solid var(--border); border-radius: 9px; font-size: 0.95rem;
+      flex: 1;
+      min-width: 140px;
+      padding: 11px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.95rem;
     }
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .chip:hover:not(.active) { background: #e2e8f0; }
 
-    .ads-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 0.9rem; color: var(--text-muted); }
+    /* Ad Cards */
+    .ads-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
     .ad-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); transition: box-shadow 0.2s;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: box-shadow 0.2s;
     }
     .ad-card:hover { box-shadow: var(--shadow-lg); }
-    .ad-card.urgent { border-left: 5px solid var(--danger); background: linear-gradient(to right, #fef2f2 0%, white 40%); }
-    .ad-card.completed { opacity: 0.75; border-left: 5px solid var(--success); }
+    .ad-card.urgent {
+      border-left: 5px solid var(--danger);
+      background: linear-gradient(to right, #fef2f2 0%, white 40%);
+    }
     .urgent-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: var(--danger); color: white; padding: 4px 10px;
-      border-radius: 6px; font-size: 0.72rem; font-weight: 700; margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--danger);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
     }
-    .completed-badge {
-      display: inline-block; background: var(--success); color: white;
-      padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; margin-bottom: 10px;
+    .ad-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
     }
-    .ad-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .ad-photo { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
-    .ad-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
-    .ad-specialty { color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+    .ad-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ad-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+    .ad-specialty {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
     .badge {
-      display: inline-block; background: #e0f2fe; color: #0369a1;
-      padding: 3px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; margin: 2px 3px 2px 0;
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin: 2px 3px 2px 0;
     }
-    .ad-comments { margin: 12px 0; color: var(--text); font-size: 0.95rem; line-height: 1.5; }
+    .ad-comments {
+      margin: 12px 0;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
     .ad-contact {
-      background: #f8fafc; padding: 12px 14px; border-radius: 10px;
-      margin-top: 12px; font-size: 0.9rem; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      background: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
     }
-    .ad-contact a { color: var(--accent); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .ad-contact a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ad-contact a:hover { text-decoration: underline; }
     .card-actions {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
-      padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
     }
     .icon-btn {
-      background: #f1f5f9; border: none; border-radius: 8px; padding: 8px 12px;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.85rem; color: var(--text-muted); font-weight: 600; font-family: inherit;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.15s;
     }
     .icon-btn:hover { background: #e2e8f0; color: var(--primary); }
     .icon-btn.fav-active { background: #fef2f2; color: var(--danger); }
 
-    .state-box { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    /* Empty / Loading */
+    .state-box {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
     .state-box .emoji { font-size: 2.5rem; margin-bottom: 12px; }
 
+    /* Modal */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(15,23,42,0.5);
-      display: none; align-items: center; justify-content: center;
-      z-index: 1000; padding: 20px;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
     }
     .modal-overlay.active { display: flex; }
     .modal {
-      background: white; border-radius: 16px; padding: 28px;
-      max-width: 400px; width: 100%; box-shadow: var(--shadow-lg);
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
     }
     .modal h3 { margin-bottom: 12px; font-size: 1.2rem; }
     .modal p { color: var(--text-muted); margin-bottom: 18px; font-size: 0.95rem; }
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .modal-actions .btn { flex: 1; }
 
-    .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    /* Stars */
+    .stars { color: #f59e0b; letter-spacing: 1px; }
   </style>
 </head>
 <body>
-
-<!-- POPUP -->
-<div class="popup-overlay" id="welcomePopup">
-  <div class="popup">
-    <button class="popup-close" onclick="closePopup()">×</button>
-    <div class="popup-logo">🛠️☕</div>
-    <h1>Θες <span>Δλεια</span> - Βρες <span>Δλεια</span></h1>
-    <p class="subtitle">Στον Νομό Τρικάλων…<br>και σύντομα σε όλη τη Θεσσαλία!</p>
-    <div class="popup-btns">
-      <button class="btn btn-primary" onclick="closePopup(); showScreen('screen-worker')">👷 Ψάχνω Δλεια</button>
-      <button class="btn btn-secondary" onclick="closePopup(); showScreen('screen-employer')">🏢 Ψάχνω Προσωπικό</button>
-      <button class="btn btn-secondary" style="margin-top:4px;font-size:0.9rem" onclick="closePopup()">➡️ Πάμε στη σελίδα</button>
-    </div>
-  </div>
-</div>
-
-<div class="top-bar">Τοπικές αγγελίες · Νομός Τρικάλων · Δωρεάν</div>
-
-<div class="container">
-  <div class="header">
-    <div class="brand">Θες <span>Δλεια</span> - Βρες <span>Δλεια</span></div>
-    <p>Βρες δλεια ή προσωπικό κοντά σου</p>
+  <div class="top-bar">
+    Τοπική πλατφόρμα εργασίας Νομού Τρικάλων · Δωρεάν αγγελίες
   </div>
 
-  <!-- Coming soon banners -->
-  <div class="coming-banners">
-    <div class="coming-banner"><strong>Νομός Καρδίτσας</strong>Σύντομα κοντά σας</div>
-    <div class="coming-banner"><strong>Νομός Λάρισας</strong>Σύντομα κοντά σας</div>
-    <div class="coming-banner"><strong>Νομός Μαγνησίας</strong>Σύντομα κοντά σας</div>
-  </div>
-
-  <!-- HOME -->
-  <div id="screen-home" class="screen active">
-    <div class="section-title">Δημοσίευση Αγγελίας</div>
-    <div class="action-grid">
-      <div class="action-card post-worker" onclick="showScreen('screen-worker')">
-        <div class="icon">👷</div>
-        <h3>Ψάχνω Δλεια</h3>
-        <p>Φτιάξε το προφίλ σου δωρεάν και περίμενε κλήση</p>
-      </div>
-      <div class="action-card post-employer" onclick="showScreen('screen-employer')">
-        <div class="icon">🔍</div>
-        <h3>Ψάχνω Προσωπικό</h3>
-        <p>Βάλε αγγελία και βρες τον άνθρωπο που χρειάζεσαι</p>
-      </div>
+  <div class="container">
+    <div class="header">
+      <div class="logo-badge">📍 Νομός Τρικάλων</div>
+      <h1>Εργασία Τρικάλων</h1>
+      <p>Βρείτε δουλειά ή προσωπικό κοντά σας</p>
     </div>
 
-    <div class="section-title">Δημόσιες Αγγελίες</div>
-    <div class="action-grid">
-      <div class="action-card workers" onclick="openPublicView('workers')">
-        <div class="icon">👀</div>
-        <h3>Προφίλ Εργατών</h3>
-        <p>Δες ποιος ψάχνει δλεια κοντά σου</p>
-      </div>
-      <div class="action-card employers" onclick="openPublicView('employers')">
-        <div class="icon">🏢</div>
-        <h3>Θέσεις Εργασίας</h3>
-        <p>Άνοιξε θέσεις από μαγαζιά & ιδιώτες</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADS LIST -->
-  <div id="screen-ads" class="screen">
-    <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
-    <div class="tabs">
-      <button id="tab-workers" class="tab-btn active" onclick="loadAds('workers')">👷 Εργάτες</button>
-      <button id="tab-employers" class="tab-btn" onclick="loadAds('employers')">🏢 Εργοδότες</button>
-    </div>
-    <div class="filter-bar">
-      <div class="filter-row">
-        <input type="text" id="searchInput" placeholder="🔍 Αναζήτηση..." oninput="filterCards()">
-      </div>
-      <div class="filter-row">
-        <select id="filterSpecialty" onchange="filterCards()"><option value="">Όλες οι ειδικότητες</option></select>
-        <select id="filterLocation" onchange="filterCards()"><option value="">Όλες οι περιοχές</option></select>
-        <select id="filterFavs" onchange="filterCards()">
-          <option value="all">Όλες</option>
-          <option value="favs">⭐ Αγαπημένα</option>
-          <option value="urgent">⚡ Επείγοντα</option>
-        </select>
-      </div>
-    </div>
-    <div class="ads-meta">
-      <span id="resultsCount">—</span>
-      <button class="btn-sm btn-secondary" onclick="loadAds(currentViewType)">↻ Ανανέωση</button>
-    </div>
-    <div id="ads-container"><div class="state-box"><div class="emoji">⏳</div>Φόρτωση...</div></div>
-  </div>
-
-  <!-- WORKER FORM -->
-  <div id="screen-worker" class="screen">
-    <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
-    <div class="form-card">
-      <h2 style="margin-bottom:18px;font-size:1.25rem;">Ψάχνω Δλεια</h2>
-      <form id="workerForm">
-        <fieldset>
-          <legend>Στοιχεία</legend>
-          <div class="form-group"><label class="main-label">Όνομα / Επώνυμο *</label><input type="text" id="w_name" required placeholder="π.χ. Γιάννης Π."></div>
-          <div class="form-group"><label class="main-label">Λεπτομέρειες / Εμπειρία</label><textarea id="w_comments" placeholder="Τι ξέρεις να κάνεις, διαθέσιμες μέρες..."></textarea></div>
-          <div class="form-group">
-            <label class="main-label">Φωτογραφία (προαιρετικά)</label>
-            <div class="photo-upload" id="w_photo_box" onclick="document.getElementById('w_photo').click()">
-              <div>📷 Πάτα ή σύρε φωτογραφία<br><small style="color:var(--text-muted)">μέχρι 4MB</small></div>
-              <input type="file" id="w_photo" accept="image/*">
-              <div class="photo-preview" id="w_photo_preview"></div>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Ειδικότητα & Περιοχές</legend>
-          <div class="form-group"><label class="main-label">Ειδικότητα</label><select class="specialty-select" id="w_specialty"></select></div>
-          <div class="form-group"><label class="main-label">Είδος δλειάς</label><select class="task-select" id="w_task"></select></div>
-          <div class="form-group"><label class="main-label">Περιοχές *</label><div class="location-selector" id="worker-locations"></div></div>
-        </fieldset>
-        <fieldset>
-          <legend>Επικοινωνία</legend>
-          <div class="form-group"><label class="main-label">Τηλέφωνο</label><input type="tel" id="w_phone" placeholder="69xxxxxxxx"></div>
-          <div class="form-group"><label class="main-label">Email (προαιρετικά)</label><input type="email" id="w_email"></div>
-          <div class="form-group"><label class="main-label">PIN * <small style="font-weight:400;color:var(--text-muted)">(για το κουμπί «Βρήκα»)</small></label><input type="text" id="w_pin" required maxlength="8" placeholder="π.χ. 4821"></div>
-          <div class="checkbox-row"><input type="checkbox" id="w_urgent"><label for="w_urgent">Άμεσα διαθέσιμος / Επείγον</label></div>
-        </fieldset>
-        <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Προφίλ</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- EMPLOYER FORM -->
-  <div id="screen-employer" class="screen">
-    <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
-    <div class="form-card">
-      <h2 style="margin-bottom:18px;font-size:1.25rem;">Ψάχνω Προσωπικό</h2>
-      <form id="employerForm">
-        <fieldset>
-          <legend>Στοιχεία</legend>
-          <div class="form-group"><label class="main-label">Όνομα / Επιχείρηση *</label><input type="text" id="e_name" required placeholder="π.χ. Καφετέρια Ολύμπου"></div>
-          <div class="form-group"><label class="main-label">Λεπτομέρειες θέσης</label><textarea id="e_comments" placeholder="Τι ψάχνεις, ωράριο..."></textarea></div>
-          <div class="form-group">
-            <label class="main-label">Φωτογραφία / Λογότυπο</label>
-            <div class="photo-upload" id="e_photo_box" onclick="document.getElementById('e_photo').click()">
-              <div>📷 Πάτα ή σύρε φωτογραφία<br><small style="color:var(--text-muted)">μέχρι 4MB</small></div>
-              <input type="file" id="e_photo" accept="image/*">
-              <div class="photo-preview" id="e_photo_preview"></div>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Αναζήτηση & Περιοχές</legend>
-          <div class="form-group"><label class="main-label">Ειδικότητα που ζητάς</label><select class="specialty-select" id="e_specialty"></select></div>
-          <div class="form-group"><label class="main-label">Είδος δλειάς</label><select class="task-select" id="e_task"></select></div>
-          <div class="form-group"><label class="main-label">Περιοχές *</label><div class="location-selector" id="employer-locations"></div></div>
-        </fieldset>
-        <fieldset>
-          <legend>Επικοινωνία</legend>
-          <div class="form-group"><label class="main-label">Τηλέφωνο</label><input type="tel" id="e_phone" placeholder="69xxxxxxxx"></div>
-          <div class="form-group"><label class="main-label">Email (προαιρετικά)</label><input type="email" id="e_email"></div>
-          <div class="form-group"><label class="main-label">PIN * <small style="font-weight:400;color:var(--text-muted)">(για το κουμπί «Βρήκα»)</small></label><input type="text" id="e_pin" required maxlength="8" placeholder="π.χ. 4821"></div>
-          <div class="checkbox-row"><input type="checkbox" id="e_urgent"><label for="e_urgent">Επείγουσα ανάγκη προσωπικού</label></div>
-        </fieldset>
-        <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Αγγελίας</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="footer">
-  Θες Δλεια - Βρες Δλεια · Νομός Τρικάλων<br>
-  <small>Οι αγγελίες μένουν τουλάχιστον 15 ημέρες</small>
-</div>
-
-<!-- Modal Βρήκα -->
-<div class="modal-overlay" id="foundModal">
-  <div class="modal">
-    <h3>Βρήκες αυτό που έψαχνες;</h3>
-    <p>Βάλε το PIN που δήλωσες όταν ανέβασες την αγγελία. Ο διαχειριστής θα την αφαιρέσει.</p>
-    <input type="text" id="foundPin" placeholder="PIN" maxlength="8" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;margin-bottom:8px;">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeFoundModal()">Ακύρωση</button>
-      <button class="btn btn-success" id="confirmFoundBtn">Ναι, το βρήκα!</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const API_BASE = "https://jobs.kafevolta.workers.dev";
-  const API_URL = API_BASE + "/api";
-  let currentData = [], currentViewType = "workers", foundTarget = null;
-
-  const specialtiesData = {
-    "Εστίαση": ["Καφετέρια Barista","Καφετέρια Service","Εστιατόριο Κουζίνα","Εστιατόριο Service","Καφενείο","Τσιπουράδικο","Delivery"],
-    "Τεχνίτες / Κατασκευές": ["Χτίσιμο - Σοβάτισμα","Υδραυλικός","Ηλεκτρολόγος","Ψυκτικός","Πλακάκια","Σκεπές","Ανακαίνιση","Βάψιμο"],
-    "Αγροτικά": ["Χωράφια / Αγροτικά","Κηπουρικά","Κλάδεμα","Ελαιοσυλλογή"],
-    "Υπηρεσίες": ["Καθαριότητα","Φροντίδα Ηλικιωμένων","Φύλαξη παιδιών","Οδηγός"],
-    "Άλλα": ["Γενικών καθηκόντων","Αποθήκη","Πωλήσεις"]
-  };
-  const tasksData = {
-    "Αγροτικά & Εξωτερικά": ["Χωράφια / Αγροτικά","Κηπουρικά","Κλάδεμα"],
-    "Οικιακά & Φροντίδα": ["Καθαριότητα","Φροντίδα Ηλικιωμένων"],
-    "Μικροεργασίες": ["Συναρμολόγηση","Μερεμέτια"],
-    "Εστίαση": ["Service","Κουζίνα","Barista","Delivery"]
-  };
-  const locationsData = {
-    "Δήμος Τρικκαίων": ["Τρίκαλα (Κέντρο)","Αγία Κυριακή","Μεγάλα Καλύβια","Μεγαλοχώρι","Ρίζωμα"],
-    "Δήμος Μετεώρων": ["Καλαμπάκα","Καστράκι","Παναγία","Χρυσομηλιά"],
-    "Δήμος Πύλης": ["Πύλη","Ελάτη","Γόμφοι","Περτούλι","Πύρρα","Στουρναραίικα","Φήκη","Φιλύρα"],
-    "Δήμος Φαρκαδόνας": ["Φαρκαδόνα","Ζάρκο","Οιχαλία","Ταξιάρχες","Φανερωμένη"]
-  };
-
-  function closePopup() {
-    document.getElementById("welcomePopup").classList.add("hidden");
-    localStorage.setItem("popupSeen", "1");
-  }
-  if (localStorage.getItem("popupSeen")) document.getElementById("welcomePopup").classList.add("hidden");
-
-  function initForms() {
-    document.querySelectorAll(".specialty-select").forEach(sel => {
-      sel.innerHTML = '<option value="">-- Ειδικότητα --</option>';
-      for (const [g, items] of Object.entries(specialtiesData)) {
-        const og = document.createElement("optgroup"); og.label = g;
-        items.forEach(i => { const o = document.createElement("option"); o.value = i; o.textContent = i; og.appendChild(o); });
-        sel.appendChild(og);
-      }
-    });
-    document.querySelectorAll(".task-select").forEach(sel => {
-      sel.innerHTML = '<option value="">-- Είδος δλειάς --</option>';
-      for (const [g, items] of Object.entries(tasksData)) {
-        const og = document.createElement("optgroup"); og.label = g;
-        items.forEach(i => { const o = document.createElement("option"); o.value = i; o.textContent = i; og.appendChild(o); });
-        sel.appendChild(og);
-      }
-    });
-    ["worker-locations","employer-locations"].forEach((id, idx) => {
-      let html = "";
-      for (const [mun, locs] of Object.entries(locationsData)) {
-        const mId = `m_${idx}_${mun.replace(/\s+/g,"")}`;
-        html += `<div class="municipality-group"><div class="municipality-header">
-          <label class="checkbox-label"><input type="checkbox" class="mun-checkbox" data-target="${mId}"> <strong>${mun}</strong></label>
-          <button type="button" class="toggle-btn" onclick="toggleCom('${mId}')">▼</button></div>
-          <div class="communities-list" id="${mId}">${locs.map(l => `<label class="checkbox-label"><input type="checkbox" class="com-checkbox" value="${l}"> ${l}</label>`).join("")}</div></div>`;
-      }
-      document.getElementById(id).innerHTML = html;
-    });
-    document.querySelectorAll(".mun-checkbox").forEach(cb => {
-      cb.addEventListener("change", function() {
-        document.querySelectorAll(`#${this.dataset.target} .com-checkbox`).forEach(c => c.checked = this.checked);
-      });
-    });
-    setupPhoto("w_photo","w_photo_preview","w_photo_box");
-    setupPhoto("e_photo","e_photo_preview","e_photo_box");
-  }
-
-  function toggleCom(id) {
-    const el = document.getElementById(id);
-    el.style.display = el.style.display === "flex" ? "none" : "flex";
-  }
-
-  function setupPhoto(inputId, previewId, boxId) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    const box = document.getElementById(boxId);
-    input.addEventListener("change", () => {
-      if (input.files[0]) {
-        preview.innerHTML = `<img src="${URL.createObjectURL(input.files[0])}">`;
-        preview.classList.add("active");
-      }
-    });
-  }
-
-  function showScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-  function openPublicView(type) { showScreen("screen-ads"); loadAds(type); }
-
-  async function loadAds(type) {
-    currentViewType = type;
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById(`tab-${type}`).classList.add("active");
-    const container = document.getElementById("ads-container");
-    container.innerHTML = `<div class="state-box"><div class="emoji">⏳</div>Φόρτωση...</div>`;
-    try {
-      const res = await fetch(`${API_URL}/${type}`);
-      currentData = await res.json();
-      if (!Array.isArray(currentData)) currentData = [];
-      populateFilters();
-      renderCards();
-    } catch {
-      container.innerHTML = `<div class="state-box"><div class="emoji">⚠️</div>Σφάλμα φόρτωσης</div>`;
-    }
-  }
-
-  function populateFilters() {
-    const specs = new Set(), locs = new Set();
-    currentData.forEach(ad => {
-      if (ad.specialty) specs.add(ad.specialty);
-      if (ad.task) specs.add(ad.task);
-      try { JSON.parse(ad.locations || "[]").forEach(l => locs.add(l)); } catch {}
-    });
-    const specSel = document.getElementById("filterSpecialty");
-    const locSel = document.getElementById("filterLocation");
-    const cs = specSel.value, cl = locSel.value;
-    specSel.innerHTML = '<option value="">Όλες οι ειδικότητες</option>' + [...specs].sort().map(s => `<option value="${s}">${s}</option>`).join("");
-    locSel.innerHTML = '<option value="">Όλες οι περιοχές</option>' + [...locs].sort().map(l => `<option value="${l}">${l}</option>`).join("");
-    specSel.value = cs; locSel.value = cl;
-  }
-
-  function renderCards() {
-    const container = document.getElementById("ads-container");
-    const search = (document.getElementById("searchInput").value || "").toLowerCase();
-    const favFilter = document.getElementById("filterFavs").value;
-    const specFilter = document.getElementById("filterSpecialty").value;
-    const locFilter = document.getElementById("filterLocation").value;
-    const favs = JSON.parse(localStorage.getItem("savedAds") || "[]");
-
-    let filtered = currentData.filter(ad => {
-      let locs = [];
-      try { locs = JSON.parse(ad.locations || "[]"); } catch { locs = []; }
-      const str = `${ad.name} ${ad.specialty||""} ${ad.task||""} ${locs.join(" ")} ${ad.comments||""}`.toLowerCase();
-      if (search && !str.includes(search)) return false;
-      if (specFilter && ad.specialty !== specFilter && ad.task !== specFilter) return false;
-      if (locFilter && !locs.includes(locFilter)) return false;
-      const isFav = favs.includes(`${currentViewType}_${ad.id}`);
-      if (favFilter === "favs" && !isFav) return false;
-      if (favFilter === "urgent" && !ad.is_urgent) return false;
-      return true;
-    });
-
-    document.getElementById("resultsCount").textContent = `${filtered.length} αποτελέσματα`;
-    if (!filtered.length) {
-      container.innerHTML = `<div class="state-box"><div class="emoji">🔍</div>Δεν βρέθηκαν αγγελίες</div>`;
-      return;
-    }
-
-    container.innerHTML = "";
-    filtered.forEach(ad => {
-      let locs = [];
-      try { locs = JSON.parse(ad.locations || "[]"); } catch {}
-      const isFav = favs.includes(`${currentViewType}_${ad.id}`);
-      const photo = ad.photo_url || ad.logo_url || "";
-      const isCompleted = ad.status === "completed";
-
-      const card = document.createElement("div");
-      card.className = `ad-card ${ad.is_urgent ? "urgent" : ""} ${isCompleted ? "completed" : ""}`;
-      card.innerHTML = `
-        ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}
-        ${isCompleted ? '<div class="completed-badge">✅ Ολοκληρώθηκε</div>' : ""}
-        <div class="ad-header">
-          <div style="flex:1">
-            <div class="ad-title">${esc(ad.name)}</div>
-            <div class="ad-specialty">${esc(ad.specialty || ad.task || "Γενικών καθηκόντων")}</div>
-            <div>${locs.map(l => `<span class="badge">${esc(l)}</span>`).join("")}</div>
-          </div>
-          ${photo ? `<img src="${photo}" class="ad-photo" onerror="this.style.display='none'">` : ""}
+    <!-- ========== HOME ========== -->
+    <div id="screen-home" class="screen active">
+      <div class="section-title">Δημόσιες Αγγελίες</div>
+      <div class="action-grid">
+        <div class="action-card workers" onclick="openPublicView('workers')">
+          <div class="icon">👷</div>
+          <h3>Προφίλ Εργατών</h3>
+          <p>Βρείτε άτομα που αναζητούν εργασία στην περιοχή σας</p>
         </div>
-        ${ad.comments ? `<div class="ad-comments">${esc(ad.comments)}</div>` : ""}
-        <div class="ad-contact">
-          ${ad.phone ? `<a href="tel:${ad.phone}">📞 ${esc(ad.phone)}</a>` : ""}
-          ${ad.phone ? `<a href="https://wa.me/30${ad.phone.replace(/\D/g,'')}" target="_blank">💬 Viber/WhatsApp</a>` : ""}
-          ${ad.email ? `<a href="mailto:${ad.email}">✉️ Email</a>` : ""}
+        <div class="action-card employers" onclick="openPublicView('employers')">
+          <div class="icon">🏢</div>
+          <h3>Θέσεις Εργασίας</h3>
+          <p>Ανοιχτές θέσεις από επιχειρήσεις & ιδιώτες</p>
         </div>
-        <div class="card-actions">
-          <button class="icon-btn ${isFav ? "fav-active" : ""}" onclick="toggleFav('${currentViewType}_${ad.id}', this)">
-            ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
-          </button>
-          <button class="icon-btn" onclick="shareAd('${esc(ad.name)}')">📤 Κοινοποίηση</button>
-          ${!isCompleted ? `<button class="icon-btn" onclick="openFoundModal(${ad.id}, '${currentViewType === "workers" ? "worker" : "employer"}')">✅ Βρήκα!</button>` : ""}
-        </div>`;
-      container.appendChild(card);
-    });
-  }
+      </div>
 
-  function filterCards() { renderCards(); }
-  function esc(s) { if (!s) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+      <div class="section-title">Δημοσίευση Αγγελίας</div>
+      <div class="action-grid">
+        <div class="action-card post-worker" onclick="showScreen('screen-worker')">
+          <div class="icon">📝</div>
+          <h3>Ψάχνω Δουλειά</h3>
+          <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
+        </div>
+        <div class="action-card post-employer" onclick="showScreen('screen-employer')">
+          <div class="icon">🔍</div>
+          <h3>Ψάχνω Προσωπικό</h3>
+          <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
+        </div>
+      </div>
+    </div>
 
-  function toggleFav(id, btn) {
-    let favs = JSON.parse(localStorage.getItem("savedAds") || "[]");
-    if (favs.includes(id)) {
-      favs = favs.filter(f => f !== id);
-      btn.innerHTML = "🤍 Αποθήκευση"; btn.classList.remove("fav-active");
-    } else {
-      favs.push(id); btn.innerHTML = "❤️ Αγαπημένο"; btn.classList.add("fav-active");
+    <!-- ========== ADS LIST ========== -->
+    <div id="screen-ads" class="screen">
+      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
+
+      <div class="tabs">
+        <button id="tab-workers" class="tab-btn active" onclick="loadAds('workers')">👷 Εργάτες</button>
+        <button id="tab-employers" class="tab-btn" onclick="loadAds('employers')">🏢 Εργοδότες</button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-row">
+          <input type="text" id="searchInput" placeholder="🔍 Αναζήτηση (όνομα, ειδικότητα, περιοχή...)" oninput="filterCards()">
+        </div>
+        <div class="filter-row">
+          <select id="filterSpecialty" onchange="filterCards()">
+            <option value="">Όλες οι ειδικότητες</option>
+          </select>
+          <select id="filterLocation" onchange="filterCards()">
+            <option value="">Όλες οι περιοχές</option>
+          </select>
+          <select id="filterFavs" onchange="filterCards()">
+            <option value="all">Όλες οι αγγελίες</option>
+            <option value="favs">⭐ Μόνο αγαπημένα</option>
+            <option value="urgent">⚡ Μόνο επείγοντα</option>
+          </select>
+        </div>
+        <div class="filter-chips" id="quickFilters"></div>
+      </div>
+
+      <div class="ads-meta">
+        <span id="resultsCount">—</span>
+        <button class="btn-ghost btn-sm" onclick="loadAds(currentViewType)">↻ Ανανέωση</button>
+      </div>
+
+      <div id="ads-container">
+        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση αγγελιών...</div>
+      </div>
+    </div>
+
+    <!-- ========== WORKER FORM ========== -->
+    <div id="screen-worker" class="screen">
+      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
+      <div class="form-card">
+        <h2 style="margin-bottom:20px;font-size:1.3rem;">Δήλωση Εργασίας</h2>
+        <form id="workerForm">
+          <fieldset>
+            <legend>Προσωπικά Στοιχεία</legend>
+            <div class="form-group">
+              <label class="main-label">Όνομα / Επώνυμο *</label>
+              <input type="text" id="w_name" required placeholder="π.χ. Γιάννης Παπαδόπουλος">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Λεπτομέρειες / Εμπειρία</label>
+              <textarea id="w_comments" placeholder="Περιγράψτε την εμπειρία σας, διαθέσιμες ώρες κλπ."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Φωτογραφία (προαιρετικά)</label>
+              <div class="photo-upload" id="w_photo_box" onclick="document.getElementById('w_photo').click()">
+                <div>📷 Πατήστε για επιλογή φωτογραφίας<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
+                <input type="file" id="w_photo" accept="image/*">
+                <div class="photo-preview" id="w_photo_preview"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Ειδικότητα & Περιοχές</legend>
+            <div class="form-group">
+              <label class="main-label">Ειδικότητα</label>
+              <select class="specialty-select" id="w_specialty"></select>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Είδος Εργασίας</label>
+              <select class="task-select" id="w_task"></select>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Περιοχές *</label>
+              <div class="location-selector" id="worker-locations"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Επικοινωνία & Ρυθμίσεις</legend>
+            <div class="form-group">
+              <label class="main-label">Τηλέφωνο</label>
+              <input type="tel" id="w_phone" placeholder="69xxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Email (προαιρετικά)</label>
+              <input type="email" id="w_email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+              <label class="main-label">PIN Διαγραφής * <small style="font-weight:400;color:var(--text-muted)">(4+ ψηφία – κρατήστε το)</small></label>
+              <input type="text" id="w_pin" required maxlength="8" placeholder="π.χ. 4821" pattern="[0-9A-Za-z]{4,8}">
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="w_urgent">
+              <label for="w_urgent">Άμεσα Διαθέσιμος / Επείγον</label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Προφίλ</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========== EMPLOYER FORM ========== -->
+    <div id="screen-employer" class="screen">
+      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
+      <div class="form-card">
+        <h2 style="margin-bottom:20px;font-size:1.3rem;">Αναζήτηση Προσωπικού</h2>
+        <form id="employerForm">
+          <fieldset>
+            <legend>Στοιχεία Επιχείρησης</legend>
+            <div class="form-group">
+              <label class="main-label">Όνομα / Επιχείρηση *</label>
+              <input type="text" id="e_name" required placeholder="π.χ. Καφετέρια Ολύμπου">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Λεπτομέρειες θέσης</label>
+              <textarea id="e_comments" placeholder="Περιγραφή θέσης, ωράριο, απαιτήσεις..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Φωτογραφία / Λογότυπο (προαιρετικά)</label>
+              <div class="photo-upload" id="e_photo_box" onclick="document.getElementById('e_photo').click()">
+                <div>📷 Πατήστε για επιλογή φωτογραφίας<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
+                <input type="file" id="e_photo" accept="image/*">
+                <div class="photo-preview" id="e_photo_preview"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Αναζήτηση & Περιοχές</legend>
+            <div class="form-group">
+              <label class="main-label">Ειδικότητα που ζητάτε</label>
+              <select class="specialty-select" id="e_specialty"></select>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Είδος Εργασίας</label>
+              <select class="task-select" id="e_task"></select>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Περιοχές *</label>
+              <div class="location-selector" id="employer-locations"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Επικοινωνία & Ρυθμίσεις</legend>
+            <div class="form-group">
+              <label class="main-label">Τηλέφωνο</label>
+              <input type="tel" id="e_phone" placeholder="69xxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Email (προαιρετικά)</label>
+              <input type="email" id="e_email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+              <label class="main-label">PIN Διαγραφής * <small style="font-weight:400;color:var(--text-muted)">(4+ ψηφία – κρατήστε το)</small></label>
+              <input type="text" id="e_pin" required maxlength="8" placeholder="π.χ. 4821">
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="e_urgent">
+              <label for="e_urgent">Επείγουσα Ανάγκη Προσωπικού</label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Αγγελίας</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Ergasia Trikala · Τοπικές αγγελίες εργασίας<br>
+    <small>Οι αγγελίες διαγράφονται αυτόματα μετά από ~45 ημέρες</small>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h3>Διαγραφή Αγγελίας</h3>
+      <p>Εισάγετε το PIN που δηλώσατε κατά τη δημοσίευση για να διαγράψετε την αγγελία.</p>
+      <input type="text" id="deletePin" placeholder="PIN" maxlength="8" style="margin-bottom:8px;">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Ακύρωση</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Διαγραφή</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ================== CONFIG ==================
+    const API_BASE = "https://jobs.kafevolta.workers.dev";
+    const API_URL = API_BASE + "/api";
+
+    let currentData = [];
+    let currentViewType = "workers";
+    let deleteTarget = null; // { id, type }
+
+    // ================== DATA ==================
+    const specialtiesData = {
+      "Εστίαση": ["Καφετέρια Barista", "Καφετέρια Service", "Εστιατόριο Κουζίνα", "Εστιατόριο Service", "Καφενείο", "Τσιπουράδικο", "Delivery"],
+      "Τεχνίτες / Κατασκευές": ["Χτίσιμο - Σοβάτισμα", "Υδραυλικός", "Ηλεκτρολόγος", "Ψυκτικός", "Πλακάκια", "Σκεπές", "Ανακαίνιση", "Βάψιμο", "Σιδηρουργός"],
+      "Αγροτικά": ["Χωράφια / Αγροτικά", "Κηπουρικά", "Κλάδεμα", "Ελαιοσυλλογή"],
+      "Υπηρεσίες": ["Καθαριότητα", "Φροντίδα Ηλικιωμένων", "Φύλαξη παιδιών", "Οδηγός"],
+      "Άλλα": ["Γενικών καθηκόντων", "Αποθήκη", "Πωλήσεις"]
+    };
+
+    const tasksData = {
+      "Αγροτικά & Εξωτερικά": ["Χωράφια / Αγροτικά", "Κηπουρικά", "Κλάδεμα", "Ελαιοσυλλογή"],
+      "Οικιακά & Φροντίδα": ["Καθαριότητα", "Φροντίδα Ηλικιωμένων", "Φύλαξη παιδιών"],
+      "Μικροεργασίες": ["Συναρμολόγηση", "Μερεμέτια", "Μεταφορές"],
+      "Εστίαση": ["Service", "Κουζίνα", "Barista", "Delivery"]
+    };
+
+    const locationsData = {
+      "Δήμος Τρικκαίων": ["Τρίκαλα (Κέντρο)", "Αγία Κυριακή", "Μεγάλα Καλύβια", "Μεγαλοχώρι", "Ρίζωμα"],
+      "Δήμος Μετεώρων": ["Καλαμπάκα", "Καστράκι", "Παναγία", "Χρυσομηλιά"],
+      "Δήμος Πύλης": ["Πύλη", "Ελάτη", "Γόμφοι", "Περτούλι", "Πύρρα", "Στουρναραίικα", "Φήκη", "Φιλύρα"],
+      "Δήμος Φαρκαδόνας": ["Φαρκαδόνα", "Ζάρκο", "Οιχαλία", "Ταξιάρχες", "Φανερωμένη"]
+    };
+
+    // ================== INIT ==================
+    function initForms() {
+      // Specialties
+      document.querySelectorAll(".specialty-select").forEach(sel => {
+        sel.innerHTML = '<option value="">-- Επιλέξτε ειδικότητα --</option>';
+        for (const [group, items] of Object.entries(specialtiesData)) {
+          const optgroup = document.createElement("optgroup");
+          optgroup.label = group;
+          items.forEach(i => {
+            const opt = document.createElement("option");
+            opt.value = i;
+            opt.textContent = i;
+            optgroup.appendChild(opt);
+          });
+          sel.appendChild(optgroup);
+        }
+      });
+
+      // Tasks
+      document.querySelectorAll(".task-select").forEach(sel => {
+        sel.innerHTML = '<option value="">-- Είδος εργασίας --</option>';
+        for (const [group, items] of Object.entries(tasksData)) {
+          const optgroup = document.createElement("optgroup");
+          optgroup.label = group;
+          items.forEach(i => {
+            const opt = document.createElement("option");
+            opt.value = i;
+            opt.textContent = i;
+            optgroup.appendChild(opt);
+          });
+          sel.appendChild(optgroup);
+        }
+      });
+
+      // Locations
+      ["worker-locations", "employer-locations"].forEach((id, idx) => {
+        let html = "";
+        for (const [mun, locs] of Object.entries(locationsData)) {
+          const mId = `m_${idx}_${mun.replace(/\s+/g, "")}`;
+          html += `
+            <div class="municipality-group">
+              <div class="municipality-header">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="mun-checkbox" data-target="${mId}">
+                  <strong>${mun}</strong>
+                </label>
+                <button type="button" class="toggle-btn" onclick="toggleCommunities('${mId}')">▼</button>
+              </div>
+              <div class="communities-list" id="${mId}">
+                ${locs.map(l => `<label class="checkbox-label"><input type="checkbox" class="com-checkbox" data-parent="${mId}" value="${l}"> ${l}</label>`).join("")}
+              </div>
+            </div>`;
+        }
+        document.getElementById(id).innerHTML = html;
+      });
+
+      document.querySelectorAll(".mun-checkbox").forEach(cb => {
+        cb.addEventListener("change", function () {
+          document.querySelectorAll(`#${this.dataset.target} .com-checkbox`).forEach(c => c.checked = this.checked);
+        });
+      });
+
+      // Photo previews
+      setupPhotoPreview("w_photo", "w_photo_preview", "w_photo_box");
+      setupPhotoPreview("e_photo", "e_photo_preview", "e_photo_box");
     }
-    localStorage.setItem("savedAds", JSON.stringify(favs));
-  }
 
-  function shareAd(name) {
-    const text = `Δες αυτή την αγγελία: ${name} στο Θες Δλεια - Βρες Δλεια!`;
-    if (navigator.share) navigator.share({ title: "Θες Δλεια - Βρες Δλεια", text, url: location.href });
-    else navigator.clipboard.writeText(location.href).then(() => alert("Ο σύνδεσμος αντιγράφηκε!"));
-  }
+    function toggleCommunities(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === "flex" ? "none" : "flex";
+    }
 
-  function openFoundModal(id, type) {
-    foundTarget = { id, type };
-    document.getElementById("foundPin").value = "";
-    document.getElementById("foundModal").classList.add("active");
-  }
-  function closeFoundModal() {
-    document.getElementById("foundModal").classList.remove("active");
-    foundTarget = null;
-  }
-  document.getElementById("confirmFoundBtn").addEventListener("click", async () => {
-    if (!foundTarget) return;
-    const pin = document.getElementById("foundPin").value.trim();
-    if (!pin) return alert("Βάλε το PIN");
-    try {
-      const res = await fetch(API_BASE + "/api/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: foundTarget.id, type: foundTarget.type, pin })
+    function setupPhotoPreview(inputId, previewId, boxId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const box = document.getElementById(boxId);
+
+      input.addEventListener("change", () => {
+        if (input.files[0]) {
+          const url = URL.createObjectURL(input.files[0]);
+          preview.innerHTML = `<img src="${url}" alt="preview">`;
+          preview.classList.add("active");
+        }
       });
-      const data = await res.json();
-      if (res.ok) {
-        alert("Μπράβο! Η αγγελία μαρκαρίστηκε. Ο διαχειριστής θα την αφαιρέσει σύντομα.");
-        closeFoundModal();
-        loadAds(currentViewType);
-      } else alert(data.error || "Λάθος PIN");
-    } catch { alert("Πρόβλημα σύνδεσης"); }
-  });
 
-  async function uploadPhoto(input) {
-    if (!input.files?.[0]) return "";
-    const fd = new FormData();
-    fd.append("file", input.files[0]);
-    const res = await fetch(API_BASE + "/api/upload", { method: "POST", body: fd });
-    if (!res.ok) throw new Error("Αποτυχία ανεβάσματος φωτογραφίας");
-    const data = await res.json();
-    return data.url || "";
-  }
+      // Drag & drop
+      box.addEventListener("dragover", e => { e.preventDefault(); box.classList.add("dragover"); });
+      box.addEventListener("dragleave", () => box.classList.remove("dragover"));
+      box.addEventListener("drop", e => {
+        e.preventDefault();
+        box.classList.remove("dragover");
+        if (e.dataTransfer.files[0]) {
+          input.files = e.dataTransfer.files;
+          input.dispatchEvent(new Event("change"));
+        }
+      });
+    }
 
-  async function handleFormSubmit(e, type) {
-    e.preventDefault();
-    const isW = type === "worker";
-    const p = isW ? "w_" : "e_";
-    const locId = isW ? "worker-locations" : "employer-locations";
-    const checked = document.querySelectorAll(`#${locId} .com-checkbox:checked`);
-    if (!checked.length) return alert("Διάλεξε τουλάχιστον μία περιοχή");
+    // ================== NAVIGATION ==================
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.textContent = "Στέλνω...";
+    function openPublicView(type) {
+      showScreen("screen-ads");
+      loadAds(type);
+    }
 
-    try {
-      let photoUrl = "";
-      const photoInput = document.getElementById(p + "photo");
-      if (photoInput.files[0]) {
-        btn.textContent = "Ανεβάζω φωτογραφία...";
-        photoUrl = await uploadPhoto(photoInput);
+    // ================== LOAD & RENDER ==================
+    async function loadAds(type) {
+      currentViewType = type;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`tab-${type}`).classList.add("active");
+
+      const container = document.getElementById("ads-container");
+      container.innerHTML = `<div class="state-box"><div class="emoji">⏳</div>Φόρτωση...</div>`;
+
+      try {
+        const res = await fetch(`${API_URL}/${type}`);
+        if (!res.ok) throw new Error("Network error");
+        currentData = await res.json();
+        if (!Array.isArray(currentData)) currentData = [];
+        populateFilters();
+        renderCards();
+      } catch (e) {
+        container.innerHTML = `<div class="state-box"><div class="emoji">⚠️</div>Σφάλμα φόρτωσης. Δοκιμάστε ξανά.</div>`;
       }
-      const payload = {
-        name: document.getElementById(p+"name").value.trim(),
-        specialty: document.getElementById(p+"specialty").value,
-        task: document.getElementById(p+"task").value,
-        locations: Array.from(checked).map(c => c.value),
-        phone: document.getElementById(p+"phone").value.trim(),
-        email: document.getElementById(p+"email").value.trim(),
-        comments: document.getElementById(p+"comments").value.trim(),
-        pin: document.getElementById(p+"pin").value.trim(),
-        is_urgent: document.getElementById(p+"urgent").checked,
-        photo_url: photoUrl, logo_url: photoUrl
-      };
-      btn.textContent = "Δημοσίευση...";
-      const res = await fetch(`${API_URL}/${type}`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+    }
+
+    function populateFilters() {
+      const specs = new Set();
+      const locs = new Set();
+      currentData.forEach(ad => {
+        if (ad.specialty) specs.add(ad.specialty);
+        if (ad.task) specs.add(ad.task);
+        try {
+          const l = JSON.parse(ad.locations || "[]");
+          l.forEach(x => locs.add(x));
+        } catch {}
       });
-      if (res.ok) {
-        alert("✅ Η αγγελία ανέβηκε!");
-        e.target.reset();
-        document.getElementById(p+"photo_preview").classList.remove("active");
-        showScreen("screen-home");
+
+      const specSel = document.getElementById("filterSpecialty");
+      const locSel = document.getElementById("filterLocation");
+      const currentSpec = specSel.value;
+      const currentLoc = locSel.value;
+
+      specSel.innerHTML = '<option value="">Όλες οι ειδικότητες</option>' +
+        [...specs].sort().map(s => `<option value="${s}">${s}</option>`).join("");
+      locSel.innerHTML = '<option value="">Όλες οι περιοχές</option>' +
+        [...locs].sort().map(l => `<option value="${l}">${l}</option>`).join("");
+
+      specSel.value = currentSpec;
+      locSel.value = currentLoc;
+    }
+
+    function renderCards() {
+      const container = document.getElementById("ads-container");
+      const search = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+      const favFilter = document.getElementById("filterFavs").value;
+      const specFilter = document.getElementById("filterSpecialty").value;
+      const locFilter = document.getElementById("filterLocation").value;
+      const favs = JSON.parse(localStorage.getItem("savedAds") || "[]");
+
+      let filtered = currentData.filter(ad => {
+        let locs = [];
+        try { locs = JSON.parse(ad.locations || "[]"); } catch { locs = [ad.locations]; }
+
+        const searchStr = `${ad.name} ${ad.specialty || ""} ${ad.task || ""} ${locs.join(" ")} ${ad.comments || ""}`.toLowerCase();
+        if (search && !searchStr.includes(search)) return false;
+
+        if (specFilter && ad.specialty !== specFilter && ad.task !== specFilter) return false;
+        if (locFilter && !locs.includes(locFilter)) return false;
+
+        const isFav = favs.includes(`${currentViewType}_${ad.id}`);
+        if (favFilter === "favs" && !isFav) return false;
+        if (favFilter === "urgent" && !ad.is_urgent) return false;
+
+        return true;
+      });
+
+      document.getElementById("resultsCount").textContent = `${filtered.length} αποτελέσματα`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="state-box"><div class="emoji">🔍</div>Δεν βρέθηκαν αγγελίες με αυτά τα κριτήρια.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      filtered.forEach(ad => {
+        let locs = [];
+        try { locs = JSON.parse(ad.locations || "[]"); } catch { locs = [ad.locations || ""]; }
+        const isFav = favs.includes(`${currentViewType}_${ad.id}`);
+        const photo = ad.photo_url || ad.logo_url || "";
+
+        const card = document.createElement("div");
+        card.className = `ad-card ${ad.is_urgent ? "urgent" : ""}`;
+        card.innerHTML = `
+          ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}
+          <div class="ad-header">
+            <div style="flex:1">
+              <h3 class="ad-title">${escapeHtml(ad.name)}</h3>
+              <div class="ad-specialty">${escapeHtml(ad.specialty || ad.task || "Γενικών καθηκόντων")}</div>
+              <div>${locs.map(l => `<span class="badge">${escapeHtml(l)}</span>`).join("")}</div>
+            </div>
+            ${photo ? `<img src="${photo}" class="ad-photo" alt="" onerror="this.style.display='none'">` : ""}
+          </div>
+          ${ad.comments ? `<div class="ad-comments">${escapeHtml(ad.comments)}</div>` : ""}
+          <div class="ad-contact">
+            ${ad.phone ? `<a href="tel:${ad.phone}">📞 ${escapeHtml(ad.phone)}</a>` : ""}
+            ${ad.phone ? `<a href="https://wa.me/30${ad.phone.replace(/\D/g,'')}" target="_blank">💬 WhatsApp</a>` : ""}
+            ${ad.email ? `<a href="mailto:${ad.email}">✉️ Email</a>` : ""}
+            ${!ad.phone && !ad.email ? "<span style='color:var(--text-muted)'>Χωρίς στοιχεία επικοινωνίας</span>" : ""}
+          </div>
+          <div class="card-actions">
+            <button class="icon-btn ${isFav ? "fav-active" : ""}" onclick="toggleFav('${currentViewType}_${ad.id}', this)">
+              ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
+            </button>
+            <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">
+              📤 Κοινοποίηση
+            </button>
+            <button class="icon-btn" onclick="openDeleteModal(${ad.id}, '${currentViewType === "workers" ? "worker" : "employer"}')">
+              🗑️ Διαγραφή
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterCards() { renderCards(); }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    // ================== FAVORITES & SHARE ==================
+    function toggleFav(id, btn) {
+      let favs = JSON.parse(localStorage.getItem("savedAds") || "[]");
+      if (favs.includes(id)) {
+        favs = favs.filter(f => f !== id);
+        btn.innerHTML = "🤍 Αποθήκευση";
+        btn.classList.remove("fav-active");
       } else {
-        const err = await res.json().catch(() => ({}));
-        alert(err.error || "Σφάλμα");
+        favs.push(id);
+        btn.innerHTML = "❤️ Αγαπημένο";
+        btn.classList.add("fav-active");
       }
-    } catch (err) {
-      alert(err.message || "Πρόβλημα σύνδεσης");
-    } finally {
-      btn.disabled = false;
-      btn.textContent = isW ? "Δημοσίευση Προφίλ" : "Δημοσίευση Αγγελίας";
+      localStorage.setItem("savedAds", JSON.stringify(favs));
     }
-  }
 
-  window.onload = () => {
-    initForms();
-    document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
-    document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
-  };
-</script>
+    function shareAd(name, spec) {
+      const text = `Δες αυτή την αγγελία: ${name} – ${spec} στο Ergasia Trikala!`;
+      if (navigator.share) {
+        navigator.share({ title: "Ergasia Trikala", text, url: window.location.href });
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => alert("Ο σύνδεσμος αντιγράφηκε!"));
+      }
+    }
+
+    // ================== DELETE ==================
+    function openDeleteModal(id, type) {
+      deleteTarget = { id, type };
+      document.getElementById("deletePin").value = "";
+      document.getElementById("deleteModal").classList.add("active");
+      document.getElementById("deletePin").focus();
+    }
+
+    function closeDeleteModal() {
+      document.getElementById("deleteModal").classList.remove("active");
+      deleteTarget = null;
+    }
+
+    document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+      if (!deleteTarget) return;
+      const pin = document.getElementById("deletePin").value.trim();
+      if (!pin) return alert("Εισάγετε PIN");
+
+      try {
+        const res = await fetch(API_BASE + "/", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: deleteTarget.id, type: deleteTarget.type, pin })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Η αγγελία διαγράφηκε.");
+          closeDeleteModal();
+          loadAds(currentViewType);
+        } else {
+          alert(data.error || "Σφάλμα διαγραφής");
+        }
+      } catch {
+        alert("Αδυναμία σύνδεσης");
+      }
+    });
+
+    // ================== UPLOAD & SUBMIT ==================
+    async function uploadPhoto(fileInput) {
+      if (!fileInput.files || !fileInput.files[0]) return "";
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      const res = await fetch(API_BASE + "/api/upload", {
+        method: "POST",
+        body: formData
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Αποτυχία ανεβάσματος φωτογραφίας");
+      }
+      const data = await res.json();
+      return data.url || "";
+    }
+
+    async function handleFormSubmit(e, type) {
+      e.preventDefault();
+      const isWorker = type === "worker";
+      const prefix = isWorker ? "w_" : "e_";
+      const locId = isWorker ? "worker-locations" : "employer-locations";
+
+      const checked = document.querySelectorAll(`#${locId} .com-checkbox:checked`);
+      if (checked.length === 0) {
+        alert("Επιλέξτε τουλάχιστον μία περιοχή.");
+        return;
+      }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Αποστολή...";
+
+      try {
+        let photoUrl = "";
+        const photoInput = document.getElementById(prefix + "photo");
+        if (photoInput.files[0]) {
+          btn.textContent = "Ανέβασμα φωτογραφίας...";
+          photoUrl = await uploadPhoto(photoInput);
+        }
+
+        const payload = {
+          name: document.getElementById(prefix + "name").value.trim(),
+          specialty: document.getElementById(prefix + "specialty").value,
+          task: document.getElementById(prefix + "task").value,
+          locations: Array.from(checked).map(c => c.value),
+          phone: document.getElementById(prefix + "phone").value.trim(),
+          email: document.getElementById(prefix + "email").value.trim(),
+          comments: document.getElementById(prefix + "comments").value.trim(),
+          pin: document.getElementById(prefix + "pin").value.trim(),
+          is_urgent: document.getElementById(prefix + "urgent").checked,
+          photo_url: photoUrl,
+          logo_url: photoUrl // for employers compatibility
+        };
+
+        btn.textContent = "Δημοσίευση...";
+        const res = await fetch(`${API_URL}/${type}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          alert("✅ Η αγγελία δημοσιεύτηκε με επιτυχία!");
+          e.target.reset();
+          document.getElementById(prefix + "photo_preview").classList.remove("active");
+          document.getElementById(prefix + "photo_preview").innerHTML = "";
+          showScreen("screen-home");
+        } else {
+          const err = await res.json().catch(() => ({}));
+          alert(err.error || "Σφάλμα κατά τη δημοσίευση");
+        }
+      } catch (err) {
+        alert(err.message || "Αδυναμία σύνδεσης με τον διακομιστή");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+
+    // ================== START ==================
+    window.onload = () => {
+      initForms();
+      document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
+      document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
+    };
+  </script>
 </body>
 </html>
