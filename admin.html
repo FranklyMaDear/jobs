@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin · Ergasia Trikala</title>
+  <title>Admin · Ergasia Thessalia</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #0f172a;
       --accent: #2563eb;
       --danger: #dc2626;
+      --success: #059669;
       --bg: #f1f5f9;
       --card: #ffffff;
       --border: #e2e8f0;
@@ -52,6 +53,9 @@
       background: rgba(255,255,255,0.15);
       padding: 6px 14px;
       border-radius: 999px;
+    }
+    .stat-pill.found {
+      background: rgba(5, 150, 105, 0.4);
     }
     .tabs {
       display: flex;
@@ -131,6 +135,8 @@
       vertical-align: middle;
     }
     tr:hover td { background: #f8fafc; }
+    tr.found-row td { background: #ecfdf5; }
+    tr.found-row:hover td { background: #d1fae5; }
     .urgent-dot {
       display: inline-block;
       width: 8px;
@@ -138,6 +144,16 @@
       background: var(--danger);
       border-radius: 50%;
       margin-right: 6px;
+    }
+    .found-badge {
+      display: inline-block;
+      background: #059669;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-left: 6px;
     }
     .photo-thumb {
       width: 40px;
@@ -187,10 +203,11 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Πίνακας Ελέγχου · Ergasia Trikala</h1>
+      <h1>Πίνακας Ελέγχου · Ergasia Thessalia</h1>
       <div class="stats">
         <span class="stat-pill" id="statWorkers">Εργάτες: —</span>
         <span class="stat-pill" id="statEmployers">Εργοδότες: —</span>
+        <span class="stat-pill found" id="statFound">Βρέθηκαν: —</span>
       </div>
     </div>
 
@@ -214,6 +231,7 @@
               <th>Περιοχές</th>
               <th>Επικοινωνία</th>
               <th>Ημ/νία</th>
+              <th>Κατάσταση</th>
               <th></th>
             </tr>
           </thead>
@@ -237,6 +255,7 @@
               <th>Περιοχές</th>
               <th>Επικοινωνία</th>
               <th>Ημ/νία</th>
+              <th>Κατάσταση</th>
               <th></th>
             </tr>
           </thead>
@@ -260,16 +279,19 @@
     async function load() {
       try {
         const [wr, er] = await Promise.all([
-          fetch(`${API}/api/workers`),
-          fetch(`${API}/api/employers`)
+          fetch(`${API}/api/admin/workers`),
+          fetch(`${API}/api/admin/employers`)
         ]);
         workersData = await wr.json();
         employersData = await er.json();
         if (!Array.isArray(workersData)) workersData = [];
         if (!Array.isArray(employersData)) employersData = [];
 
+        const foundCount = [...workersData, ...employersData].filter(r => r.found == 1).length;
+
         document.getElementById("statWorkers").textContent = `Εργάτες: ${workersData.length}`;
         document.getElementById("statEmployers").textContent = `Εργοδότες: ${employersData.length}`;
+        document.getElementById("statFound").textContent = `Βρέθηκαν: ${foundCount}`;
 
         render("w-tbody", workersData, "worker");
         render("e-tbody", employersData, "employer");
@@ -281,7 +303,7 @@
     function render(tbodyId, data, type) {
       const tbody = document.getElementById(tbodyId);
       if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="empty">Δεν υπάρχουν αγγελίες</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">Δεν υπάρχουν αγγελίες</td></tr>`;
         return;
       }
 
@@ -290,15 +312,17 @@
         try { locs = JSON.parse(r.locations || "[]"); } catch { locs = []; }
         const photo = r.photo_url || r.logo_url || "";
         const date = r.created_at ? new Date(r.created_at).toLocaleDateString("el-GR") : "—";
+        const isFound = r.found == 1;
 
         return `
-          <tr data-search="${(r.name + " " + (r.specialty||"") + " " + (r.task||"") + " " + locs.join(" ")).toLowerCase()}">
+          <tr class="${isFound ? 'found-row' : ''}" data-search="${(r.name + " " + (r.specialty||"") + " " + (r.task||"") + " " + locs.join(" ")).toLowerCase()}">
             <td data-label="">
               ${photo ? `<img src="${photo}" class="photo-thumb" onerror="this.style.display='none'">` : "—"}
             </td>
             <td data-label="Όνομα">
               ${r.is_urgent ? '<span class="urgent-dot" title="Επείγον"></span>' : ""}
               <strong>${escapeHtml(r.name)}</strong>
+              ${isFound ? '<span class="found-badge">ΒΡΕΘΗΚΕ</span>' : ""}
             </td>
             <td data-label="Ειδικότητα">${escapeHtml(r.specialty || r.task || "—")}</td>
             <td data-label="Περιοχές">${locs.slice(0,3).map(l => `<span class="badge">${escapeHtml(l)}</span>`).join("")}${locs.length > 3 ? "…" : ""}</td>
@@ -307,6 +331,9 @@
               ${r.email ? `<br><small>${escapeHtml(r.email)}</small>` : ""}
             </td>
             <td data-label="Ημ/νία">${date}</td>
+            <td data-label="Κατάσταση">
+              ${isFound ? '<strong style="color:#059669">Να διαγραφεί</strong>' : 'Ενεργή'}
+            </td>
             <td data-label="">
               <button class="btn btn-danger" onclick="del(${r.id}, '${type}')">Διαγραφή</button>
             </td>
