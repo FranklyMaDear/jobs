@@ -399,6 +399,26 @@
       width: 100%; padding: 14px 12px; font-size: 16px; min-height: 48px;
       border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit;
     }
+    .home-job-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow);
+      display: flex; gap: 14px; align-items: flex-start; text-align: left;
+    }
+    .home-job-card .hj-logo {
+      width: 56px; height: 56px; border-radius: 12px; object-fit: cover;
+      border: 1px solid var(--border); flex-shrink: 0; background: #f8fafc;
+    }
+    .home-job-card .hj-body { flex: 1; min-width: 0; }
+    .home-job-card h4 { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+    .home-job-card .hj-spec { color: var(--accent); font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; }
+    .home-job-card .hj-meta { font-size: 0.8rem; color: var(--text-muted); }
+    .btn-request {
+      margin-top: 10px; background: var(--accent); color: white; border: none;
+      padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 0.88rem;
+      cursor: pointer; font-family: inherit; width: 100%;
+    }
+    .btn-request:hover { background: var(--accent-hover); }
+    .ad-slot-wrap { overflow: hidden; min-height: 50px; }
     .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
     .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
   </style>
@@ -409,9 +429,8 @@
   <div class="welcome-overlay" id="welcomeOverlay">
     <div class="welcome-card">
       <div class="logo-spin-wrap">
-        <img src="/logo.png" alt="Θελς Δλειά! Βρες Δλειά" class="welcome-logo" id="welcomeLogo">
+        <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
-      <h1>Θελς Δλειά;<br>Βρες Δλειά!</h1>
       <p>Η τοπική πλατφόρμα αγγελιών εργασίας της Θεσσαλίας.<br>Δωρεάν, γρήγορα και κοντά σου.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
@@ -438,8 +457,8 @@
         </div>
         <div class="action-card employers" onclick="openPublicView('employers')">
           <div class="icon">🏢</div>
-          <h3>Θέσεις Εργασίας</h3>
-          <p>Ανοιχτές θέσεις από επιχειρήσεις & ιδιώτες</p>
+          <h3>Όλες οι θέσεις</h3>
+          <p>Δείτε όλες τις ανοιχτές θέσεις με φίλτρα</p>
         </div>
       </div>
 
@@ -457,7 +476,23 @@
         </div>
       </div>
 
-      <div style="margin-top:28px;text-align:center;">
+      <div class="section-title">Θέσεις εργασίας</div>
+      <div id="home-jobs-list">
+        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση θέσεων...</div>
+      </div>
+      <div id="home-jobs-more" style="display:none;text-align:center;margin:16px 0;">
+        <button class="btn btn-primary" onclick="openPublicView('employers')">Δείτε όλες τις θέσεις →</button>
+      </div>
+
+      <div style="margin:24px 0;" class="ad-slot-wrap">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-format="autorelaxed"
+             data-ad-client="ca-pub-3186700611266549"
+             data-ad-slot="6826169932"></ins>
+      </div>
+
+      <div style="margin-top:20px;text-align:center;">
         <button class="btn btn-secondary" onclick="shareSite()" style="gap:10px;">
           📤 Κοινοποίησε τη σελίδα
         </button>
@@ -506,14 +541,7 @@
               <label class="main-label">Λεπτομέρειες / Εμπειρία</label>
               <textarea id="w_comments" placeholder="Περιγράψτε την εμπειρία σας, διαθέσιμες ώρες κλπ."></textarea>
             </div>
-            <div class="form-group">
-              <label class="main-label">Φωτογραφία (προαιρετικά)</label>
-              <div class="photo-upload" id="w_photo_box" onclick="document.getElementById('w_photo').click()">
-                <div>📷 Πατήστε για επιλογή φωτογραφίας<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
-                <input type="file" id="w_photo" accept="image/*">
-                <div class="photo-preview" id="w_photo_preview"></div>
-              </div>
-            </div>
+
           </fieldset>
           <fieldset>
             <legend>Ειδικότητα & Περιοχές</legend>
@@ -558,8 +586,8 @@
               <input type="tel" id="w_phone" placeholder="69xxxxxxxx">
             </div>
             <div class="form-group">
-              <label class="main-label">Email (προαιρετικά)</label>
-              <input type="email" id="w_email" placeholder="email@example.com">
+              <label class="main-label">Email *</label>
+              <input type="email" id="w_email" required placeholder="email@example.com">
             </div>
             <div class="checkbox-row">
               <input type="checkbox" id="w_urgent">
@@ -587,9 +615,9 @@
               <textarea id="e_comments" placeholder="Περιγραφή θέσης, ωράριο, απαιτήσεις..."></textarea>
             </div>
             <div class="form-group">
-              <label class="main-label">Φωτογραφία / Λογότυπο (προαιρετικά)</label>
+              <label class="main-label">Λογότυπο εταιρείας (προαιρετικά)</label>
               <div class="photo-upload" id="e_photo_box" onclick="document.getElementById('e_photo').click()">
-                <div>📷 Πατήστε για επιλογή φωτογραφίας<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
+                <div>🏢 Πατήστε για λογότυπο εταιρείας<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
                 <input type="file" id="e_photo" accept="image/*">
                 <div class="photo-preview" id="e_photo_preview"></div>
               </div>
@@ -638,8 +666,8 @@
               <input type="tel" id="e_phone" placeholder="69xxxxxxxx">
             </div>
             <div class="form-group">
-              <label class="main-label">Email (προαιρετικά)</label>
-              <input type="email" id="e_email" placeholder="email@example.com">
+              <label class="main-label">Email *</label>
+              <input type="email" id="e_email" required placeholder="email@example.com">
             </div>
             <div class="checkbox-row">
               <input type="checkbox" id="e_urgent">
@@ -718,6 +746,34 @@
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeRatingModal()">Παράβλεψη</button>
         <button class="btn btn-primary" onclick="submitRating()" style="background:var(--success)">Υποβολή</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Request / Contact Modal -->
+  <div class="modal-overlay" id="requestModal">
+    <div class="modal">
+      <h3 id="requestModalTitle">Αίτημα</h3>
+      <p id="requestModalCompany" style="margin-bottom:12px;"></p>
+      <div id="requestPhoneWrap" style="margin-bottom:12px;display:none;">
+        <a id="requestPhoneLink" class="btn btn-primary btn-full" href="#" style="text-decoration:none;margin-bottom:8px;">📞 Κλήση</a>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="main-label">Email εταιρείας</label>
+        <input type="text" id="requestEmailDisplay" readonly style="background:#f8fafc;">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="main-label">Το μήνυμά σας / συνοδευτικό</label>
+        <textarea id="requestMessage" placeholder="Γράψτε λίγα λόγια ή ότι επισυνάπτετε βιογραφικό..."></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="main-label">Επισύναψη αρχείου (βιογραφικό κλπ.)</label>
+        <input type="file" id="requestFile" accept=".pdf,.doc,.docx,image/*">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeRequestModal()">Κλείσιμο</button>
+        <button class="btn btn-primary" onclick="sendRequestEmail()">✉️ Άνοιγμα email</button>
       </div>
     </div>
   </div>
@@ -1008,7 +1064,6 @@
         }
       });
 
-      setupPhotoPreview("w_photo", "w_photo_preview", "w_photo_box");
       setupPhotoPreview("e_photo", "e_photo_preview", "e_photo_box");
     }
 
@@ -1180,9 +1235,8 @@
     }
 
     function openPublicView(type) {
-      // Προφίλ εργατών μόνο για εγγεγραμμένους
+      // Προφίλ εργατών μόνο για εγγεγραμμένους → απευθείας φόρμα σύνδεσης/εγγραφής
       if (type === "workers" && !currentUser) {
-        alert("Τα προφίλ εργατών εμφανίζονται μόνο σε εγγεγραμμένους χρήστες. Κάντε σύνδεση ή εγγραφή.");
         openAuthModal("login");
         return;
       }
@@ -1284,6 +1338,7 @@
             </button>
             <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
             ${currentViewType === "workers" ? `<button class="icon-btn found-btn" onclick="openFoundModalWorker(${ad.id})">✅ Βρήκα δουλειά</button>` : ""}
+            ${currentViewType === "employers" ? `<button class="icon-btn found-btn" onclick="openRequestModal({name: '${escapeHtml(ad.name).replace(/'/g, "\'")}', email: '${escapeHtml(ad.email||"")}', phone: '${escapeHtml(ad.phone||"")}'})">📨 Αίτημα</button>` : ""}
           </div>
         `;
         container.appendChild(card);
@@ -1416,9 +1471,15 @@
       try {
         let photoUrl = "";
         const photoInput = document.getElementById(prefix + "photo");
-        if (photoInput.files[0]) {
-          btn.textContent = "Ανέβασμα φωτογραφίας...";
+        if (!isWorker && photoInput && photoInput.files && photoInput.files[0]) {
+          btn.textContent = "Ανέβασμα λογοτύπου...";
           photoUrl = await uploadPhoto(photoInput);
+        }
+        const emailVal = document.getElementById(prefix + "email").value.trim();
+        if (!emailVal) {
+          alert("Το email είναι υποχρεωτικό.");
+          btn.disabled = false; btn.textContent = originalText;
+          return;
         }
         const payload = {
           name: document.getElementById(prefix + "name").value.trim(),
@@ -1456,7 +1517,7 @@
           e.target.reset();
           document.getElementById(prefix + "photo_preview").classList.remove("active");
           document.getElementById(prefix + "photo_preview").innerHTML = "";
-          showScreen("screen-home");
+          showScreen("screen-home"); loadHomeJobs();
         } else {
           const err = await res.json().catch(() => ({}));
           alert(err.error || "Σφάλμα κατά τη δημοσίευση");
@@ -1468,10 +1529,114 @@
       }
     }
 
+
+    // ========== HOME JOBS (first 10 employers) ==========
+    let homeJobsData = [];
+    const HOME_JOBS_LIMIT = 10;
+
+    async function loadHomeJobs() {
+      const box = document.getElementById("home-jobs-list");
+      const more = document.getElementById("home-jobs-more");
+      if (!box) return;
+      try {
+        const res = await fetch(API_URL + "/employers");
+        if (!res.ok) throw new Error("net");
+        homeJobsData = await res.json();
+        if (!Array.isArray(homeJobsData)) homeJobsData = [];
+        renderHomeJobs();
+      } catch (e) {
+        box.innerHTML = '<div class="state-box"><div class="emoji">📋</div>Δεν υπάρχουν θέσεις ακόμα.</div>';
+        if (more) more.style.display = "none";
+      }
+    }
+
+    function renderHomeJobs() {
+      const box = document.getElementById("home-jobs-list");
+      const more = document.getElementById("home-jobs-more");
+      if (!box) return;
+      if (!homeJobsData.length) {
+        box.innerHTML = '<div class="state-box"><div class="emoji">📋</div>Δεν υπάρχουν θέσεις ακόμα.<br><small>Γίνετε ο πρώτος που δημοσιεύει!</small></div>';
+        if (more) more.style.display = "none";
+        return;
+      }
+      const slice = homeJobsData.slice(0, HOME_JOBS_LIMIT);
+      box.innerHTML = "";
+      slice.forEach(function(ad) {
+        let locs = [];
+        try { locs = JSON.parse(ad.locations || "[]"); } catch(e) { locs = []; }
+        const photo = ad.logo_url || ad.photo_url || "";
+        const email = ad.email || "";
+        const phone = ad.phone || "";
+        const card = document.createElement("div");
+        card.className = "home-job-card";
+        card.innerHTML =
+          (photo ? '<img class="hj-logo" src="' + photo + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="hj-logo" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🏢</div>') +
+          '<div class="hj-body">' +
+            '<h4>' + escapeHtml(ad.name) + '</h4>' +
+            '<div class="hj-spec">' + escapeHtml(ad.specialty || ad.task || "Θέση εργασίας") + '</div>' +
+            '<div class="hj-meta">' + (locs.length ? locs.slice(0,3).map(function(l){return escapeHtml(l);}).join(" · ") : "") +
+              (ad.is_urgent ? " · ⚡ Επείγον" : "") + '</div>' +
+            (ad.comments ? '<div style="font-size:0.85rem;margin-top:6px;color:var(--text);">' + escapeHtml(String(ad.comments).slice(0,120)) + (String(ad.comments).length>120?"…":"") + '</div>' : "") +
+            '<button type="button" class="btn-request" onclick=\'openRequestModal(' + JSON.stringify({name: ad.name, email: email, phone: phone}) + ')\'>📨 Αίτημα</button>' +
+          '</div>';
+        box.appendChild(card);
+      });
+      if (more) more.style.display = homeJobsData.length > HOME_JOBS_LIMIT ? "block" : "none";
+    }
+
+    let requestTarget = null;
+    function openRequestModal(info) {
+      requestTarget = info || {};
+      document.getElementById("requestModalTitle").textContent = "Αίτημα προς " + (info.name || "εταιρεία");
+      document.getElementById("requestModalCompany").textContent = info.name || "";
+      document.getElementById("requestEmailDisplay").value = info.email || "Δεν έχει δηλωθεί email";
+      document.getElementById("requestMessage").value = "";
+      document.getElementById("requestFile").value = "";
+      const phoneWrap = document.getElementById("requestPhoneWrap");
+      const phoneLink = document.getElementById("requestPhoneLink");
+      if (info.phone) {
+        phoneWrap.style.display = "block";
+        phoneLink.href = "tel:" + String(info.phone).replace(/\\s/g, "");
+        phoneLink.textContent = "📞 Κλήση " + info.phone;
+      } else {
+        phoneWrap.style.display = "none";
+      }
+      document.getElementById("requestModal").classList.add("active");
+    }
+    function closeRequestModal() {
+      document.getElementById("requestModal").classList.remove("active");
+      requestTarget = null;
+    }
+    function sendRequestEmail() {
+      if (!requestTarget || !requestTarget.email) {
+        alert("Η εταιρεία δεν έχει δηλώσει email επικοινωνίας.");
+        return;
+      }
+      const msg = (document.getElementById("requestMessage").value || "").trim();
+      const subj = encodeURIComponent("Αίτημα ενδιαφέροντος – " + (requestTarget.name || "Θέση εργασίας"));
+      const body = encodeURIComponent(
+        (msg || "Γεια σας, ενδιαφέρομαι για τη θέση εργασίας.") +
+        "\\n\\n---\\nΑπό την πλατφόρμα Θελς Δλειά · franklymadear.com"
+      );
+      // Σημείωση: επισύναψη αρχείου δεν υποστηρίζεται από mailto· ο χρήστης μπορεί να το επισυνάψει στο email client
+      const fileInput = document.getElementById("requestFile");
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        alert("Θα ανοίξει το email σας. Επισυνάψτε χειροκίνητα το αρχείο «" + fileInput.files[0].name + "» στο μήνυμα.");
+      }
+      window.location.href = "mailto:" + requestTarget.email + "?subject=" + subj + "&body=" + body;
+    }
+
+
+        // AdSense
+    try {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {}
+
     window.onload = () => {
       initForms();
       setupStarsPick();
       loadCurrentUser();
+      loadHomeJobs();
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
     };
