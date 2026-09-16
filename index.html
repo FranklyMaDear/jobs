@@ -335,6 +335,34 @@
     .icon-btn.fav-active { background: #fef2f2; color: var(--danger); }
     .icon-btn.found-btn { background: #ecfdf5; color: var(--success); }
     .icon-btn.found-btn:hover { background: #d1fae5; }
+    .icon-btn.found-btn-gray {
+      background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1;
+    }
+    .icon-btn.found-btn-gray:hover { background: #cbd5e1; color: #1e293b; }
+    .icon-btn.found-btn-green {
+      background: #059669; color: white; cursor: default; pointer-events: none;
+    }
+    .found-hint { font-size: 0.78rem; color: var(--text-muted); margin-left: 4px; align-self: center; }
+    .free-promo {
+      margin: 16px auto 0; max-width: 420px; padding: 14px 18px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
+    }
+    .free-promo-title { font-weight: 800; color: #1e40af; font-size: 0.95rem; }
+    .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
+    .free-promo-timer {
+      margin-top: 10px; font-size: 1.35rem; font-weight: 800;
+      color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
+    }
+    .quota-badge {
+      font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 3px 10px;
+      border-radius: 999px; font-weight: 600;
+    }
+    .quota-info {
+      background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 16px; font-size: 0.9rem; color: #0369a1;
+      font-weight: 600;
+    }
     .state-box { text-align: center; padding: 40px 20px; color: var(--text-muted); }
     .state-box .emoji { font-size: 2.5rem; margin-bottom: 12px; }
     .modal-overlay {
@@ -501,6 +529,11 @@
     <div class="header">
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p>Βρείτε δουλειά ή προσωπικό κοντά σας</p>
+      <div id="freePromoCountdown" class="free-promo">
+        <div class="free-promo-title">🎁 Δωρεάν αγγελίες έως τέλη Σεπτεμβρίου</div>
+        <div class="free-promo-sub">Εργαζόμενοι &amp; εργοδότες · 1 αγγελία ο καθένας</div>
+        <div class="free-promo-timer" id="countdownTimer">—</div>
+      </div>
     </div>
 
     <div id="screen-home" class="screen active">
@@ -586,6 +619,7 @@
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
       <div class="form-card">
         <h2 style="margin-bottom:20px;font-size:1.3rem;">Δήλωση Εργασίας</h2>
+        <div class="quota-info" style="display:none"></div>
         <form id="workerForm">
           <fieldset>
             <legend>Προσωπικά Στοιχεία</legend>
@@ -597,7 +631,14 @@
               <label class="main-label">Λεπτομέρειες / Εμπειρία</label>
               <textarea id="w_comments" placeholder="Περιγράψτε την εμπειρία σας, διαθέσιμες ώρες κλπ."></textarea>
             </div>
-
+            <div class="form-group">
+              <label class="main-label">Φωτογραφία (προαιρετικά)</label>
+              <div class="photo-upload" id="w_photo_box" onclick="document.getElementById('w_photo').click()">
+                <div>📷 Πατήστε για φωτογραφία<br><small style="color:var(--text-muted)">ή σύρετε εδώ · max 4MB</small></div>
+                <input type="file" id="w_photo" accept="image/*">
+                <div class="photo-preview" id="w_photo_preview"></div>
+              </div>
+            </div>
           </fieldset>
           <fieldset>
             <legend>Ειδικότητα & Περιοχές</legend>
@@ -659,6 +700,7 @@
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω</button>
       <div class="form-card">
         <h2 style="margin-bottom:20px;font-size:1.3rem;">Αναζήτηση Προσωπικού</h2>
+        <div class="quota-info" style="display:none"></div>
         <form id="employerForm">
           <fieldset>
             <legend>Στοιχεία Επιχείρησης</legend>
@@ -737,14 +779,13 @@
   </div>
 
   <div class="footer">
-    Η εφαρμογή είναι εντελώς δωρεάν<br>
     Copyright · <a href="https://franklymadear.com/" target="_blank" rel="noopener">franklymadear.com</a>
   </div>
 
   <div class="modal-overlay" id="foundModal">
     <div class="modal">
-      <h3 id="foundModalTitle">Βρήκα!</h3>
-      <p>Επιβεβαιώστε ότι βρήκατε δουλειά / υπάλληλο. Ο διαχειριστής θα ενημερωθεί και θα αφαιρέσει την αγγελία.</p>
+      <h3 id="foundModalTitle">Βρήκα δλεια</h3>
+      <p>Επιβεβαιώστε ότι βρήκατε δουλειά. Ο διαχειριστής θα ενημερωθεί και θα αφαιρέσει την αγγελία από τη δημόσια λίστα.</p>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeFoundModal()">Ακύρωση</button>
         <button class="btn btn-primary" id="confirmFoundBtn" style="background:var(--success)">Επιβεβαίωση</button>
@@ -757,7 +798,7 @@
   <div class="modal-overlay" id="authModal">
     <div class="modal">
       <h3 id="authModalTitle">Σύνδεση</h3>
-      <p id="authModalDesc">Συνδεθείτε για αξιολογήσεις και προφίλ.</p>
+      <p id="authModalDesc">Συνδεθείτε για να δημοσιεύσετε αγγελίες και να στείλετε αιτήματα.</p>
       <div id="authRegisterFields" style="display:none">
         <div class="form-group" style="margin-bottom:12px">
           <label class="main-label">Ψευδώνυμο *</label>
@@ -790,21 +831,7 @@
     </div>
   </div>
 
-  <!-- Rating Modal -->
-  <div class="modal-overlay" id="ratingModal">
-    <div class="modal">
-      <h3>Αξιολόγηση</h3>
-      <p id="ratingModalDesc">Βαθμολογήστε τη συνεργασία σας (1–5 αστέρια).</p>
-      <div class="stars-pick" id="starsPick">
-        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
-      </div>
-      <textarea id="ratingComment" placeholder="Σύντομο σχόλιο (προαιρετικά)" style="width:100%;min-height:70px;margin-bottom:8px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:16px"></textarea>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeRatingModal()">Παράβλεψη</button>
-        <button class="btn btn-primary" onclick="submitRating()" style="background:var(--success)">Υποβολή</button>
-      </div>
-    </div>
-  </div>
+  <!-- Rating system removed for now -->
 
 
   <!-- Request / Contact Modal -->
@@ -840,10 +867,8 @@
     let currentData = [];
     let currentViewType = "workers";
     let foundTarget = null;
-    let currentUser = null; // { id, email, nickname, role, rating_avg, rating_count }
+    let currentUser = null; // { id, email, nickname, role, max_ads, ads_used }
     let authMode = "login"; // login | register
-    let ratingTarget = null; // { to_user_id, ad_id, ad_type }
-    let selectedStars = 0;
 
     function getToken() {
       try { return localStorage.getItem("authToken") || ""; } catch(e) { return ""; }
@@ -879,11 +904,12 @@
       const bar = document.getElementById("authBar");
       if (!bar) return;
       if (currentUser) {
-        const stars = currentUser.rating_avg
-          ? `<span class="stars-mini">★ ${currentUser.rating_avg} (${currentUser.rating_count || 0})</span>`
-          : `<span class="stars-mini" style="opacity:0.5">χωρίς αξιολογήσεις</span>`;
+        const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
+        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
         bar.innerHTML = `
-          <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)} ${stars}</div>
+          <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
+            <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
+          </div>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
         `;
       } else {
@@ -892,10 +918,23 @@
           <button class="btn-auth" onclick="openAuthModal('register')">Εγγραφή</button>
         `;
       }
-      // Ανανέωση κουμπιών «Αίτημα» στην αρχική μετά από σύνδεση/αποσύνδεση
       if (typeof homeJobsData !== "undefined" && homeJobsData && homeJobsData.length) {
         try { renderHomeJobs(); } catch (e) {}
       }
+      updateQuotaInfos();
+    }
+
+    function updateQuotaInfos() {
+      document.querySelectorAll(".quota-info").forEach(function(el) {
+        if (!currentUser) {
+          el.style.display = "none";
+          return;
+        }
+        const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
+        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+        el.style.display = "block";
+        el.textContent = "Οι αγγελίες σας: " + used + " / " + max + (used >= max ? " · Έχετε φτάσει το όριο" : "");
+      });
     }
 
     function openAuthModal(mode) {
@@ -919,7 +958,7 @@
       document.getElementById("authModalTitle").textContent = isReg ? "Εγγραφή" : "Σύνδεση";
       document.getElementById("authModalDesc").textContent = isReg
         ? "Δημιουργήστε λογαριασμό με email, κωδικό και ψευδώνυμο."
-        : "Συνδεθείτε για αξιολογήσεις και προφίλ.";
+        : "Συνδεθείτε για να δημοσιεύσετε αγγελίες και να στείλετε αιτήματα.";
       document.getElementById("authRegisterFields").style.display = isReg ? "block" : "none";
       document.getElementById("authSubmitBtn").textContent = isReg ? "Εγγραφή" : "Σύνδεση";
       document.getElementById("authToggleLink").textContent = isReg
@@ -974,63 +1013,7 @@
       renderAuthBar();
     }
 
-    // Rating UI
-    function openRatingModal(toUserId, adId, adType) {
-      if (!currentUser) {
-        alert("Για να αξιολογήσετε, συνδεθείτε πρώτα.");
-        openAuthModal("login");
-        return;
-      }
-      if (!toUserId) {
-        // Δεν υπάρχει συνδεδεμένος κάτοχος αγγελίας – απλά κλείνουμε
-        return;
-      }
-      ratingTarget = { to_user_id: toUserId, ad_id: adId, ad_type: adType };
-      selectedStars = 0;
-      document.getElementById("ratingComment").value = "";
-      document.querySelectorAll("#starsPick span").forEach(s => s.classList.remove("on"));
-      document.getElementById("ratingModal").classList.add("active");
-    }
-    function closeRatingModal() {
-      document.getElementById("ratingModal").classList.remove("active");
-      ratingTarget = null;
-    }
-    function setupStarsPick() {
-      document.querySelectorAll("#starsPick span").forEach(span => {
-        span.addEventListener("click", () => {
-          selectedStars = parseInt(span.getAttribute("data-v"), 10);
-          document.querySelectorAll("#starsPick span").forEach(s => {
-            s.classList.toggle("on", parseInt(s.getAttribute("data-v"), 10) <= selectedStars);
-          });
-        });
-      });
-    }
-    async function submitRating() {
-      if (!ratingTarget || !selectedStars) return alert("Επιλέξτε αστέρια (1–5)");
-      try {
-        const res = await fetch(API_BASE + "/api/ratings", {
-          method: "POST",
-          headers: authHeaders(),
-          body: JSON.stringify({
-            to_user_id: ratingTarget.to_user_id,
-            ad_id: ratingTarget.ad_id,
-            ad_type: ratingTarget.ad_type,
-            stars: selectedStars,
-            comment: document.getElementById("ratingComment").value.trim()
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          alert(data.error || "Σφάλμα");
-          return;
-        }
-        alert(data.message || "Η αξιολόγηση καταχωρήθηκε!");
-        closeRatingModal();
-        loadCurrentUser();
-      } catch(e) {
-        alert("Αδυναμία σύνδεσης");
-      }
-    }
+    // Rating system removed for now
 
     function closeWelcome() {
       var el = document.getElementById("welcomeOverlay");
@@ -1125,6 +1108,7 @@
       });
 
       setupPhotoPreview("e_photo", "e_photo_preview", "e_photo_box");
+      setupPhotoPreview("w_photo", "w_photo_preview", "w_photo_box");
     }
 
     // ========== MAP + LOCATION SEARCH ==========
@@ -1397,7 +1381,17 @@
               ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
             </button>
             <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
-            ${currentViewType === "workers" ? `<button class="icon-btn found-btn" onclick="openFoundModalWorker(${ad.id})">✅ Βρήκα δουλειά</button>` : ""}
+            ${(() => {
+              if (currentViewType !== "workers") return "";
+              // Μόνο ο κάτοχος της αγγελίας βλέπει το κουμπί
+              const isOwner = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
+              if (!isOwner) return "";
+              const isFound = ad.found == 1;
+              if (isFound) {
+                return `<button class="icon-btn found-btn-green" type="button">✅ Βρήκα δλεια</button><span class="found-hint">Ο διαχειριστής ενημερώθηκε</span>`;
+              }
+              return `<button class="icon-btn found-btn-gray" type="button" onclick="openFoundModalWorker(${ad.id})">Βρήκα δλεια</button><span class="found-hint">αν βρήκες εργασία κλικ στο κουμπί</span>`;
+            })()}
             ${currentViewType === "employers"
               ? (currentUser
                   ? `<button class="icon-btn found-btn" onclick='openRequestModal(${JSON.stringify({name: ad.name, email: ad.email || "", phone: ad.phone || ""})})'>📨 Αίτημα</button>`
@@ -1449,17 +1443,9 @@
         openAuthModal("login");
         return;
       }
-      // Μόνο εργαζόμενος (worker ή both)
-      if (currentUser.role === "employer") {
-        alert("Μόνο όσοι αναζητούν εργασία μπορούν να δηλώσουν ότι βρήκαν δουλειά.");
-        return;
-      }
       foundTarget = { id: id, type: "worker" };
-      document.getElementById("foundModalTitle").textContent = "Βρήκα δουλειά";
+      document.getElementById("foundModalTitle").textContent = "Βρήκα δλεια";
       document.getElementById("foundModal").classList.add("active");
-    }
-    function openFoundModal(id, type, label) {
-      openFoundModalWorker(id);
     }
     function closeFoundModal() {
       document.getElementById("foundModal").classList.remove("active");
@@ -1471,26 +1457,14 @@
       try {
         const res = await fetch(API_BASE + "/api/found", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: authHeaders(),
           body: JSON.stringify({ id: foundTarget.id, type: foundTarget.type })
         });
         const data = await res.json();
         if (res.ok) {
-          alert(data.message || "Η αγγελία σημειώθηκε. Ο διαχειριστής θα την αφαιρέσει σύντομα.");
-          const ownerId = data.owner_user_id;
-          const adId = foundTarget.id;
-          const adType = foundTarget.type;
+          alert(data.message || "Η αγγελία σημειώθηκε ως «Βρήκα δλεια». Ο διαχειριστής ενημερώθηκε.");
           closeFoundModal();
           loadAds(currentViewType);
-          // Αν υπάρχει κάτοχος με λογαριασμό → πρόταση αξιολόγησης
-          if (ownerId && currentUser && ownerId !== currentUser.id) {
-            setTimeout(() => openRatingModal(ownerId, adId, adType), 400);
-          } else if (ownerId && !currentUser) {
-            // Προτροπή σύνδεσης για αξιολόγηση
-            if (confirm("Θέλετε να αξιολογήσετε τη συνεργασία; Θα χρειαστεί σύνδεση.")) {
-              openAuthModal("login");
-            }
-          }
         } else alert(data.error || "Σφάλμα");
       } catch { alert("Αδυναμία σύνδεσης"); }
     });
@@ -1535,8 +1509,8 @@
       try {
         let photoUrl = "";
         const photoInput = document.getElementById(prefix + "photo");
-        if (!isWorker && photoInput && photoInput.files && photoInput.files[0]) {
-          btn.textContent = "Ανέβασμα λογοτύπου...";
+        if (photoInput && photoInput.files && photoInput.files[0]) {
+          btn.textContent = isWorker ? "Ανέβασμα φωτογραφίας..." : "Ανέβασμα λογοτύπου...";
           photoUrl = await uploadPhoto(photoInput);
         }
         const emailVal = document.getElementById(prefix + "email").value.trim();
@@ -1573,14 +1547,24 @@
           method: "POST", headers: authHeaders(), body: JSON.stringify(payload)
         });
         if (res.ok) {
+          const dataOk = await res.json().catch(() => ({}));
+          if (dataOk.ads_used != null && currentUser) {
+            currentUser.ads_used = dataOk.ads_used;
+            if (dataOk.max_ads != null) currentUser.max_ads = dataOk.max_ads;
+            renderAuthBar();
+          } else {
+            loadCurrentUser();
+          }
           let msg = "✅ Η αγγελία δημοσιεύτηκε με επιτυχία!";
           if (photoInput && photoInput.files[0] && !photoUrl) {
             msg += "\n\n(Η φωτογραφία δεν ανέβηκε – η αποθήκευση εικόνων δεν είναι διαθέσιμη ακόμα.)";
           }
           alert(msg);
           e.target.reset();
-          document.getElementById(prefix + "photo_preview").classList.remove("active");
-          document.getElementById(prefix + "photo_preview").innerHTML = "";
+          const prev = document.getElementById(prefix + "photo_preview");
+          if (prev) { prev.classList.remove("active"); prev.innerHTML = ""; }
+          selectedLocations[formKey] = [];
+          renderLocChips(formKey);
           showScreen("screen-home"); loadHomeJobs();
         } else {
           const err = await res.json().catch(() => ({}));
@@ -1719,11 +1703,37 @@
       (adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {}
 
+    // Αντίστροφη μέτρηση έως 30 Σεπτεμβρίου 2026 23:59:59 (τοπική)
+    function startFreePromoCountdown() {
+      const el = document.getElementById("countdownTimer");
+      const box = document.getElementById("freePromoCountdown");
+      if (!el) return;
+      const end = new Date(2026, 8, 30, 23, 59, 59); // μήνας 0-based → 8 = Σεπτέμβριος
+      function tick() {
+        const now = new Date();
+        let diff = end - now;
+        if (diff <= 0) {
+          el.textContent = "Η περίοδος δωρεάν αγγελιών έληξε";
+          if (box) box.style.opacity = "0.7";
+          return;
+        }
+        const d = Math.floor(diff / 86400000);
+        diff %= 86400000;
+        const h = Math.floor(diff / 3600000);
+        diff %= 3600000;
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        el.textContent = d + "η " + String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+        requestAnimationFrame(function() { setTimeout(tick, 1000); });
+      }
+      tick();
+    }
+
     window.onload = () => {
       initForms();
-      setupStarsPick();
       loadCurrentUser();
       loadHomeJobs();
+      startFreePromoCountdown();
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
     };
