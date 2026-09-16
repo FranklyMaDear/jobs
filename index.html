@@ -26,6 +26,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     :root {
       --primary: #0f172a;
@@ -125,21 +127,35 @@
     .welcome-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(37, 99, 235, 0.5); }
     .top-bar {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
-      color: white; padding: 14px 20px; text-align: center; font-size: 0.85rem; font-weight: 500;
+      color: white; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      min-height: 52px;
     }
+    .top-bar .btn-auth {
+      padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+      border: 1.5px solid rgba(255,255,255,0.35); background: transparent; color: white;
+      cursor: pointer; font-family: inherit;
+    }
+    .top-bar .btn-auth.primary {
+      background: #2563eb; border-color: #2563eb; color: white;
+    }
+    .top-bar .btn-auth:hover { background: rgba(255,255,255,0.12); }
+    .top-bar .btn-auth.primary:hover { background: #1d4ed8; }
+    .top-bar .auth-user { color: white; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .top-bar .stars-mini { color: #fbbf24; font-size: 0.85rem; }
+
     .container { max-width: 820px; margin: 0 auto; padding: 20px 16px 60px; }
     .header { text-align: center; margin-bottom: 28px; }
     .header h1 { font-size: 1.75rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
     .header p { color: var(--text-muted); margin-top: 6px; font-size: 0.95rem; }
-    .site-logo {
-      width: 88px; height: 88px; border-radius: 20px; object-fit: cover;
-      margin-bottom: 14px; box-shadow: 0 6px 20px rgba(37,99,235,0.25);
-      border: 3px solid white;
+    .site-logo-wide {
+      max-width: min(340px, 88vw); width: 100%; height: auto;
+      margin: 0 auto 10px; display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(15,23,42,0.12));
     }
-    .logo-badge {
-      display: inline-flex; align-items: center; gap: 8px; background: var(--accent-soft); color: var(--accent);
-      padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px;
-    }
+    .header p { color: var(--text-muted); margin-top: 4px; font-size: 0.95rem; }
+
     .prefecture-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
     @media (max-width: 480px) { .prefecture-grid { grid-template-columns: 1fr; } }
     .pref-card {
@@ -355,6 +371,27 @@
     .rating-list { text-align: left; max-height: 200px; overflow-y: auto; margin-top: 12px; }
     .rating-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
+    
+    .loc-map-wrap { margin-top: 8px; }
+    .loc-search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .loc-search-row input { flex: 1; }
+    .loc-search-row button { white-space: nowrap; }
+    .loc-map {
+      height: 220px; width: 100%; border-radius: 12px; border: 1.5px solid var(--border);
+      z-index: 1;
+    }
+    .loc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 28px; }
+    .loc-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 600;
+    }
+    .loc-chip button {
+      border: none; background: none; color: #0369a1; cursor: pointer;
+      font-size: 1rem; line-height: 1; padding: 0 2px; font-weight: 700;
+    }
+    .loc-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
     .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
   </style>
 </head>
@@ -370,18 +407,15 @@
     </div>
   </div>
 
-  <div class="top-bar">Τοπική πλατφόρμα εργασίας Θεσσαλίας · Δωρεάν αγγελίες</div>
+  <div class="top-bar" id="authBar">
+    <button class="btn-auth primary" onclick="openAuthModal('login')">Σύνδεση</button>
+    <button class="btn-auth" onclick="openAuthModal('register')">Εγγραφή</button>
+  </div>
 
   <div class="container">
     <div class="header">
-      <img src="/logo.png" alt="Θελς Δλειά! Βρες Δλειά" class="site-logo" onerror="this.style.display='none'">
-      <div class="logo-badge">📍 Θεσσαλία</div>
-      <h1>Θελς Δλειά; Βρες Δλειά</h1>
+      <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p>Βρείτε δουλειά ή προσωπικό κοντά σας</p>
-      <div class="auth-bar" id="authBar">
-        <button class="btn-auth primary" onclick="openAuthModal('login')">Σύνδεση</button>
-        <button class="btn-auth" onclick="openAuthModal('register')">Εγγραφή</button>
-      </div>
     </div>
 
     <div id="screen-home" class="screen active">
@@ -510,7 +544,19 @@
             </div>
             <div class="form-group">
               <label class="main-label">Περιοχές *</label>
-              <div class="location-selector" id="worker-locations"></div>
+              <div class="loc-map-wrap" data-form="worker">
+                <div class="loc-search-row">
+                  <input type="text" id="w_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
+                  <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('worker')">Εύρεση</button>
+                </div>
+                <div id="w_loc_map" class="loc-map"></div>
+                <div class="loc-chips" id="w_loc_chips"></div>
+                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες (Θεσσαλία)</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Διαθέσιμος/η από</label>
+              <input type="date" id="w_available_from">
             </div>
           </fieldset>
           <fieldset>
@@ -569,7 +615,19 @@
             </div>
             <div class="form-group">
               <label class="main-label">Περιοχές *</label>
-              <div class="location-selector" id="employer-locations"></div>
+              <div class="loc-map-wrap" data-form="employer">
+                <div class="loc-search-row">
+                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
+                  <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('employer')">Εύρεση</button>
+                </div>
+                <div id="e_loc_map" class="loc-map"></div>
+                <div class="loc-chips" id="e_loc_chips"></div>
+                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες (Θεσσαλία)</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Έναρξη από / Ημερομηνία</label>
+              <input type="date" id="e_available_from">
             </div>
           </fieldset>
           <fieldset>
@@ -948,35 +1006,125 @@
           sel.appendChild(optgroup);
         }
       });
-      ["worker-locations", "employer-locations"].forEach((id, idx) => {
-        let html = "";
-        for (const [mun, locs] of Object.entries(locationsData)) {
-          const mId = `m_${idx}_${mun.replace(/\s+/g, "")}`;
-          html += `<div class="municipality-group">
-            <div class="municipality-header">
-              <label class="checkbox-label"><input type="checkbox" class="mun-checkbox" data-target="${mId}"><strong>${mun}</strong></label>
-              <button type="button" class="toggle-btn" onclick="toggleCommunities('${mId}')">▼</button>
-            </div>
-            <div class="communities-list" id="${mId}">
-              ${locs.map(l => `<label class="checkbox-label"><input type="checkbox" class="com-checkbox" data-parent="${mId}" value="${l}"> ${l}</label>`).join("")}
-            </div>
-          </div>`;
-        }
-        document.getElementById(id).innerHTML = html;
-      });
-      document.querySelectorAll(".mun-checkbox").forEach(cb => {
-        cb.addEventListener("change", function () {
-          document.querySelectorAll(`#${this.dataset.target} .com-checkbox`).forEach(c => c.checked = this.checked);
-        });
-      });
+
       setupPhotoPreview("w_photo", "w_photo_preview", "w_photo_box");
       setupPhotoPreview("e_photo", "e_photo_preview", "e_photo_box");
     }
 
-    function toggleCommunities(id) {
-      const el = document.getElementById(id);
-      el.style.display = el.style.display === "flex" ? "none" : "flex";
+    // ========== MAP + LOCATION SEARCH ==========
+    const selectedLocations = { worker: [], employer: [] };
+    const mapInstances = { worker: null, employer: null };
+    const mapMarkers = { worker: [], employer: [] };
+    const THESSALY_CENTER = [39.55, 22.05];
+
+    function initMap(form) {
+      const mapId = form === "worker" ? "w_loc_map" : "e_loc_map";
+      const el = document.getElementById(mapId);
+      if (!el) return;
+      if (mapInstances[form]) {
+        setTimeout(function() { mapInstances[form].invalidateSize(); }, 150);
+        return;
+      }
+      const map = L.map(mapId, { scrollWheelZoom: true }).setView(THESSALY_CENTER, 8);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+      map.on("click", async function(e) {
+        const lat = e.latlng.lat, lng = e.latlng.lng;
+        const name = await reverseGeocode(lat, lng);
+        if (name) addLocation(form, name, lat, lng);
+      });
+      mapInstances[form] = map;
+      setTimeout(function() { map.invalidateSize(); }, 250);
     }
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&zoom=14&addressdetails=1&accept-language=el";
+        const res = await fetch(url, { headers: { "Accept-Language": "el" } });
+        const data = await res.json();
+        const a = data.address || {};
+        let place = a.village || a.town || a.city || a.municipality || a.suburb || a.hamlet || a.county || data.display_name || "Σημείο";
+        if (typeof place === "string" && place.indexOf(",") >= 0) place = place.split(",")[0].trim();
+        return place;
+      } catch (e) {
+        return "Σημείο " + lat.toFixed(3) + ", " + lng.toFixed(3);
+      }
+    }
+
+    async function searchLocation(form) {
+      const inputId = form === "worker" ? "w_loc_search" : "e_loc_search";
+      const q = (document.getElementById(inputId).value || "").trim();
+      if (!q) return alert("Γράψτε πόλη ή χωριό");
+      try {
+        let url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(q + ", Θεσσαλία, Ελλάδα") + "&limit=5&accept-language=el&countrycodes=gr";
+        let res = await fetch(url, { headers: { "Accept-Language": "el" } });
+        let data = await res.json();
+        if (!data.length) {
+          url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(q + ", Ελλάδα") + "&limit=5&accept-language=el&countrycodes=gr";
+          res = await fetch(url, { headers: { "Accept-Language": "el" } });
+          data = await res.json();
+        }
+        if (!data.length) return alert("Δεν βρέθηκε τοποθεσία");
+        const item = data[0];
+        let name = (item.display_name || "").split(",")[0].trim();
+        addLocation(form, name, parseFloat(item.lat), parseFloat(item.lon));
+        document.getElementById(inputId).value = "";
+      } catch (e) {
+        alert("Σφάλμα αναζήτησης. Δοκιμάστε ξανά.");
+      }
+    }
+
+    function addLocation(form, name, lat, lng) {
+      if (!name) return;
+      if (selectedLocations[form].length >= 5) return alert("Μέχρι 5 τοποθεσίες");
+      if (selectedLocations[form].some(function(l) { return l.name.toLowerCase() === name.toLowerCase(); })) return;
+      selectedLocations[form].push({ name: name, lat: lat, lng: lng });
+      renderLocChips(form);
+      if (mapInstances[form] && lat && lng) {
+        const m = L.marker([lat, lng]).addTo(mapInstances[form]).bindPopup(name);
+        mapMarkers[form].push(m);
+        mapInstances[form].setView([lat, lng], 11);
+      }
+    }
+
+    function removeLocation(form, idx) {
+      selectedLocations[form].splice(idx, 1);
+      if (mapMarkers[form][idx] && mapInstances[form]) {
+        mapInstances[form].removeLayer(mapMarkers[form][idx]);
+        mapMarkers[form].splice(idx, 1);
+      } else {
+        mapMarkers[form] = [];
+      }
+      // rebuild markers simply
+      if (mapInstances[form]) {
+        mapMarkers[form].forEach(function(m) { try { mapInstances[form].removeLayer(m); } catch(e){} });
+        mapMarkers[form] = [];
+        selectedLocations[form].forEach(function(l) {
+          if (l.lat && l.lng) {
+            const m = L.marker([l.lat, l.lng]).addTo(mapInstances[form]).bindPopup(l.name);
+            mapMarkers[form].push(m);
+          }
+        });
+      }
+      renderLocChips(form);
+    }
+
+    function renderLocChips(form) {
+      const box = document.getElementById(form === "worker" ? "w_loc_chips" : "e_loc_chips");
+      if (!box) return;
+      box.innerHTML = selectedLocations[form].map(function(l, i) {
+        return '<span class="loc-chip">' + escapeHtml(l.name) + ' <button type="button" onclick="removeLocation(\'' + form + '\',' + i + ')">×</button></span>';
+      }).join("");
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && e.target && (e.target.id === "w_loc_search" || e.target.id === "e_loc_search")) {
+        e.preventDefault();
+        searchLocation(e.target.id.indexOf("w_") === 0 ? "worker" : "employer");
+      }
+    });
 
     function setupPhotoPreview(inputId, previewId, boxId) {
       const input = document.getElementById(inputId);
@@ -1001,6 +1149,8 @@
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
+      if (id === "screen-worker") setTimeout(function() { initMap("worker"); }, 100);
+      if (id === "screen-employer") setTimeout(function() { initMap("employer"); }, 100);
     }
 
     function openPublicView(type) {
@@ -1205,9 +1355,9 @@
       e.preventDefault();
       const isWorker = type === "worker";
       const prefix = isWorker ? "w_" : "e_";
-      const locId = isWorker ? "worker-locations" : "employer-locations";
-      const checked = document.querySelectorAll(`#${locId} .com-checkbox:checked`);
-      if (checked.length === 0) { alert("Επιλέξτε τουλάχιστον μία περιοχή."); return; }
+      const formKey = isWorker ? "worker" : "employer";
+      const locs = selectedLocations[formKey] || [];
+      if (locs.length === 0) { alert("Επιλέξτε τουλάχιστον μία περιοχή (χάρτης ή αναζήτηση)."); return; }
 
       const btn = e.target.querySelector('button[type="submit"]');
       const originalText = btn.textContent;
@@ -1224,13 +1374,17 @@
           name: document.getElementById(prefix + "name").value.trim(),
           specialty: document.getElementById(prefix + "specialty").value,
           task: document.getElementById(prefix + "task").value,
-          locations: Array.from(checked).map(c => c.value),
+          locations: locs.map(function(l) { return l.name; }),
           phone: document.getElementById(prefix + "phone").value.trim(),
           email: document.getElementById(prefix + "email").value.trim(),
           comments: document.getElementById(prefix + "comments").value.trim(),
           is_urgent: document.getElementById(prefix + "urgent").checked,
-          photo_url: photoUrl, logo_url: photoUrl
+          photo_url: photoUrl, logo_url: photoUrl,
+          available_from: (document.getElementById(prefix + "available_from") || {}).value || ""
         };
+        if (payload.available_from) {
+          payload.comments = (payload.comments ? payload.comments + "\n" : "") + "📅 Από: " + payload.available_from;
+        }
         btn.textContent = "Δημοσίευση...";
         const res = await fetch(`${API_URL}/${type}`, {
           method: "POST", headers: authHeaders(), body: JSON.stringify(payload)
