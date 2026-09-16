@@ -392,8 +392,18 @@
     }
     .loc-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
 
+    .date-row { display: flex; gap: 12px; }
+    .date-field { flex: 1; }
+    .date-lbl { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .date-field input[type="date"] {
+      width: 100%; padding: 14px 12px; font-size: 16px; min-height: 48px;
+      border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit;
+    }
     .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
+    .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
   </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3186700611266549"
+     crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="welcome-overlay" id="welcomeOverlay">
@@ -419,38 +429,12 @@
     </div>
 
     <div id="screen-home" class="screen active">
-      <div class="section-title">Επίλεξε Νομό</div>
-      <div class="prefecture-grid">
-        <div class="pref-card active" onclick="selectPrefecture('trikala')">
-          <div class="pref-icon">🏔️</div>
-          <h3>Νομός Τρικάλων</h3>
-          <div class="status">✓ Διαθέσιμος</div>
-        </div>
-        <div class="pref-card disabled" title="Σύντομα διαθέσιμο">
-          <span class="coming-soon">Σύντομα</span>
-          <div class="pref-icon">🏛️</div>
-          <h3>Νομός Λάρισας</h3>
-          <div class="status">Έρχεται σύντομα</div>
-        </div>
-        <div class="pref-card disabled" title="Σύντομα διαθέσιμο">
-          <span class="coming-soon">Σύντομα</span>
-          <div class="pref-icon">🌊</div>
-          <h3>Νομός Μαγνησίας</h3>
-          <div class="status">Έρχεται σύντομα</div>
-        </div>
-        <div class="pref-card active" onclick="selectPrefecture('karditsa')">
-          <div class="pref-icon">🌾</div>
-          <h3>Νομός Καρδίτσας</h3>
-          <div class="status">✓ Διαθέσιμος</div>
-        </div>
-      </div>
-
       <div class="section-title">Δημόσιες Αγγελίες</div>
       <div class="action-grid">
         <div class="action-card workers" onclick="openPublicView('workers')">
           <div class="icon">👷</div>
           <h3>Προφίλ Εργατών</h3>
-          <p>Βρείτε άτομα που αναζητούν εργασία στην περιοχή σας</p>
+          <p>Βρείτε άτομα που αναζητούν εργασία (απαιτείται εγγραφή)</p>
         </div>
         <div class="action-card employers" onclick="openPublicView('employers')">
           <div class="icon">🏢</div>
@@ -461,14 +445,14 @@
 
       <div class="section-title">Δημοσίευση Αγγελίας</div>
       <div class="action-grid">
-        <div class="action-card post-worker" onclick="showScreen('screen-worker')">
+        <div class="action-card post-worker" onclick="requireAuthThen('screen-worker')">
           <div class="icon">📝</div>
-          <h3>Ψάχνω Δουλειά</h3>
+          <h3>Ψάχνω εργασία</h3>
           <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
         </div>
-        <div class="action-card post-employer" onclick="showScreen('screen-employer')">
+        <div class="action-card post-employer" onclick="requireAuthThen('screen-employer')">
           <div class="icon">🔍</div>
-          <h3>Ψάχνω Προσωπικό</h3>
+          <h3>Ψάχνω προσωπικό</h3>
           <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
         </div>
       </div>
@@ -477,15 +461,14 @@
         <button class="btn btn-secondary" onclick="shareSite()" style="gap:10px;">
           📤 Κοινοποίησε τη σελίδα
         </button>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">Θα εμφανιστεί το λογότυπο και ο τίτλος «Θελς Δλειά! Βρες Δλειά»</p>
       </div>
     </div>
 
     <div id="screen-ads" class="screen">
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
       <div class="tabs">
-        <button id="tab-workers" class="tab-btn active" onclick="loadAds('workers')">👷 Εργάτες</button>
-        <button id="tab-employers" class="tab-btn" onclick="loadAds('employers')">🏢 Εργοδότες</button>
+        <button id="tab-workers" class="tab-btn active" onclick="openPublicView('workers')">👷 Εργάτες</button>
+        <button id="tab-employers" class="tab-btn" onclick="openPublicView('employers')">🏢 Εργοδότες</button>
       </div>
       <div class="filter-bar">
         <div class="filter-row">
@@ -555,8 +538,17 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Διαθέσιμος/η από</label>
-              <input type="date" id="w_available_from">
+              <label class="main-label">Διαθεσιμότητα</label>
+              <div class="date-row">
+                <div class="date-field">
+                  <label class="date-lbl">Από</label>
+                  <input type="date" id="w_available_from">
+                </div>
+                <div class="date-field">
+                  <label class="date-lbl">Έως</label>
+                  <input type="date" id="w_available_to">
+                </div>
+              </div>
             </div>
           </fieldset>
           <fieldset>
@@ -626,8 +618,17 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Έναρξη από / Ημερομηνία</label>
-              <input type="date" id="e_available_from">
+              <label class="main-label">Διάστημα</label>
+              <div class="date-row">
+                <div class="date-field">
+                  <label class="date-lbl">Από</label>
+                  <input type="date" id="e_available_from">
+                </div>
+                <div class="date-field">
+                  <label class="date-lbl">Έως</label>
+                  <input type="date" id="e_available_to">
+                </div>
+              </div>
             </div>
           </fieldset>
           <fieldset>
@@ -652,8 +653,8 @@
   </div>
 
   <div class="footer">
-    Θελς Δλειά; Βρες Δλειά · Τοπικές αγγελίες εργασίας Θεσσαλίας<br>
-    <small>Οι αγγελίες μένουν τουλάχιστον 15 ημέρες · Μόνο ο διαχειριστής τις διαγράφει</small>
+    Η εφαρμογή είναι εντελώς δωρεάν<br>
+    Copyright · <a href="https://franklymadear.com/" target="_blank" rel="noopener">franklymadear.com</a>
   </div>
 
   <div class="modal-overlay" id="foundModal">
@@ -1025,13 +1026,29 @@
         setTimeout(function() { mapInstances[form].invalidateSize(); }, 150);
         return;
       }
-      const map = L.map(mapId, { scrollWheelZoom: true }).setView(THESSALY_CENTER, 8);
+      const thessalyBounds = L.latLngBounds([38.85, 20.85], [40.25, 23.55]);
+      const map = L.map(mapId, {
+        scrollWheelZoom: true,
+        maxBounds: thessalyBounds,
+        maxBoundsViscosity: 1.0,
+        minZoom: 7,
+        maxZoom: 16
+      }).setView(THESSALY_CENTER, 8);
+      map.setMaxBounds(thessalyBounds);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
+        maxZoom: 16,
         attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+      // Ορθογώνιο περίγραμμα Θεσσαλίας (οπτική ένδειξη)
+      L.rectangle(thessalyBounds, {
+        color: "#2563eb", weight: 1, fillOpacity: 0.03, interactive: false
       }).addTo(map);
       map.on("click", async function(e) {
         const lat = e.latlng.lat, lng = e.latlng.lng;
+        if (!thessalyBounds.contains([lat, lng])) {
+          alert("Επιλέξτε σημείο εντός Θεσσαλίας");
+          return;
+        }
         const name = await reverseGeocode(lat, lng);
         if (name) addLocation(form, name, lat, lng);
       });
@@ -1153,7 +1170,22 @@
       if (id === "screen-employer") setTimeout(function() { initMap("employer"); }, 100);
     }
 
+    function requireAuthThen(screenId) {
+      if (!currentUser) {
+        alert("Για να δημοσιεύσετε αγγελία πρέπει να κάνετε εγγραφή / σύνδεση.");
+        openAuthModal("register");
+        return;
+      }
+      showScreen(screenId);
+    }
+
     function openPublicView(type) {
+      // Προφίλ εργατών μόνο για εγγεγραμμένους
+      if (type === "workers" && !currentUser) {
+        alert("Τα προφίλ εργατών εμφανίζονται μόνο σε εγγεγραμμένους χρήστες. Κάντε σύνδεση ή εγγραφή.");
+        openAuthModal("login");
+        return;
+      }
       showScreen("screen-ads");
       loadAds(type);
     }
@@ -1251,7 +1283,7 @@
               ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
             </button>
             <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
-            <button class="icon-btn found-btn" onclick="openFoundModal(${ad.id}, '${typeLabel}', '${foundLabel}')">✅ ${foundLabel}</button>
+            ${currentViewType === "workers" ? `<button class="icon-btn found-btn" onclick="openFoundModalWorker(${ad.id})">✅ Βρήκα δουλειά</button>` : ""}
           </div>
         `;
         container.appendChild(card);
@@ -1292,10 +1324,23 @@
       shareAd("", "");
     }
 
-    function openFoundModal(id, type, label) {
-      foundTarget = { id, type };
-      document.getElementById("foundModalTitle").textContent = label;
+    function openFoundModalWorker(id) {
+      if (!currentUser) {
+        alert("Συνδεθείτε για να δηλώσετε ότι βρήκατε εργασία.");
+        openAuthModal("login");
+        return;
+      }
+      // Μόνο εργαζόμενος (worker ή both)
+      if (currentUser.role === "employer") {
+        alert("Μόνο όσοι αναζητούν εργασία μπορούν να δηλώσουν ότι βρήκαν δουλειά.");
+        return;
+      }
+      foundTarget = { id: id, type: "worker" };
+      document.getElementById("foundModalTitle").textContent = "Βρήκα δουλειά";
       document.getElementById("foundModal").classList.add("active");
+    }
+    function openFoundModal(id, type, label) {
+      openFoundModalWorker(id);
     }
     function closeFoundModal() {
       document.getElementById("foundModal").classList.remove("active");
@@ -1353,6 +1398,11 @@
 
     async function handleFormSubmit(e, type) {
       e.preventDefault();
+      if (!currentUser) {
+        alert("Για δημοσίευση αγγελίας απαιτείται εγγραφή / σύνδεση.");
+        openAuthModal("register");
+        return;
+      }
       const isWorker = type === "worker";
       const prefix = isWorker ? "w_" : "e_";
       const formKey = isWorker ? "worker" : "employer";
@@ -1380,11 +1430,19 @@
           comments: document.getElementById(prefix + "comments").value.trim(),
           is_urgent: document.getElementById(prefix + "urgent").checked,
           photo_url: photoUrl, logo_url: photoUrl,
-          available_from: (document.getElementById(prefix + "available_from") || {}).value || ""
+          available_from: (document.getElementById(prefix + "available_from") || {}).value || "",
+          available_to: (document.getElementById(prefix + "available_to") || {}).value || ""
         };
-        if (payload.available_from) {
-          payload.comments = (payload.comments ? payload.comments + "\n" : "") + "📅 Από: " + payload.available_from;
-        }
+        (function() {
+          var from = payload.available_from, to = payload.available_to;
+          if (from || to) {
+            var line = "📅 ";
+            if (from && to) line += "Από " + from + " έως " + to;
+            else if (from) line += "Από " + from;
+            else line += "Έως " + to;
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
+          }
+        })();
         btn.textContent = "Δημοσίευση...";
         const res = await fetch(`${API_URL}/${type}`, {
           method: "POST", headers: authHeaders(), body: JSON.stringify(payload)
