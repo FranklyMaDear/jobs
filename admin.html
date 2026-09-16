@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin · Εργασία</title>
+  <title>Admin · Ergasia Thessalia</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -203,7 +203,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Πίνακας Ελέγχου · Εργασία</h1>
+      <h1>Πίνακας Ελέγχου · Ergasia Thessalia</h1>
       <div class="stats">
         <span class="stat-pill" id="statWorkers">Εργάτες: —</span>
         <span class="stat-pill" id="statEmployers">Εργοδότες: —</span>
@@ -483,11 +483,29 @@
         }
         box.style.display = "block";
         list.innerHTML = rows.map(r =>
-          `<div style="margin-top:8px;font-size:0.9rem;">#${r.user_id} ${escapeHtml(r.nickname||"")} · ${escapeHtml(r.email||"")} · ${r.created_at||""}
-            <button class="btn btn-primary" style="padding:2px 8px;font-size:0.75rem;margin-left:8px;" onclick="adminResetPass(${r.user_id})">Ορισμός κωδικού</button>
+          `<div style="margin-top:8px;font-size:0.9rem;display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+            <span>#${r.user_id} <strong>${escapeHtml(r.nickname||"")}</strong> · ${escapeHtml(r.email||"")} · ${r.created_at||""}</span>
+            ${r.new_hash
+              ? `<button class="btn btn-primary" style="padding:4px 10px;font-size:0.8rem;background:#059669;" onclick="approveReset(${r.id})">✅ Έγκριση νέου κωδικού</button>`
+              : `<button class="btn btn-primary" style="padding:4px 10px;font-size:0.8rem;" onclick="adminResetPass(${r.user_id})">Ορισμός κωδικού</button>`
+            }
           </div>`
         ).join("");
       } catch (e) {}
+    }
+
+    async function approveReset(resetId) {
+      if (!confirm("Έγκριση του νέου κωδικού που διάλεξε ο χρήστης;")) return;
+      try {
+        const res = await fetch(`${API}/api/admin/approve-reset`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reset_id: resetId, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        alert(res.ok ? (data.message || "Εγκρίθηκε") : (data.error || "Σφάλμα"));
+        if (res.ok) loadPasswordResets();
+      } catch { alert("Αδυναμία σύνδεσης"); }
     }
 
     async function loadMatches() {
