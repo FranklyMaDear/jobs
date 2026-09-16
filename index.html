@@ -508,6 +508,7 @@
   </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3186700611266549"
      crossorigin="anonymous"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <div class="welcome-overlay" id="welcomeOverlay">
@@ -785,7 +786,13 @@
   <div class="modal-overlay" id="foundModal">
     <div class="modal">
       <h3 id="foundModalTitle">Βρήκα δλεια</h3>
-      <p>Επιβεβαιώστε ότι βρήκατε δουλειά. Ο διαχειριστής θα ενημερωθεί και θα αφαιρέσει την αγγελία από τη δημόσια λίστα.</p>
+      <p>Επιλέξτε σε ποιον εργοδότη βρήκατε δουλειά (αναζήτηση εγγεγραμμένων).</p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="main-label">Αναζήτηση εργοδότη</label>
+        <input type="text" id="foundEmployerSearch" placeholder="Ψευδώνυμο ή email..." oninput="searchFoundEmployers()">
+        <div id="foundEmployerResults" style="max-height:140px;overflow-y:auto;margin-top:8px;"></div>
+        <div id="foundEmployerSelected" style="margin-top:8px;font-weight:600;color:var(--accent);"></div>
+      </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeFoundModal()">Ακύρωση</button>
         <button class="btn btn-primary" id="confirmFoundBtn" style="background:var(--success)">Επιβεβαίωση</button>
@@ -825,9 +832,81 @@
         <button class="btn btn-secondary" onclick="closeAuthModal()">Ακύρωση</button>
         <button class="btn btn-primary" id="authSubmitBtn" onclick="submitAuth()">Σύνδεση</button>
       </div>
-      <p style="margin-top:14px;font-size:0.85rem;color:var(--text-muted);text-align:center">
+      <div style="margin-top:16px;text-align:center;">
+        <div id="googleBtnWrap" style="display:flex;justify-content:center;margin-bottom:8px;"></div>
+        <p style="font-size:0.8rem;color:var(--text-muted);">ή με email</p>
+      </div>
+      <p style="margin-top:10px;font-size:0.85rem;color:var(--text-muted);text-align:center">
         <a href="#" id="authToggleLink" onclick="toggleAuthMode(event)" style="color:var(--accent)">Δεν έχω λογαριασμό – Εγγραφή</a>
       </p>
+      <p style="margin-top:8px;font-size:0.85rem;text-align:center">
+        <a href="#" onclick="openForgotPassword(event)" style="color:var(--text-muted)">Ξέχασα τον κωδικό</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal">
+      <h3>Το προφίλ μου</h3>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Ψευδώνυμο</label>
+        <input type="text" id="profileNickname" maxlength="40">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Ρόλος</label>
+        <select id="profileRole">
+          <option value="both">Εργάτης &amp; Εργοδότης</option>
+          <option value="worker">Ψάχνω δουλειά</option>
+          <option value="employer">Ψάχνω προσωπικό</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Email</label>
+        <input type="text" id="profileEmail" readonly style="background:#f8fafc;">
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+      <h3 style="font-size:1rem;margin-bottom:10px;">Αλλαγή κωδικού</h3>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Τρέχων κωδικός</label>
+        <input type="password" id="profileCurPass" placeholder="αν έχετε κωδικό">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Νέος κωδικός</label>
+        <input type="password" id="profileNewPass" placeholder="τουλάχιστον 6 χαρακτήρες">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeProfileModal()">Κλείσιμο</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Αποθήκευση</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hire / Select worker Modal -->
+  <div class="modal-overlay" id="hireModal">
+    <div class="modal">
+      <h3>Επιλογή υπαλλήλου</h3>
+      <p id="hireModalDesc">Επιβεβαιώστε ότι επιλέγετε αυτόν τον εργαζόμενο. Ο διαχειριστής θα ενημερωθεί.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeHireModal()">Ακύρωση</button>
+        <button class="btn btn-primary" onclick="confirmHire()">Επιβεβαίωση επιλογής</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rating Modal (after match) -->
+  <div class="modal-overlay" id="ratingModal">
+    <div class="modal">
+      <h3>Αξιολόγηση</h3>
+      <p id="ratingModalDesc">Βαθμολογήστε τη συνεργασία (1–5 αστέρια).</p>
+      <div class="stars-pick" id="starsPick">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <textarea id="ratingComment" placeholder="Σχόλιο (προαιρετικά)" style="width:100%;min-height:70px;margin-bottom:8px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:16px"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeRatingModal()">Παράβλεψη</button>
+        <button class="btn btn-primary" onclick="submitRating()" style="background:var(--success)">Υποβολή</button>
+      </div>
     </div>
   </div>
 
@@ -869,6 +948,12 @@
     let foundTarget = null;
     let currentUser = null; // { id, email, nickname, role, max_ads, ads_used }
     let authMode = "login"; // login | register
+    // Βάλτε το Google OAuth Client ID από Google Cloud Console (τύπος Web)
+    const GOOGLE_CLIENT_ID = ""; // π.χ. "123456-abc.apps.googleusercontent.com"
+    let hireTarget = null;
+    let foundEmployerTarget = null;
+    let ratingTarget = null;
+    let selectedStars = 0;
 
     function getToken() {
       try { return localStorage.getItem("authToken") || ""; } catch(e) { return ""; }
@@ -910,6 +995,7 @@
           <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
             <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
           </div>
+          <button class="btn-auth" onclick="openProfileModal()">Προφίλ</button>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
         `;
       } else {
@@ -944,6 +1030,7 @@
       document.getElementById("authNickname").value = "";
       updateAuthModalUI();
       document.getElementById("authModal").classList.add("active");
+      setTimeout(initGoogleButton, 200);
     }
     function closeAuthModal() {
       document.getElementById("authModal").classList.remove("active");
@@ -1383,14 +1470,21 @@
             <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
             ${(() => {
               if (currentViewType !== "workers") return "";
-              // Μόνο ο κάτοχος της αγγελίας βλέπει το κουμπί
               const isOwner = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
-              if (!isOwner) return "";
-              const isFound = ad.found == 1;
-              if (isFound) {
-                return `<button class="icon-btn found-btn-green" type="button">✅ Βρήκα δλεια</button><span class="found-hint">Ο διαχειριστής ενημερώθηκε</span>`;
+              let html = "";
+              if (isOwner) {
+                const isFound = ad.found == 1;
+                if (isFound) {
+                  html += `<button class="icon-btn found-btn-green" type="button">✅ Βρήκα δλεια</button><span class="found-hint">Ο διαχειριστής ενημερώθηκε</span>`;
+                } else {
+                  html += `<button class="icon-btn found-btn-gray" type="button" onclick="openFoundModalWorker(${ad.id})">Βρήκα δλεια</button><span class="found-hint">αν βρήκες εργασία κλικ στο κουμπί</span>`;
+                }
               }
-              return `<button class="icon-btn found-btn-gray" type="button" onclick="openFoundModalWorker(${ad.id})">Βρήκα δλεια</button><span class="found-hint">αν βρήκες εργασία κλικ στο κουμπί</span>`;
+              // Εργοδότης επιλέγει υπάλληλο
+              if (currentUser && !isOwner && currentUser.role !== "worker" && ad.user_id) {
+                html += `<button class="icon-btn found-btn" type="button" onclick='openHireModal(${JSON.stringify({user_id: ad.user_id, ad_id: ad.id, name: ad.name})})'>✅ Επιλογή υπαλλήλου</button>`;
+              }
+              return html;
             })()}
             ${currentViewType === "employers"
               ? (currentUser
@@ -1444,30 +1538,239 @@
         return;
       }
       foundTarget = { id: id, type: "worker" };
+      foundEmployerTarget = null;
+      var se = document.getElementById("foundEmployerSearch");
+      if (se) se.value = "";
+      var fr = document.getElementById("foundEmployerResults");
+      if (fr) fr.innerHTML = "";
+      var fs = document.getElementById("foundEmployerSelected");
+      if (fs) fs.textContent = "";
       document.getElementById("foundModalTitle").textContent = "Βρήκα δλεια";
       document.getElementById("foundModal").classList.add("active");
+      searchFoundEmployers();
     }
     function closeFoundModal() {
       document.getElementById("foundModal").classList.remove("active");
       foundTarget = null;
+      foundEmployerTarget = null;
+    }
+
+    async function searchFoundEmployers() {
+      var q = (document.getElementById("foundEmployerSearch").value || "").trim();
+      var box = document.getElementById("foundEmployerResults");
+      if (!box) return;
+      try {
+        var res = await fetch(API_URL + "/search/employers?q=" + encodeURIComponent(q), { headers: authHeaders() });
+        var list = await res.json();
+        if (!Array.isArray(list) || !list.length) {
+          box.innerHTML = "<small style='color:var(--text-muted)'>Δεν βρέθηκαν</small>";
+          return;
+        }
+        box.innerHTML = list.map(function(u) {
+          return '<button type="button" class="btn btn-secondary btn-sm" style="margin:3px;display:block;width:100%;text-align:left" onclick=\'selectFoundEmployer(' +
+            JSON.stringify({ id: u.id, nickname: u.nickname, email: u.email }) + ')\'>' +
+            escapeHtml(u.nickname) + " <small>(" + escapeHtml(u.email) + ")</small></button>";
+        }).join("");
+      } catch (e) {
+        box.innerHTML = "<small>Σφάλμα αναζήτησης</small>";
+      }
+    }
+    function selectFoundEmployer(u) {
+      foundEmployerTarget = u;
+      document.getElementById("foundEmployerSelected").textContent = "Επιλέχθηκε: " + u.nickname + " (" + u.email + ")";
+      document.getElementById("foundEmployerResults").innerHTML = "";
     }
 
     document.getElementById("confirmFoundBtn").addEventListener("click", async () => {
       if (!foundTarget) return;
+      if (!foundEmployerTarget) {
+        alert("Επιλέξτε εργοδότη από την αναζήτηση.");
+        return;
+      }
       try {
-        const res = await fetch(API_BASE + "/api/found", {
+        var res = await fetch(API_BASE + "/api/matches/found", {
           method: "POST",
           headers: authHeaders(),
-          body: JSON.stringify({ id: foundTarget.id, type: foundTarget.type })
+          body: JSON.stringify({
+            worker_ad_id: foundTarget.id,
+            to_user_id: foundEmployerTarget.id,
+            to_name: foundEmployerTarget.nickname
+          })
         });
-        const data = await res.json();
+        var data = await res.json();
         if (res.ok) {
-          alert(data.message || "Η αγγελία σημειώθηκε ως «Βρήκα δλεια». Ο διαχειριστής ενημερώθηκε.");
           closeFoundModal();
           loadAds(currentViewType);
+          openRatingModal(foundEmployerTarget.id, data.match_id, foundEmployerTarget.nickname);
         } else alert(data.error || "Σφάλμα");
-      } catch { alert("Αδυναμία σύνδεσης"); }
+      } catch (e) { alert("Αδυναμία σύνδεσης"); }
     });
+
+    function openHireModal(info) {
+      if (!currentUser) { openAuthModal("login"); return; }
+      hireTarget = info;
+      document.getElementById("hireModalDesc").textContent =
+        "Επιβεβαιώστε ότι επιλέγετε τον/την «" + (info.name || "") + "». Ο διαχειριστής θα ενημερωθεί.";
+      document.getElementById("hireModal").classList.add("active");
+    }
+    function closeHireModal() {
+      document.getElementById("hireModal").classList.remove("active");
+      hireTarget = null;
+    }
+    async function confirmHire() {
+      if (!hireTarget) return;
+      try {
+        var res = await fetch(API_BASE + "/api/matches/hire", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            to_user_id: hireTarget.user_id,
+            worker_ad_id: hireTarget.ad_id,
+            to_name: hireTarget.name
+          })
+        });
+        var data = await res.json();
+        if (res.ok) {
+          closeHireModal();
+          alert(data.message || "Καταχωρήθηκε");
+          openRatingModal(hireTarget.user_id, null, hireTarget.name);
+        } else alert(data.error || "Σφάλμα");
+      } catch (e) { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    function openRatingModal(toUserId, matchId, name) {
+      ratingTarget = { to_user_id: toUserId, match_id: matchId };
+      selectedStars = 0;
+      document.getElementById("ratingModalDesc").textContent =
+        "Βαθμολογήστε" + (name ? " τον/την «" + name + "»" : "") + " (1–5 αστέρια).";
+      document.getElementById("ratingComment").value = "";
+      document.querySelectorAll("#starsPick span").forEach(function(s) { s.classList.remove("on"); });
+      document.getElementById("ratingModal").classList.add("active");
+    }
+    function closeRatingModal() {
+      document.getElementById("ratingModal").classList.remove("active");
+      ratingTarget = null;
+    }
+    function setupStarsPick() {
+      document.querySelectorAll("#starsPick span").forEach(function(span) {
+        span.addEventListener("click", function() {
+          selectedStars = parseInt(span.getAttribute("data-v"), 10);
+          document.querySelectorAll("#starsPick span").forEach(function(s) {
+            s.classList.toggle("on", parseInt(s.getAttribute("data-v"), 10) <= selectedStars);
+          });
+        });
+      });
+    }
+    async function submitRating() {
+      if (!ratingTarget || !selectedStars) return alert("Επιλέξτε αστέρια (1–5)");
+      try {
+        var res = await fetch(API_BASE + "/api/ratings", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            to_user_id: ratingTarget.to_user_id,
+            match_id: ratingTarget.match_id,
+            stars: selectedStars,
+            comment: document.getElementById("ratingComment").value.trim()
+          })
+        });
+        var data = await res.json();
+        if (res.ok) {
+          alert(data.message || "Καταχωρήθηκε");
+          closeRatingModal();
+        } else alert(data.error || "Σφάλμα");
+      } catch (e) { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    function openProfileModal() {
+      if (!currentUser) return;
+      document.getElementById("profileNickname").value = currentUser.nickname || "";
+      document.getElementById("profileRole").value = currentUser.role || "both";
+      document.getElementById("profileEmail").value = currentUser.email || "";
+      document.getElementById("profileCurPass").value = "";
+      document.getElementById("profileNewPass").value = "";
+      document.getElementById("profileModal").classList.add("active");
+    }
+    function closeProfileModal() {
+      document.getElementById("profileModal").classList.remove("active");
+    }
+    async function saveProfile() {
+      var nickname = document.getElementById("profileNickname").value.trim();
+      var role = document.getElementById("profileRole").value;
+      try {
+        var res = await fetch(API_URL + "/me", {
+          method: "PUT",
+          headers: authHeaders(),
+          body: JSON.stringify({ nickname: nickname, role: role })
+        });
+        var data = await res.json();
+        if (!res.ok) { alert(data.error || "Σφάλμα"); return; }
+        if (data.user) currentUser = data.user;
+        var newPass = document.getElementById("profileNewPass").value;
+        var curPass = document.getElementById("profileCurPass").value;
+        if (newPass) {
+          var pr = await fetch(API_BASE + "/api/me/password", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ current_password: curPass, new_password: newPass })
+          });
+          var pd = await pr.json();
+          if (!pr.ok) { alert(pd.error || "Σφάλμα κωδικού"); return; }
+        }
+        renderAuthBar();
+        closeProfileModal();
+        alert("Το προφίλ ενημερώθηκε");
+      } catch (e) { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    function openForgotPassword(e) {
+      if (e) e.preventDefault();
+      var email = prompt("Δώστε το email του λογαριασμού για αίτημα επαναφοράς κωδικού:");
+      if (!email) return;
+      fetch(API_BASE + "/api/password-reset-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        alert(d.message || "Το αίτημα καταχωρήθηκε. Ο διαχειριστής θα ορίσει νέο κωδικό.");
+      }).catch(function() { alert("Αδυναμία σύνδεσης"); });
+    }
+
+    function initGoogleButton() {
+      if (!GOOGLE_CLIENT_ID) return;
+      var wrap = document.getElementById("googleBtnWrap");
+      if (!wrap || typeof google === "undefined" || !google.accounts) return;
+      wrap.innerHTML = "";
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential
+      });
+      google.accounts.id.renderButton(wrap, {
+        theme: "outline", size: "large", text: "continue_with", shape: "rectangular", width: 280
+      });
+    }
+
+    async function handleGoogleCredential(response) {
+      if (!response || !response.credential) return;
+      var roleEl = document.getElementById("authRole");
+      var role = (authMode === "register" && roleEl) ? roleEl.value : "both";
+      try {
+        var res = await fetch(API_BASE + "/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential: response.credential, role: role })
+        });
+        var data = await res.json();
+        if (!res.ok) { alert(data.error || "Σφάλμα Google"); return; }
+        setToken(data.token);
+        currentUser = data.user;
+        closeAuthModal();
+        renderAuthBar();
+        alert("✅ Σύνδεση με Google επιτυχής!");
+      } catch (e) {
+        alert("Αδυναμία σύνδεσης");
+      }
+    }
 
     async function uploadPhoto(fileInput) {
       if (!fileInput.files || !fileInput.files[0]) return "";
@@ -1731,9 +2034,11 @@
 
     window.onload = () => {
       initForms();
+      setupStarsPick();
       loadCurrentUser();
       loadHomeJobs();
       startFreePromoCountdown();
+      setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
     };
