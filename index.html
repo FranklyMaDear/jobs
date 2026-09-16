@@ -845,6 +845,32 @@
     </div>
   </div>
 
+  <!-- Forgot password: email + νέος κωδικός + επιβεβαίωση -->
+  <div class="modal-overlay" id="forgotModal">
+    <div class="modal">
+      <h3>Νέος κωδικός</h3>
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:14px;">
+        Βάλτε το email του λογαριασμού και τον νέο κωδικό. Ο διαχειριστής εγκρίνει το αίτημα και μετά συνδέεστε κανονικά.
+      </p>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Email λογαριασμού *</label>
+        <input type="email" id="forgotEmail" placeholder="email@example.com" autocomplete="email">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Νέος κωδικός *</label>
+        <input type="password" id="forgotNewPass" placeholder="τουλάχιστον 6 χαρακτήρες" autocomplete="new-password">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="main-label">Επιβεβαίωση κωδικού *</label>
+        <input type="password" id="forgotConfirmPass" placeholder="ξανά ο ίδιος κωδικός" autocomplete="new-password">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeForgotModal()">Ακύρωση</button>
+        <button class="btn btn-primary" onclick="submitForgotPassword()">Υποβολή</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Profile Modal -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal">
@@ -1725,15 +1751,38 @@
 
     function openForgotPassword(e) {
       if (e) e.preventDefault();
-      var email = prompt("Δώστε το email του λογαριασμού για αίτημα επαναφοράς κωδικού:");
-      if (!email) return;
-      fetch(API_BASE + "/api/password-reset-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() })
-      }).then(function(r) { return r.json(); }).then(function(d) {
-        alert(d.message || "Το αίτημα καταχωρήθηκε. Ο διαχειριστής θα ορίσει νέο κωδικό.");
-      }).catch(function() { alert("Αδυναμία σύνδεσης"); });
+      closeAuthModal();
+      document.getElementById("forgotEmail").value = "";
+      document.getElementById("forgotNewPass").value = "";
+      document.getElementById("forgotConfirmPass").value = "";
+      document.getElementById("forgotModal").classList.add("active");
+    }
+    function closeForgotModal() {
+      document.getElementById("forgotModal").classList.remove("active");
+    }
+    async function submitForgotPassword() {
+      var email = (document.getElementById("forgotEmail").value || "").trim();
+      var p1 = document.getElementById("forgotNewPass").value || "";
+      var p2 = document.getElementById("forgotConfirmPass").value || "";
+      if (!email) return alert("Συμπληρώστε το email του λογαριασμού.");
+      if (p1.length < 6) return alert("Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες.");
+      if (p1 !== p2) return alert("Οι κωδικοί δεν ταιριάζουν.");
+      try {
+        var res = await fetch(API_BASE + "/api/password-reset-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, new_password: p1, confirm_password: p2 })
+        });
+        var data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Σφάλμα");
+          return;
+        }
+        closeForgotModal();
+        alert(data.message || "Το αίτημα στάλθηκε. Μόλις το εγκρίνει ο διαχειριστής, συνδεθείτε με τον νέο κωδικό.");
+      } catch (err) {
+        alert("Αδυναμία σύνδεσης με τον διακομιστή. Βεβαιωθείτε ότι έχει γίνει deploy το worker.");
+      }
     }
 
     function initGoogleButton() {
