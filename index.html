@@ -392,13 +392,69 @@
     }
     .loc-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
 
-    .date-row { display: flex; gap: 12px; }
-    .date-field { flex: 1; }
-    .date-lbl { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
-    .date-field input[type="date"] {
-      width: 100%; padding: 14px 12px; font-size: 16px; min-height: 48px;
-      border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit;
+    .date-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+    .date-field {
+      width: 100%;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .date-field:focus-within {
+      border-color: var(--accent);
+      background: #eff6ff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .date-lbl {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .date-field input[type="date"] {
+      width: 100%;
+      padding: 12px 10px;
+      font-size: 16px;
+      min-height: 46px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      background: white;
+      color: var(--primary);
+    }
+    .date-field input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btn-request:disabled,
+    .btn-request.disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+    .btn-request:disabled:hover,
+    .btn-request.disabled:hover {
+      background: #94a3b8;
+    }
+    .hj-more {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px 0;
+      margin-top: 4px;
+      font-family: inherit;
+      text-decoration: underline;
+    }
+    .hj-more:hover { color: var(--accent-hover); }
     .home-job-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 14px;
       padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow);
@@ -835,6 +891,10 @@
           <button class="btn-auth primary" onclick="openAuthModal('login')">Σύνδεση</button>
           <button class="btn-auth" onclick="openAuthModal('register')">Εγγραφή</button>
         `;
+      }
+      // Ανανέωση κουμπιών «Αίτημα» στην αρχική μετά από σύνδεση/αποσύνδεση
+      if (typeof homeJobsData !== "undefined" && homeJobsData && homeJobsData.length) {
+        try { renderHomeJobs(); } catch (e) {}
       }
     }
 
@@ -1338,7 +1398,11 @@
             </button>
             <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
             ${currentViewType === "workers" ? `<button class="icon-btn found-btn" onclick="openFoundModalWorker(${ad.id})">✅ Βρήκα δουλειά</button>` : ""}
-            ${currentViewType === "employers" ? `<button class="icon-btn found-btn" onclick="openRequestModal({name: '${escapeHtml(ad.name).replace(/'/g, "\'")}', email: '${escapeHtml(ad.email||"")}', phone: '${escapeHtml(ad.phone||"")}'})">📨 Αίτημα</button>` : ""}
+            ${currentViewType === "employers"
+              ? (currentUser
+                  ? `<button class="icon-btn found-btn" onclick='openRequestModal(${JSON.stringify({name: ad.name, email: ad.email || "", phone: ad.phone || ""})})'>📨 Αίτημα</button>`
+                  : `<button class="icon-btn" style="opacity:0.7;background:#e2e8f0;" onclick="requireAuthForRequest()">📨 Αίτημα (σύνδεση)</button>`)
+              : ""}
           </div>
         `;
         container.appendChild(card);
@@ -1560,6 +1624,7 @@
         return;
       }
       const slice = homeJobsData.slice(0, HOME_JOBS_LIMIT);
+      const loggedIn = !!currentUser;
       box.innerHTML = "";
       slice.forEach(function(ad) {
         let locs = [];
@@ -1567,6 +1632,19 @@
         const photo = ad.logo_url || ad.photo_url || "";
         const email = ad.email || "";
         const phone = ad.phone || "";
+        const fullComments = String(ad.comments || "");
+        const truncated = fullComments.length > 120;
+        const commentsHtml = fullComments
+          ? '<div style="font-size:0.85rem;margin-top:6px;color:var(--text);">' +
+              escapeHtml(truncated ? fullComments.slice(0, 120) + "…" : fullComments) +
+            '</div>' +
+            (truncated
+              ? '<button type="button" class="hj-more" onclick="openPublicView(\'employers\')">Περισσότερα →</button>'
+              : "")
+          : "";
+        const reqBtn = loggedIn
+          ? '<button type="button" class="btn-request" onclick=\'openRequestModal(' + JSON.stringify({name: ad.name, email: email, phone: phone}) + ')\'>📨 Αίτημα</button>'
+          : '<button type="button" class="btn-request disabled" title="Απαιτείται εγγραφή / σύνδεση" onclick="requireAuthForRequest()">📨 Αίτημα <small>(απαιτείται σύνδεση)</small></button>';
         const card = document.createElement("div");
         card.className = "home-job-card";
         card.innerHTML =
@@ -1576,16 +1654,25 @@
             '<div class="hj-spec">' + escapeHtml(ad.specialty || ad.task || "Θέση εργασίας") + '</div>' +
             '<div class="hj-meta">' + (locs.length ? locs.slice(0,3).map(function(l){return escapeHtml(l);}).join(" · ") : "") +
               (ad.is_urgent ? " · ⚡ Επείγον" : "") + '</div>' +
-            (ad.comments ? '<div style="font-size:0.85rem;margin-top:6px;color:var(--text);">' + escapeHtml(String(ad.comments).slice(0,120)) + (String(ad.comments).length>120?"…":"") + '</div>' : "") +
-            '<button type="button" class="btn-request" onclick=\'openRequestModal(' + JSON.stringify({name: ad.name, email: email, phone: phone}) + ')\'>📨 Αίτημα</button>' +
+            commentsHtml +
+            reqBtn +
           '</div>';
         box.appendChild(card);
       });
       if (more) more.style.display = homeJobsData.length > HOME_JOBS_LIMIT ? "block" : "none";
     }
 
+    function requireAuthForRequest() {
+      alert("Για να στείλετε αίτημα ή να επικοινωνήσετε με επιχείρηση πρέπει να κάνετε εγγραφή / σύνδεση.");
+      openAuthModal("register");
+    }
+
     let requestTarget = null;
     function openRequestModal(info) {
+      if (!currentUser) {
+        requireAuthForRequest();
+        return;
+      }
       requestTarget = info || {};
       document.getElementById("requestModalTitle").textContent = "Αίτημα προς " + (info.name || "εταιρεία");
       document.getElementById("requestModalCompany").textContent = info.name || "";
@@ -1596,7 +1683,7 @@
       const phoneLink = document.getElementById("requestPhoneLink");
       if (info.phone) {
         phoneWrap.style.display = "block";
-        phoneLink.href = "tel:" + String(info.phone).replace(/\\s/g, "");
+        phoneLink.href = "tel:" + String(info.phone).replace(/\s/g, "");
         phoneLink.textContent = "📞 Κλήση " + info.phone;
       } else {
         phoneWrap.style.display = "none";
