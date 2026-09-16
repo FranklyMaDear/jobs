@@ -214,6 +214,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('workers')">👷 Εργάτες</button>
       <button class="tab-btn" onclick="switchTab('employers')">🏢 Εργοδότες</button>
+      <button class="tab-btn" onclick="switchTab('users')">👤 Χρήστες / Όρια</button>
     </div>
 
     <div id="workers" class="panel active">
@@ -263,17 +264,45 @@
         </table>
       </div>
     </div>
+
+    <div id="users" class="panel">
+      <div class="toolbar">
+        <input type="text" id="searchUsers" placeholder="Αναζήτηση χρήστη..." oninput="filterUsers()">
+        <button class="btn btn-primary" onclick="loadUsers()">↻ Ανανέωση</button>
+      </div>
+      <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
+        Ορίστε πόσα αγγελίες μπορεί να δημοσιεύσει κάθε εγγεγραμμένος χρήστης (συνδρομή). Προεπιλογή: 1.
+      </p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ψευδώνυμο</th>
+              <th>Email</th>
+              <th>Ρόλος</th>
+              <th>Χρησιμοποιημένες</th>
+              <th>Όριο (max)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="u-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
     const API = "https://jobs.kafevolta.workers.dev";
     let workersData = [];
     let employersData = [];
+    let usersData = [];
 
     function switchTab(t) {
       document.querySelectorAll(".tab-btn, .panel").forEach(e => e.classList.remove("active"));
       document.querySelector(`.tab-btn[onclick="switchTab('${t}')"]`).classList.add("active");
       document.getElementById(t).classList.add("active");
+      if (t === "users") loadUsers();
     }
 
     async function load() {
@@ -297,6 +326,79 @@
         render("e-tbody", employersData, "employer");
       } catch (e) {
         alert("Σφάλμα φόρτωσης δεδομένων");
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch(`${API}/api/admin/users`);
+        usersData = await res.json();
+        if (!Array.isArray(usersData)) usersData = [];
+        renderUsers();
+      } catch (e) {
+        alert("Σφάλμα φόρτωσης χρηστών");
+      }
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById("u-tbody");
+      if (!usersData.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">Δεν υπάρχουν εγγεγραμμένοι χρήστες</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = usersData.map(u => {
+        const roleLabel = u.role === "worker" ? "Εργάτης" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
+        return `
+          <tr data-search="${(u.nickname + " " + u.email + " " + (u.role||"")).toLowerCase()}">
+            <td data-label="ID">${u.id}</td>
+            <td data-label="Ψευδώνυμο"><strong>${escapeHtml(u.nickname)}</strong></td>
+            <td data-label="Email">${escapeHtml(u.email)}</td>
+            <td data-label="Ρόλος">${roleLabel}</td>
+            <td data-label="Χρησιμοποιημένες">${u.ads_used || 0}
+              <small style="color:#64748b"> (Ε:${u.ads_workers||0} / Εργ:${u.ads_employers||0})</small>
+            </td>
+            <td data-label="Όριο">
+              <input type="number" min="0" max="999" value="${u.max_ads != null ? u.max_ads : 1}"
+                id="quota-${u.id}" style="width:70px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;">
+            </td>
+            <td data-label="">
+              <button class="btn btn-primary" style="padding:6px 12px;font-size:0.85rem;" onclick="saveQuota(${u.id})">Αποθήκευση</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function filterUsers() {
+      const q = (document.getElementById("searchUsers").value || "").toLowerCase();
+      document.querySelectorAll("#u-tbody tr").forEach(tr => {
+        const s = tr.getAttribute("data-search") || "";
+        tr.style.display = !q || s.includes(q) ? "" : "none";
+      });
+    }
+
+    async function saveQuota(userId) {
+      const input = document.getElementById("quota-" + userId);
+      const maxAds = parseInt(input.value, 10);
+      if (isNaN(maxAds) || maxAds < 0) {
+        alert("Μη έγκυρος αριθμός");
+        return;
+      }
+      try {
+        const res = await fetch(`${API}/api/admin/quota`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, max_ads: maxAds, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Όριο ενημερώθηκε: " + maxAds + " αγγελίες (χρησιμοποιημένες: " + (data.ads_used || 0) + ")");
+          loadUsers();
+        } else {
+          alert(data.error || "Σφάλμα");
+        }
+      } catch {
+        alert("Αδυναμία σύνδεσης");
       }
     }
 
