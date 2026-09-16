@@ -780,7 +780,21 @@
   </div>
 
   <div class="footer">
+    <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px;">
+      <a href="#" onclick="openLegalModal('terms');return false;">Όροι και Προϋποθέσεις</a>
+      <a href="#" onclick="openLegalModal('privacy');return false;">Πολιτική Απορρήτου</a>
+    </div>
     Copyright · <a href="https://franklymadear.com/" target="_blank" rel="noopener">franklymadear.com</a>
+  </div>
+
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal" style="max-width:560px;max-height:85vh;overflow-y:auto;text-align:left;">
+      <h3 id="legalModalTitle" style="margin-bottom:14px;"></h3>
+      <div id="legalModalBody" style="font-size:0.9rem;line-height:1.55;color:var(--text);"></div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="closeLegalModal()" style="width:100%;">Κλείσιμο</button>
+      </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="foundModal">
@@ -845,12 +859,12 @@
     </div>
   </div>
 
-  <!-- Forgot password: email + νέος κωδικός + επιβεβαίωση -->
+  <!-- Forgot password: email + νέος κωδικός + επιβεβαίωση (αυτόματη αλλαγή) -->
   <div class="modal-overlay" id="forgotModal">
     <div class="modal">
       <h3>Νέος κωδικός</h3>
       <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:14px;">
-        Βάλτε το email του λογαριασμού και τον νέο κωδικό. Ο διαχειριστής εγκρίνει το αίτημα και μετά συνδέεστε κανονικά.
+        Βάλτε το email του λογαριασμού, τον νέο κωδικό και την επιβεβαίωση. Ο κωδικός αλλάζει αμέσως.
       </p>
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Email λογαριασμού *</label>
@@ -1779,10 +1793,63 @@
           return;
         }
         closeForgotModal();
-        alert(data.message || "Το αίτημα στάλθηκε. Μόλις το εγκρίνει ο διαχειριστής, συνδεθείτε με τον νέο κωδικό.");
+        alert(data.message || "Ο κωδικός άλλαξε. Συνδεθείτε με τον νέο κωδικό.");
+        openAuthModal("login");
       } catch (err) {
         alert("Αδυναμία σύνδεσης με τον διακομιστή. Βεβαιωθείτε ότι έχει γίνει deploy το worker.");
       }
+    }
+
+    const LEGAL_CONTENT = {
+      terms: {
+        title: "Όροι και Προϋποθέσεις Χρήσης",
+        html: `
+          <h4 style="margin:12px 0 6px;color:var(--primary);">Εισαγωγή</h4>
+          <p>Καλώς ήρθατε στο jobs.franklymadear.com. Ο ιστότοπος αυτός αποτελεί μια δωρεάν, ερασιτεχνική προσπάθεια ενός ανεξάρτητου δημιουργού (blogger) με σκοπό τη διευκόλυνση της επικοινωνίας μεταξύ εργοδοτών και ατόμων που αναζητούν εργασία. Η χρήση του ιστότοπου προϋποθέτει την αποδοχή των παρακάτω όρων.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Φύση της Υπηρεσίας &amp; Αποποίηση Ευθύνης</h4>
+          <p><strong>Πλατφόρμα Επικοινωνίας:</strong> Ο ιστότοπος λειτουργεί αποκλειστικά ως πίνακας ανακοινώσεων (job board). Δεν αποτελεί γραφείο εύρεσης εργασίας, δεν εκπροσωπεί καμία εταιρεία και δεν συμμετέχει στη διαδικασία αξιολόγησης ή πρόσληψης.</p>
+          <p><strong>Ακρίβεια Πληροφοριών:</strong> Δεν φέρουμε καμία νομική ή άλλη ευθύνη για την ορθότητα, την ακρίβεια ή τη νομιμότητα των αγγελιών που αναρτώνται από τρίτους, ούτε για το περιεχόμενο των βιογραφικών. Οι χρήστες οφείλουν να ελέγχουν οι ίδιοι την αξιοπιστία των αγγελιών.</p>
+          <p><strong>Παροχή «Ως Έχει»:</strong> Η υπηρεσία παρέχεται δωρεάν και «ως έχει», χωρίς καμία εγγύηση για αδιάλειπτη λειτουργία ή τεχνική υποστήριξη.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Δωρεές και Υποστήριξη (Buy me a Coffee)</h4>
+          <p>Η βασική χρήση της πλατφόρμας είναι εντελώς δωρεάν. Οποιαδήποτε οικονομική συνεισφορά μέσω πλατφορμών δωρεάς (π.χ. Buy me a Coffee) αποτελεί προαιρετικό φιλοδώρημα (tip) για την υποστήριξη του δημιουργού και των εξόδων φιλοξενίας της σελίδας. Δεν αποτελεί εμπορική συναλλαγή, δεν δημιουργεί σχέση πελάτη-προμηθευτή και δεν εξασφαλίζει ειδική μεταχείριση, εγγύηση εύρεσης εργασίας ή εγγύηση προβολής αγγελιών.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Επικοινωνία</h4>
+          <p>Για οποιοδήποτε ζήτημα σχετικά με τους όρους, παρακαλούμε επικοινωνήστε μαζί μας στο: <a href="mailto:info.franklydear@gmail.com">info.franklydear@gmail.com</a></p>
+        `
+      },
+      privacy: {
+        title: "Πολιτική Απορρήτου",
+        html: `
+          <h4 style="margin:12px 0 6px;color:var(--primary);">Εισαγωγή</h4>
+          <p>Ο ιστότοπος jobs.franklymadear.com σέβεται τα προσωπικά σας δεδομένα. Η παρούσα πολιτική εξηγεί πώς συλλέγουμε, χρησιμοποιούμε και προστατεύουμε τις πληροφορίες σας.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Συλλογή Δεδομένων</h4>
+          <p><strong>Δεδομένα που παρέχετε εσείς:</strong> Συλλέγουμε μόνο τις πληροφορίες που εσείς επιλέγετε να μοιραστείτε μαζί μας (π.χ. το email σας κατά την εγγραφή ή στοιχεία επικοινωνίας μέσα στις αγγελίες).</p>
+          <p><strong>Χρήση των δεδομένων:</strong> Τα στοιχεία αυτά χρησιμοποιούνται αποκλειστικά για την εύρυθμη λειτουργία της πλατφόρμας (δημοσίευση αγγελιών) και δεν πωλούνται, δεν ενοικιάζονται και δεν παραχωρούνται σε τρίτους.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Cookies και Διαφημίσεις Google AdSense</h4>
+          <p>Ο ιστότοπος χρησιμοποιεί την υπηρεσία Google AdSense για την προβολή διαφημίσεων, προκειμένου να καλύπτονται τα λειτουργικά έξοδα.</p>
+          <ul style="margin:8px 0 8px 18px;">
+            <li>Τρίτοι προμηθευτές, συμπεριλαμβανομένης της Google, χρησιμοποιούν cookies για την προβολή διαφημίσεων με βάση προηγούμενες επισκέψεις σας στον ιστότοπό μας ή σε άλλους ιστότοπους στο διαδίκτυο.</li>
+            <li>Η χρήση cookies διαφήμισης επιτρέπει στην Google και στους συνεργάτες της να προβάλλουν διαφημίσεις στους χρήστες μας βάσει της περιήγησής τους.</li>
+            <li>Μπορείτε να εξαιρεθείτε από την εξατομικευμένη διαφήμιση μεταβαίνοντας στις <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">Ρυθμίσεις διαφημίσεων της Google</a>.</li>
+          </ul>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Εξωτερικοί Σύνδεσμοι</h4>
+          <p>Ο ιστότοπός μας ενδέχεται να περιέχει συνδέσμους προς άλλες σελίδες (π.χ. σελίδες εργοδοτών). Δεν φέρουμε ευθύνη για τις πολιτικές απορρήτου αυτών των εξωτερικών ιστότοπων.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Δικαιώματα Χρηστών</h4>
+          <p>Έχετε το δικαίωμα να ζητήσετε την επεξεργασία, διόρθωση ή την οριστική διαγραφή των δεδομένων σας και των αγγελιών σας ανά πάσα στιγμή.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Επικοινωνία</h4>
+          <p>Για αιτήματα διαγραφής στοιχείων ή απορίες σχετικά με την προστασία των δεδομένων σας, παρακαλούμε επικοινωνήστε στο: <a href="mailto:info.franklydear@gmail.com">info.franklydear@gmail.com</a></p>
+        `
+      }
+    };
+
+    function openLegalModal(key) {
+      var item = LEGAL_CONTENT[key];
+      if (!item) return;
+      document.getElementById("legalModalTitle").textContent = item.title;
+      document.getElementById("legalModalBody").innerHTML = item.html;
+      document.getElementById("legalModal").classList.add("active");
+    }
+    function closeLegalModal() {
+      document.getElementById("legalModal").classList.remove("active");
     }
 
     function initGoogleButton() {
