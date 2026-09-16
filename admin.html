@@ -214,7 +214,9 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('workers')">👷 Εργάτες</button>
       <button class="tab-btn" onclick="switchTab('employers')">🏢 Εργοδότες</button>
-      <button class="tab-btn" onclick="switchTab('users')">👤 Χρήστες / Όρια</button>
+      <button class="tab-btn" onclick="switchTab('users')">👤 Χρήστες</button>
+      <button class="tab-btn" onclick="switchTab('matches')">🤝 Επιλογές</button>
+      <button class="tab-btn" onclick="switchTab('ratings')">⭐ Αξιολογήσεις</button>
     </div>
 
     <div id="workers" class="panel active">
@@ -271,8 +273,12 @@
         <button class="btn btn-primary" onclick="loadUsers()">↻ Ανανέωση</button>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
-        Ορίστε πόσα αγγελίες μπορεί να δημοσιεύσει κάθε εγγεγραμμένος χρήστης (συνδρομή). Προεπιλογή: 1.
+        Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
       </p>
+      <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
+        <strong>Αιτήματα επαναφοράς κωδικού</strong>
+        <div id="passwordResetsList"></div>
+      </div>
       <div style="overflow-x:auto">
         <table>
           <thead>
@@ -281,12 +287,56 @@
               <th>Ψευδώνυμο</th>
               <th>Email</th>
               <th>Ρόλος</th>
-              <th>Χρησιμοποιημένες</th>
-              <th>Όριο (max)</th>
-              <th></th>
+              <th>Αγγελίες</th>
+              <th>Όριο</th>
+              <th>Κατάσταση</th>
+              <th>Ενέργειες</th>
             </tr>
           </thead>
           <tbody id="u-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="matches" class="panel">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="loadMatches()">↻ Ανανέωση</button>
+      </div>
+      <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
+        Επιλογές εργοδοτών (προσέλαβα) και δηλώσεις εργαζομένων (βρήκα δλεια).
+      </p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Ημ/νία</th>
+              <th>Τύπος</th>
+              <th>Από</th>
+              <th>Προς</th>
+              <th>Σημειώσεις</th>
+            </tr>
+          </thead>
+          <tbody id="m-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="ratings" class="panel">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="loadRatings()">↻ Ανανέωση</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Ημ/νία</th>
+              <th>Από</th>
+              <th>Προς</th>
+              <th>Αστέρια</th>
+              <th>Σχόλιο</th>
+            </tr>
+          </thead>
+          <tbody id="r-tbody"></tbody>
         </table>
       </div>
     </div>
@@ -303,6 +353,8 @@
       document.querySelector(`.tab-btn[onclick="switchTab('${t}')"]`).classList.add("active");
       document.getElementById(t).classList.add("active");
       if (t === "users") loadUsers();
+      if (t === "matches") loadMatches();
+      if (t === "ratings") loadRatings();
     }
 
     async function load() {
@@ -343,30 +395,146 @@
     function renderUsers() {
       const tbody = document.getElementById("u-tbody");
       if (!usersData.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="empty">Δεν υπάρχουν εγγεγραμμένοι χρήστες</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">Δεν υπάρχουν εγγεγραμμένοι χρήστες</td></tr>`;
         return;
       }
       tbody.innerHTML = usersData.map(u => {
         const roleLabel = u.role === "worker" ? "Εργάτης" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
+        const isBlocked = u.blocked == 1;
         return `
-          <tr data-search="${(u.nickname + " " + u.email + " " + (u.role||"")).toLowerCase()}">
+          <tr class="${isBlocked ? 'found-row' : ''}" style="${isBlocked ? 'background:#fef2f2' : ''}" data-search="${(u.nickname + " " + u.email + " " + (u.role||"")).toLowerCase()}">
             <td data-label="ID">${u.id}</td>
             <td data-label="Ψευδώνυμο"><strong>${escapeHtml(u.nickname)}</strong></td>
             <td data-label="Email">${escapeHtml(u.email)}</td>
             <td data-label="Ρόλος">${roleLabel}</td>
-            <td data-label="Χρησιμοποιημένες">${u.ads_used || 0}
-              <small style="color:#64748b"> (Ε:${u.ads_workers||0} / Εργ:${u.ads_employers||0})</small>
+            <td data-label="Αγγελίες">${u.ads_used || 0}
+              <small style="color:#64748b"> (Ε:${u.ads_workers||0}/Εργ:${u.ads_employers||0})</small>
             </td>
             <td data-label="Όριο">
               <input type="number" min="0" max="999" value="${u.max_ads != null ? u.max_ads : 1}"
-                id="quota-${u.id}" style="width:70px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;">
+                id="quota-${u.id}" style="width:64px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;">
+              <button class="btn btn-primary" style="padding:4px 8px;font-size:0.75rem;margin-left:4px;" onclick="saveQuota(${u.id})">OK</button>
             </td>
-            <td data-label="">
-              <button class="btn btn-primary" style="padding:6px 12px;font-size:0.85rem;" onclick="saveQuota(${u.id})">Αποθήκευση</button>
+            <td data-label="Κατάσταση">${isBlocked ? '<strong style="color:#dc2626">Μπλοκαρισμένος</strong>' : 'Ενεργός'}</td>
+            <td data-label="Ενέργειες" style="white-space:nowrap">
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:0.75rem;" onclick="toggleBlock(${u.id}, ${isBlocked ? 0 : 1})">${isBlocked ? 'Ξεμπλοκάρισμα' : 'Μπλοκ'}</button>
+              <button class="btn btn-primary" style="padding:4px 8px;font-size:0.75rem;background:#64748b;" onclick="adminResetPass(${u.id})">Κωδικός</button>
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:0.75rem;" onclick="deleteUser(${u.id})">Διαγραφή</button>
             </td>
           </tr>
         `;
       }).join("");
+      loadPasswordResets();
+    }
+
+    async function toggleBlock(userId, blocked) {
+      const msg = blocked ? "Μπλοκάρισμα αυτού του χρήστη;" : "Ξεμπλοκάρισμα;";
+      if (!confirm(msg)) return;
+      try {
+        const res = await fetch(`${API}/api/admin/block`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, blocked: !!blocked, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        if (res.ok) loadUsers();
+        else alert(data.error || "Σφάλμα");
+      } catch { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm("Οριστική διαγραφή προφίλ χρήστη #" + userId + "; Οι αγγελίες του μένουν εκτός αν τις διαγράψετε χωριστά.")) return;
+      try {
+        const res = await fetch(`${API}/api/admin/delete-user`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        if (res.ok) loadUsers();
+        else alert(data.error || "Σφάλμα");
+      } catch { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    async function adminResetPass(userId) {
+      const p = prompt("Νέος κωδικός για χρήστη #" + userId + " (τουλάχιστον 6 χαρακτήρες):");
+      if (!p || p.length < 6) return;
+      try {
+        const res = await fetch(`${API}/api/admin/reset-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, new_password: p, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        alert(res.ok ? (data.message || "Ορίστηκε") : (data.error || "Σφάλμα"));
+        if (res.ok) loadPasswordResets();
+      } catch { alert("Αδυναμία σύνδεσης"); }
+    }
+
+    async function loadPasswordResets() {
+      try {
+        const res = await fetch(`${API}/api/admin/password-resets`);
+        const rows = await res.json();
+        const box = document.getElementById("passwordResetsBox");
+        const list = document.getElementById("passwordResetsList");
+        if (!Array.isArray(rows) || !rows.length) {
+          box.style.display = "none";
+          return;
+        }
+        box.style.display = "block";
+        list.innerHTML = rows.map(r =>
+          `<div style="margin-top:8px;font-size:0.9rem;">#${r.user_id} ${escapeHtml(r.nickname||"")} · ${escapeHtml(r.email||"")} · ${r.created_at||""}
+            <button class="btn btn-primary" style="padding:2px 8px;font-size:0.75rem;margin-left:8px;" onclick="adminResetPass(${r.user_id})">Ορισμός κωδικού</button>
+          </div>`
+        ).join("");
+      } catch (e) {}
+    }
+
+    async function loadMatches() {
+      try {
+        const res = await fetch(`${API}/api/admin/matches`);
+        const rows = await res.json();
+        const tbody = document.getElementById("m-tbody");
+        if (!Array.isArray(rows) || !rows.length) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty">Καμία επιλογή ακόμα</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rows.map(m => {
+          const typeLabel = m.type === "employer_hired" ? "🏢 Εργοδότης επέλεξε" : "✅ Εργαζόμενος βρήκε δλεια";
+          const from = escapeHtml(m.from_nickname || ("#" + m.from_user_id));
+          const to = escapeHtml(m.to_nickname || m.to_name || (m.to_user_id ? "#" + m.to_user_id : "—"));
+          return `<tr>
+            <td>${m.created_at ? new Date(m.created_at).toLocaleString("el-GR") : "—"}</td>
+            <td>${typeLabel}</td>
+            <td>${from}<br><small>${escapeHtml(m.from_email||"")}</small></td>
+            <td>${to}<br><small>${escapeHtml(m.to_email||"")}</small></td>
+            <td>${escapeHtml(m.notes||"—")}</td>
+          </tr>`;
+        }).join("");
+      } catch {
+        document.getElementById("m-tbody").innerHTML = `<tr><td colspan="5" class="empty">Σφάλμα φόρτωσης</td></tr>`;
+      }
+    }
+
+    async function loadRatings() {
+      try {
+        const res = await fetch(`${API}/api/admin/ratings`);
+        const rows = await res.json();
+        const tbody = document.getElementById("r-tbody");
+        if (!Array.isArray(rows) || !rows.length) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty">Καμία αξιολόγηση</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rows.map(r => `<tr>
+          <td>${r.created_at ? new Date(r.created_at).toLocaleString("el-GR") : "—"}</td>
+          <td>${escapeHtml(r.from_nickname || "#" + r.from_user_id)}</td>
+          <td>${escapeHtml(r.to_nickname || "#" + r.to_user_id)}</td>
+          <td>${"★".repeat(r.stars||0)}${"☆".repeat(5-(r.stars||0))} (${r.stars})</td>
+          <td>${escapeHtml(r.comment||"—")}</td>
+        </tr>`).join("");
+      } catch {
+        document.getElementById("r-tbody").innerHTML = `<tr><td colspan="5" class="empty">Σφάλμα φόρτωσης</td></tr>`;
+      }
     }
 
     function filterUsers() {
