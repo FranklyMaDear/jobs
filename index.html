@@ -550,10 +550,16 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p>Βρείτε εργασία ή προσωπικό κοντά σας</p>
       <div id="freePromoCountdown" class="free-promo">
-        <div class="free-promo-title">🎁 Δωρεάν αγγελίες έως τέλη Σεπτεμβρίου</div>
-        <div class="free-promo-sub">Εργαζόμενοι &amp; εργοδότες · 1 αγγελία 
-    </div>
+        <div class="free-promo-title">🎁 Δώρο 1 αγγελία έως τέλη Σεπτεμβρίου</div>
+        <div class="free-promo-sub">Κάθε νέα εγγραφή εργαζομένου ή εργοδότη · 1 δωρεάν αγγελία</div>
         <div class="free-promo-timer" id="countdownTimer">—</div>
+        <div id="homePlanButtons" style="display:none;margin-top:14px;">
+          <div style="font-size:0.8rem;color:#1e3a5f;margin-bottom:8px;font-weight:600;">Πακέτα εργοδοτών</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="text-decoration:none;flex:1;min-width:140px;">Start Plan 1,5€</a>
+            <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="text-decoration:none;flex:1;min-width:140px;">Premium Plan 3€</a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -787,19 +793,29 @@
           <div class="packages-box" id="employerPackages" style="display:none">
             <h3>📦 Πακέτα αγγελιών (μόνο εργοδότες)</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Νέοι εργοδότες: <strong>1 δωρεάν ενεργή αγγελία</strong>. Για περισσότερες, επιλέξτε πακέτο (εξωτερική πληρωμή) και ενημερώστε μας για αύξηση ορίου.
+              Νέοι εργοδότες έως τέλη Σεπτεμβρίου: <strong>1 δωρεάν ενεργή αγγελία</strong>. Για περισσότερες θέσεις επιλέξτε πακέτο (πληρωμή μέσω Ko-fi).
             </p>
-            <div class="package-card">
-              <strong>Πλάνο 1 · Φιλοδώρημα</strong>
-              <div style="font-size:0.9rem;margin-top:4px;">+3 αγγελίες (slots) · κανονική προβολή</div>
-              <a class="btn btn-secondary btn-sm" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Υποστήριξη / Φιλοδώρημα</a>
+            <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
+              ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την ολοκλήρωση της πληρωμής, είναι απαραίτητη προϋπόθεση να χρησιμοποιήσετε το <u>ίδιο ακριβώς e-mail</u> με το οποίο κάνατε εγγραφή στην πλατφόρμα μας. Σε διαφορετική περίπτωση, δεν θα είναι δυνατή η ταυτοποίηση του λογαριασμού σας και η άμεση ενεργοποίηση των αγγελιών σας.
             </div>
             <div class="package-card">
-              <strong>Πλάνο 2 · Premium Προώθηση</strong>
-              <div style="font-size:0.9rem;margin-top:4px;">+5 αγγελίες · καρφίτσωμα βασικής αγγελίας στην κορυφή</div>
-              <a class="btn btn-primary btn-sm" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Premium Προώθηση</a>
+              <strong>Πλάνο 1 – Φιλοδώρημα (+3 Αγγελίες)</strong>
+              <div style="font-size:1.15rem;font-weight:800;color:var(--accent);margin:6px 0;">1,50€</div>
+              <div style="font-size:0.9rem;color:var(--text-muted);">Προσθέτει 3 επιπλέον θέσεις (slots). Απλή, χρονολογική προβολή των αγγελιών.</div>
+              <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Start Plan 1,5€</a>
             </div>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">Μετά την πληρωμή, στείλτε email στο <a href="mailto:info.franklydear@gmail.com">info.franklydear@gmail.com</a> για ενεργοποίηση ορίου.</p>
+            <div class="package-card" style="border-color:#f59e0b;position:relative;">
+              <span style="position:absolute;top:10px;right:10px;background:#f59e0b;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;">Προτεινόμενο</span>
+              <strong>Πλάνο 2 – Premium (+6 Αγγελίες &amp; Προώθηση)</strong>
+              <div style="font-size:1.15rem;font-weight:800;color:var(--accent);margin:6px 0;">3,00€</div>
+              <div style="font-size:0.9rem;color:var(--text-muted);">Προσθέτει 6 επιπλέον θέσεις. Καρφίτσωμα της βασικής αγγελίας στην κορυφή και προώθηση στα Social Media.</div>
+              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Premium Plan 3€</a>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+              <a class="btn btn-secondary" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="flex:1;min-width:140px;text-decoration:none;">Start Plan 1,5€</a>
+              <a class="btn btn-primary" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="flex:1;min-width:140px;text-decoration:none;">Premium Plan 3€</a>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή με το ίδιο email εγγραφής, το όριο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
           </div>
           <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Αγγελίας</button>
         </form>
@@ -1077,6 +1093,14 @@
       }
       updateQuotaInfos();
       updatePublishCards();
+      updateHomePlanButtons();
+    }
+
+    function updateHomePlanButtons() {
+      var el = document.getElementById("homePlanButtons");
+      if (!el) return;
+      var isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
+      el.style.display = isEmp ? "block" : "none";
     }
 
     /** Εμφάνιση κουμπιών δημοσίευσης ανά ρόλο */
@@ -1873,8 +1897,8 @@
           <p><strong>Πλατφόρμα Επικοινωνίας:</strong> Ο ιστότοπος λειτουργεί αποκλειστικά ως πίνακας ανακοινώσεων (job board). Δεν αποτελεί γραφείο εύρεσης εργασίας, δεν εκπροσωπεί καμία εταιρεία και δεν συμμετέχει στη διαδικασία αξιολόγησης ή πρόσληψης.</p>
           <p><strong>Ακρίβεια Πληροφοριών:</strong> Δεν φέρουμε καμία νομική ή άλλη ευθύνη για την ορθότητα, την ακρίβεια ή τη νομιμότητα των αγγελιών που αναρτώνται από τρίτους, ούτε για το περιεχόμενο των βιογραφικών. Οι χρήστες οφείλουν να ελέγχουν οι ίδιοι την αξιοπιστία των αγγελιών.</p>
           <p><strong>Παροχή «Ως Έχει»:</strong> Η υπηρεσία παρέχεται δωρεάν και «ως έχει», χωρίς καμία εγγύηση για αδιάλειπτη λειτουργία ή τεχνική υποστήριξη.</p>
-          <h4 style="margin:14px 0 6px;color:var(--primary);">Δωρεές και Υποστήριξη (Buy me a Coffee)</h4>
-          <p>Η βασική χρήση της πλατφόρμας είναι εντελώς δωρεάν. Οποιαδήποτε οικονομική συνεισφορά μέσω πλατφορμών δωρεάς (π.χ. Buy me a Coffee) αποτελεί προαιρετικό φιλοδώρημα (tip) για την υποστήριξη του δημιουργού και των εξόδων φιλοξενίας της σελίδας. Δεν αποτελεί εμπορική συναλλαγή, δεν δημιουργεί σχέση πελάτη-προμηθευτή και δεν εξασφαλίζει ειδική μεταχείριση, εγγύηση εύρεσης εργασίας ή εγγύηση προβολής αγγελιών.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Δωρεές και Υποστήριξη (Ko-fi)</h4>
+          <p>Η βασική χρήση της πλατφόρμας είναι εντελώς δωρεάν. Οποιαδήποτε οικονομική συνεισφορά μέσω πλατφορμών δωρεάς ή αγορά πακέτων εργοδοτών (π.χ. μέσω Ko-fi) αποτελεί προαιρετική υποστήριξη του δημιουργού και των εξόδων φιλοξενίας ή αγορά επιπλέον slots αγγελιών. Δεν αποτελεί εμπορική συναλλαγή πέραν της ρητής περιγραφής κάθε πακέτου, δεν δημιουργεί σχέση πελάτη-προμηθευτή πέραν αυτής και δεν εξασφαλίζει εγγύηση εύρεσης εργασίας.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Επικοινωνία</h4>
           <p>Για οποιοδήποτε ζήτημα σχετικά με τους όρους, παρακαλούμε επικοινωνήστε μαζί μας στο: <a href="mailto:info.franklydear@gmail.com">info.franklydear@gmail.com</a></p>
         `
