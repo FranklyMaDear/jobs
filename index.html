@@ -367,7 +367,7 @@
     .kofi-goal-card:hover {
       box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
     }
-    .kofi-goal-card-inner { padding: 16px 16px 14px; }
+    .kofi-goal-card-inner { padding: 14px 14px 12px; }
     .kofi-goal-top {
       display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px;
     }
@@ -379,12 +379,24 @@
       font-size: 0.78rem; color: #3b82f6; margin-top: 3px; line-height: 1.35;
     }
     .kofi-live-bar {
-      margin-top: 4px;
-      border-radius: 10px;
+      margin-top: 8px;
+      border-radius: 12px;
       overflow: hidden;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid #bfdbfe;
-      min-height: 80px;
+      background: #fff;
+      border: 1.5px solid #93c5fd;
+      height: 56px;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .kofi-live-iframe {
+      border: none !important;
+      width: 100% !important;
+      height: 56px !important;
+      display: block !important;
+      background: transparent !important;
+      border-radius: 11px;
+      transform: scale(1);
+      transform-origin: left center;
     }
     .kofi-goal-meta {
       display: flex; justify-content: flex-end; align-items: center;
@@ -613,7 +625,7 @@
               title="Στόχος στήριξης"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
-              style="border:none;width:100%;height:80px;background:transparent;display:block;border-radius:8px;">
+              class="kofi-live-iframe">
             </iframe>
           </div>
           <div class="kofi-goal-meta" style="margin-top:10px;">
@@ -772,7 +784,7 @@
           <div class="packages-box" id="workerPackages" style="display:none">
             <h3>📦 Ενίσχυση Προφίλ (Εργαζόμενοι)</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Έχετε εξαντλήσει τις δωρεάν αγγελίες σας. Αγοράστε επιπλέον slots για πολλαπλές ειδικότητες (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα).
+              Χρειάζεστε περισσότερες αγγελίες / ειδικότητες; Αγοράστε επιπλέον slots (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα).
             </p>
             <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
               ⚠️ Χρησιμοποιήστε το <u>ίδιο e-mail</u> εγγραφής κατά την πληρωμή.
@@ -869,7 +881,7 @@
           <div class="packages-box" id="employerPackages" style="display:none">
             <h3>📦 Πακέτα Αναβάθμισης (Εργοδότες)</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Έχετε εξαντλήσει τις δωρεάν αγγελίες σας. Επιλέξτε πακέτο για περισσότερες θέσεις (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα από τον διαχειριστή).
+              Χρειάζεστε περισσότερες αγγελίες; Επιλέξτε πακέτο (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα από τον διαχειριστή).
             </p>
             <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
               ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την πληρωμή χρησιμοποιήστε το <u>ίδιο ακριβώς e-mail</u> με το οποίο κάνατε εγγραφή. Αλλιώς δεν θα μπορέσουμε να ταυτοποιήσουμε τον λογαριασμό σας.
@@ -1239,15 +1251,16 @@
       const empSubmit = document.querySelector("#employerForm button[type=submit]");
       const workSubmit = document.getElementById("workerSubmitBtn") || document.querySelector("#workerForm button[type=submit]");
 
+      // Πακέτα: πάντα ορατά στον αντίστοιχο ρόλο (ώστε να φαίνονται και πριν εξαντληθεί το όριο)
       if (empPkg) {
         const isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
-        empPkg.style.display = (isEmp && remaining <= 0) ? "block" : "none";
+        empPkg.style.display = isEmp ? "block" : "none";
       }
       if (workPkg) {
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
-        workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
+        workPkg.style.display = isWork ? "block" : "none";
       }
-      // Optionally disable submit when no slots (backend will also reject)
+      // Κουμπί δημοσίευσης: κρύβεται μόνο όταν δεν υπάρχει υπόλοιπο
       if (empSubmit) empSubmit.style.display = remaining > 0 ? "" : "none";
       if (workSubmit) workSubmit.style.display = remaining > 0 ? "" : "none";
     }
