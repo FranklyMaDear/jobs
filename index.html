@@ -573,13 +573,13 @@
       </div>
 
       <div class="section-title">Δημοσίευση Αγγελίας</div>
-      <div class="action-grid">
-        <div class="action-card post-worker" onclick="requireAuthThen('screen-worker')">
+      <div class="action-grid" id="publishActionsGrid">
+        <div class="action-card post-worker" id="cardPostWorker" onclick="requireAuthThen('screen-worker')">
           <div class="icon">📝</div>
           <h3>Ψάχνω εργασία</h3>
           <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
         </div>
-        <div class="action-card post-employer" onclick="requireAuthThen('screen-employer')">
+        <div class="action-card post-employer" id="cardPostEmployer" onclick="requireAuthThen('screen-employer')">
           <div class="icon">🔍</div>
           <h3>Ψάχνω προσωπικό</h3>
           <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
@@ -1076,6 +1076,32 @@
         try { renderHomeJobs(); } catch (e) {}
       }
       updateQuotaInfos();
+      updatePublishCards();
+    }
+
+    /** Εμφάνιση κουμπιών δημοσίευσης ανά ρόλο */
+    function updatePublishCards() {
+      var w = document.getElementById("cardPostWorker");
+      var e = document.getElementById("cardPostEmployer");
+      if (!w || !e) return;
+      if (!currentUser) {
+        // Μη συνδεδεμένος: φαίνονται και τα δύο (μετά ανοίγει εγγραφή)
+        w.style.display = "";
+        e.style.display = "";
+        return;
+      }
+      var role = currentUser.role || "both";
+      if (role === "worker") {
+        w.style.display = "";
+        e.style.display = "none";
+      } else if (role === "employer") {
+        w.style.display = "none";
+        e.style.display = "";
+      } else {
+        // both
+        w.style.display = "";
+        e.style.display = "";
+      }
     }
 
     function updateQuotaInfos() {
@@ -1150,8 +1176,10 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        alert(authMode === "register" ? "✅ Εγγραφή επιτυχής!" : "✅ Καλωσήρθες!");
+        showScreen("screen-home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
         loadCurrentUser();
+        loadHomeJobs();
       } catch(e) {
         alert("Αδυναμία σύνδεσης με τον διακομιστή");
       } finally {
@@ -1166,6 +1194,7 @@
       setToken("");
       currentUser = null;
       renderAuthBar();
+      showScreen("screen-home");
     }
 
     // Rating system removed for now
@@ -1916,7 +1945,9 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        alert("✅ Σύνδεση με Google επιτυχής!");
+        showScreen("screen-home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        loadHomeJobs();
       } catch (e) {
         alert("Αδυναμία σύνδεσης");
       }
