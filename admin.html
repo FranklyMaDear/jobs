@@ -623,6 +623,7 @@
               ${isFound ? '<strong style="color:#059669">Να διαγραφεί</strong>' : 'Ενεργή'}
             </td>
             <td data-label="">
+              <button class="btn btn-primary" style="padding:6px 10px;font-size:0.8rem;background:${r.is_pinned==1?'#f59e0b':'#64748b'};margin-right:4px;" onclick="togglePin(${r.id}, '${type}', ${r.is_pinned==1?0:1})">${r.is_pinned==1?'Ξεκαρφίτσωμα':'📌 Καρφίτσωμα'}</button>
               <button class="btn btn-danger" onclick="del(${r.id}, '${type}')">Διαγραφή</button>
             </td>
           </tr>
@@ -637,6 +638,20 @@
         const s = tr.getAttribute("data-search") || "";
         tr.style.display = !q || s.includes(q) ? "" : "none";
       });
+    }
+
+    
+    async function togglePin(id, type, isPinned) {
+      try {
+        const res = await fetch(`${API}/api/admin/pin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, type, is_pinned: !!isPinned, pin: "ADMIN999" })
+        });
+        const data = await res.json();
+        if (res.ok) load();
+        else alert(data.error || "Σφάλμα");
+      } catch { alert("Αδυναμία σύνδεσης"); }
     }
 
     async function del(id, type) {
