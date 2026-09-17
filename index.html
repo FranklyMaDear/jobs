@@ -549,17 +549,13 @@
     <div class="header">
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p>Βρείτε εργασία ή προσωπικό κοντά σας</p>
-      <div id="freePromoCountdown" class="free-promo">
-        <div class="free-promo-title">🎁 Δώρο 1 αγγελία έως τέλη Σεπτεμβρίου</div>
-        <div class="free-promo-sub">Κάθε νέα εγγραφή εργαζομένου ή εργοδότη 1 δωρεάν αγγελία</div>
-        <div class="free-promo-timer" id="countdownTimer">—</div>
-        <div id="homePlanButtons" style="display:none;margin-top:14px;">
-          <div style="font-size:0.8rem;color:#1e3a5f;margin-bottom:8px;font-weight:600;">Πακέτα εργοδοτών</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-            <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="text-decoration:none;flex:1;min-width:140px;">Start Plan 1,5€</a>
-            <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="text-decoration:none;flex:1;min-width:140px;">Premium Plan 3€</a>
-          </div>
-        </div>
+      <div id="freePromoBanner" class="free-promo">
+        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε ΔΩΡΟ 1 Αγγελία!</div>
+        <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
+      </div>
+      <!-- Ταμείο Αλληλεγγύης Ko-fi Goal -->
+      <div style="margin: 18px 0 8px; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow);">
+        <iframe src="https://ko-fi.com/franklymadear/goal?g=0" width="100%" height="500" style="border:none; border-radius: 8px; background: transparent;" title="Ταμείο Αλληλεγγύης"></iframe>
       </div>
     </div>
 
@@ -709,7 +705,23 @@
               <label for="w_urgent">Άμεσα Διαθέσιμος / Επείγον</label>
             </div>
           </fieldset>
-          <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Προφίλ</button>
+          <div class="packages-box" id="workerPackages" style="display:none">
+            <h3>📦 Ενίσχυση Προφίλ (Εργαζόμενοι)</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+              Έχετε εξαντλήσει τις δωρεάν αγγελίες σας. Αγοράστε επιπλέον slots για πολλαπλές ειδικότητες (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα).
+            </p>
+            <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
+              ⚠️ Χρησιμοποιήστε το <u>ίδιο e-mail</u> εγγραφής κατά την πληρωμή.
+            </div>
+            <div class="package-card">
+              <strong>Ενίσχυση Προφίλ – (+5 Αγγελίες)</strong>
+              <div style="font-size:1.15rem;font-weight:800;color:var(--accent);margin:6px 0;">1,00€</div>
+              <div style="font-size:0.9rem;color:var(--text-muted);">+5 επιπλέον αγγελίες. Ιδανικό για πολλαπλές ειδικότητες.</div>
+              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/adc9b7273f" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Ενίσχυση · 1,00€</a>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή, το υπόλοιπο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="workerSubmitBtn">Δημοσίευση Προφίλ</button>
         </form>
       </div>
     </div>
@@ -791,31 +803,27 @@
             </div>
           </fieldset>
           <div class="packages-box" id="employerPackages" style="display:none">
-            <h3>📦 Πακέτα αγγελιών (μόνο εργοδότες)</h3>
+            <h3>📦 Πακέτα Αναβάθμισης (Εργοδότες)</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Νέοι εργοδότες έως τέλη Σεπτεμβρίου: <strong>1 δωρεάν ενεργή αγγελία</strong>. Για περισσότερες θέσεις επιλέξτε πακέτο (πληρωμή μέσω Ko-fi).
+              Έχετε εξαντλήσει τις δωρεάν αγγελίες σας. Επιλέξτε πακέτο για περισσότερες θέσεις (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα από τον διαχειριστή).
             </p>
             <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
-              ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την ολοκλήρωση της πληρωμής, είναι απαραίτητη προϋπόθεση να χρησιμοποιήσετε το <u>ίδιο ακριβώς e-mail</u> με το οποίο κάνατε εγγραφή στην πλατφόρμα μας. Σε διαφορετική περίπτωση, δεν θα είναι δυνατή η ταυτοποίηση του λογαριασμού σας και η άμεση ενεργοποίηση των αγγελιών σας.
+              ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την πληρωμή χρησιμοποιήστε το <u>ίδιο ακριβώς e-mail</u> με το οποίο κάνατε εγγραφή. Αλλιώς δεν θα μπορέσουμε να ταυτοποιήσουμε τον λογαριασμό σας.
             </div>
             <div class="package-card">
-              <strong>Start – (+3 Αγγελίες)</strong>
+              <strong>Πλάνο 1 – (+3 Αγγελίες)</strong>
               <div style="font-size:1.15rem;font-weight:800;color:var(--accent);margin:6px 0;">1,50€</div>
-              <div style="font-size:0.9rem;color:var(--text-muted);">Προσθέτει 3 επιπλέον θέσεις (slots). Απλή, χρονολογική προβολή των αγγελιών.</div>
-              <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Start Plan 1,5€</a>
+              <div style="font-size:0.9rem;color:var(--text-muted);">+3 αγγελίες. Απλή προβολή.</div>
+              <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Πλάνο 1 · 1,50€</a>
             </div>
             <div class="package-card" style="border-color:#f59e0b;position:relative;">
               <span style="position:absolute;top:10px;right:10px;background:#f59e0b;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;">Προτεινόμενο</span>
-              <strong>Premium – (+6 Αγγελίες &amp; Προώθηση)</strong>
+              <strong>Πλάνο 2 – (+6 Αγγελίες &amp; Καρφίτσωμα)</strong>
               <div style="font-size:1.15rem;font-weight:800;color:var(--accent);margin:6px 0;">3,00€</div>
-              <div style="font-size:0.9rem;color:var(--text-muted);">Προσθέτει 6 επιπλέον θέσεις. Καρφίτσωμα της βασικής αγγελίας στην κορυφή και προώθηση στα Social Media.</div>
-              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Premium Plan 3€</a>
+              <div style="font-size:0.9rem;color:var(--text-muted);">+6 αγγελίες + καρφίτσωμα στην κορυφή.</div>
+              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Πλάνο 2 · 3,00€</a>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-              <a class="btn btn-secondary" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="flex:1;min-width:140px;text-decoration:none;">Start Plan 1,5€</a>
-              <a class="btn btn-primary" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="flex:1;min-width:140px;text-decoration:none;">Premium Plan 3€</a>
-            </div>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή με το ίδιο email εγγραφής, το όριο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή, το υπόλοιπο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
           </div>
           <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Αγγελίας</button>
         </form>
@@ -1030,7 +1038,7 @@
     let currentData = [];
     let currentViewType = "workers";
     let foundTarget = null;
-    let currentUser = null; // { id, email, nickname, role, max_ads, ads_used }
+    let currentUser = null; // { id, email, nickname, role, free_slots, max_ads, ads_used }
     let authMode = "login"; // login | register
     // Βάλτε το Google OAuth Client ID από Google Cloud Console (τύπος Web)
     const GOOGLE_CLIENT_ID = ""; // π.χ. "123456-abc.apps.googleusercontent.com"
@@ -1057,15 +1065,19 @@
 
     async function loadCurrentUser() {
       const t = getToken();
-      if (!t) { currentUser = null; renderAuthBar(); return; }
+      if (!t) { currentUser = null; renderAuthBar(); updateQuotaInfos(); updatePackagesVisibility(); return; }
       try {
         const res = await fetch(API_URL + "/me", { headers: authHeaders() });
-        if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); return; }
+        if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); updateQuotaInfos(); updatePackagesVisibility(); return; }
         currentUser = await res.json();
         renderAuthBar();
+        updateQuotaInfos();
+        updatePackagesVisibility();
       } catch(e) {
         currentUser = null;
         renderAuthBar();
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
     }
 
@@ -1128,17 +1140,52 @@
       }
     }
 
+    function getRemainingSlots() {
+      if (!currentUser) return 0;
+      // Prefer free_slots (new remaining credits model)
+      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
+      // Fallback to old max_ads - ads_used
+      const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
+      const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+      return Math.max(0, max - used);
+    }
+
     function updateQuotaInfos() {
       document.querySelectorAll(".quota-info").forEach(function(el) {
         if (!currentUser) {
           el.style.display = "none";
           return;
         }
-        const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+        const remaining = getRemainingSlots();
         el.style.display = "block";
-        el.textContent = "Οι αγγελίες σας: " + used + " / " + max + (used >= max ? " · Έχετε φτάσει το όριο" : "");
+        if (remaining > 0) {
+          el.textContent = "Υπόλοιπο δωρεάν αγγελιών: " + remaining;
+          el.style.color = "";
+        } else {
+          el.textContent = "Υπόλοιπο: 0 · Έχετε εξαντλήσει τις δωρεάν αγγελίες";
+          el.style.color = "#dc2626";
+        }
       });
+    }
+
+    function updatePackagesVisibility() {
+      const remaining = getRemainingSlots();
+      const empPkg = document.getElementById("employerPackages");
+      const workPkg = document.getElementById("workerPackages");
+      const empSubmit = document.querySelector("#employerForm button[type=submit]");
+      const workSubmit = document.getElementById("workerSubmitBtn") || document.querySelector("#workerForm button[type=submit]");
+
+      if (empPkg) {
+        const isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
+        empPkg.style.display = (isEmp && remaining <= 0) ? "block" : "none";
+      }
+      if (workPkg) {
+        const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
+        workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
+      }
+      // Optionally disable submit when no slots (backend will also reject)
+      if (empSubmit) empSubmit.style.display = remaining > 0 ? "" : "none";
+      if (workSubmit) workSubmit.style.display = remaining > 0 ? "" : "none";
     }
 
     function openAuthModal(mode) {
@@ -1473,14 +1520,15 @@
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
-      if (id === "screen-worker") setTimeout(function() { initMap("worker"); }, 100);
+      if (id === "screen-worker") {
+        setTimeout(function() { initMap("worker"); }, 100);
+        updateQuotaInfos();
+        updatePackagesVisibility();
+      }
       if (id === "screen-employer") {
         setTimeout(function() { initMap("employer"); }, 100);
-        var pkg = document.getElementById("employerPackages");
-        if (pkg) {
-          var isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
-          pkg.style.display = isEmp ? "block" : "none";
-        }
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
     }
 
@@ -2056,10 +2104,13 @@
         });
         if (res.ok) {
           const dataOk = await res.json().catch(() => ({}));
-          if (dataOk.ads_used != null && currentUser) {
-            currentUser.ads_used = dataOk.ads_used;
+          if (currentUser) {
+            if (dataOk.free_slots != null) currentUser.free_slots = dataOk.free_slots;
+            if (dataOk.ads_used != null) currentUser.ads_used = dataOk.ads_used;
             if (dataOk.max_ads != null) currentUser.max_ads = dataOk.max_ads;
             renderAuthBar();
+            updateQuotaInfos();
+            updatePackagesVisibility();
           } else {
             loadCurrentUser();
           }
@@ -2204,38 +2255,11 @@
       }
       window.location.href = "mailto:" + requestTarget.email + "?subject=" + subj + "&body=" + body;
     }
-// Αντίστροφη μέτρηση έως 30 Σεπτεμβρίου 2026 23:59:59 (τοπική)
-    function startFreePromoCountdown() {
-      const el = document.getElementById("countdownTimer");
-      const box = document.getElementById("freePromoCountdown");
-      if (!el) return;
-      const end = new Date(2026, 8, 30, 23, 59, 59); // μήνας 0-based → 8 = Σεπτέμβριος
-      function tick() {
-        const now = new Date();
-        let diff = end - now;
-        if (diff <= 0) {
-          el.textContent = "Η περίοδος δωρεάν αγγελιών έληξε";
-          if (box) box.style.opacity = "0.7";
-          return;
-        }
-        const d = Math.floor(diff / 86400000);
-        diff %= 86400000;
-        const h = Math.floor(diff / 3600000);
-        diff %= 3600000;
-        const m = Math.floor(diff / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        el.textContent = d + "η " + String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-        requestAnimationFrame(function() { setTimeout(tick, 1000); });
-      }
-      tick();
-    }
-
     window.onload = () => {
       initForms();
       setupStarsPick();
       loadCurrentUser();
       loadHomeJobs();
-      startFreePromoCountdown();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
