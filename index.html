@@ -365,7 +365,6 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .kofi-goal-card:hover {
-      transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
     }
     .kofi-goal-card-inner { padding: 16px 16px 14px; }
@@ -379,27 +378,25 @@
     .kofi-goal-desc {
       font-size: 0.78rem; color: #3b82f6; margin-top: 3px; line-height: 1.35;
     }
-    .kofi-goal-bar-wrap { margin-top: 2px; }
-    .kofi-goal-bar {
-      height: 12px; background: rgba(255,255,255,0.75);
-      border-radius: 999px; overflow: hidden;
-      border: 1px solid #93c5fd;
-    }
-    .kofi-goal-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
-      border-radius: 999px;
-      transition: width 0.6s ease;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    .kofi-live-bar {
+      margin-top: 4px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid #bfdbfe;
+      min-height: 80px;
     }
     .kofi-goal-meta {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: flex-end; align-items: center;
       margin-top: 8px; font-size: 0.8rem; font-weight: 600; color: #1e40af;
     }
     .kofi-goal-cta {
-      background: #2563eb; color: #fff; padding: 5px 12px;
-      border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+      background: #2563eb; color: #fff; padding: 8px 16px;
+      border-radius: 999px; font-size: 0.8rem; font-weight: 700;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
     }
+    .kofi-goal-cta:hover { background: #1d4ed8; }
     .quota-badge {
       font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 3px 10px;
       border-radius: 999px; font-weight: 600;
@@ -599,27 +596,31 @@
         <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε ΔΩΡΟ 1 Αγγελία!</div>
         <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
       </div>
-      <!-- Ταμείο Αλληλεγγύης – custom bar (χωρίς κενό iframe) -->
-      <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-card" style="text-decoration:none;display:block;">
+      <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
+      <div class="kofi-goal-card">
         <div class="kofi-goal-card-inner">
           <div class="kofi-goal-top">
             <span class="kofi-goal-emoji">💙</span>
             <div>
-              <div class="kofi-goal-title">Ταμείο Αλληλεγγύης</div>
-              <div class="kofi-goal-desc">Στηρίζουμε όσους αναζητούν εργασία · κληρώσεις Premium αγγελιών &amp; κουπόνια</div>
+              <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
+              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
             </div>
           </div>
-          <div class="kofi-goal-bar-wrap">
-            <div class="kofi-goal-bar">
-              <div class="kofi-goal-bar-fill" style="width:10%"></div>
-            </div>
-            <div class="kofi-goal-meta">
-              <span>10% · €15 / €150</span>
-              <span class="kofi-goal-cta">Στήριξε →</span>
-            </div>
+          <!-- Live μπάρα Ko-fi (streamalerts overlay – real-time) -->
+          <div class="kofi-live-bar">
+            <iframe
+              src="https://ko-fi.com/streamalerts/goaloverlay/sa_d99fac7d-3908-4c1d-97c2-98e751a7195c"
+              title="Στόχος στήριξης"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              style="border:none;width:100%;height:80px;background:transparent;display:block;border-radius:8px;">
+            </iframe>
+          </div>
+          <div class="kofi-goal-meta" style="margin-top:10px;">
+            <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-cta" style="text-decoration:none;">Στήριξε τώρα →</a>
           </div>
         </div>
-      </a>
+      </div>
     </div>
 
     <div id="screen-home" class="screen active">
