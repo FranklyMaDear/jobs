@@ -565,20 +565,31 @@
 
     async function saveQuota(userId) {
       const input = document.getElementById("quota-" + userId);
+      const freeInput = document.getElementById("freeslots-" + userId);
       const maxAds = parseInt(input.value, 10);
+      const freeSlots = freeInput ? parseInt(freeInput.value, 10) : null;
       if (isNaN(maxAds) || maxAds < 0) {
-        alert("Μη έγκυρος αριθμός");
+        alert("Μη έγκυρος αριθμός για max_ads");
+        return;
+      }
+      if (freeInput && (isNaN(freeSlots) || freeSlots < 0)) {
+        alert("Μη έγκυρος αριθμός για free_slots");
         return;
       }
       try {
+        const body = { user_id: userId, max_ads: maxAds, pin: "ADMIN999" };
+        if (freeSlots != null && !isNaN(freeSlots)) body.free_slots = freeSlots;
         const res = await fetch(`${API}/api/admin/quota`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: userId, max_ads: maxAds, pin: "ADMIN999" })
+          body: JSON.stringify(body)
         });
         const data = await res.json();
         if (res.ok) {
-          alert("Όριο ενημερώθηκε: " + maxAds + " αγγελίες (χρησιμοποιημένες: " + (data.ads_used || 0) + ")");
+          let msg = "Ενημερώθηκε: max_ads=" + maxAds;
+          if (freeSlots != null) msg += ", free_slots=" + freeSlots;
+          msg += " (χρησιμοποιημένες: " + (data.ads_used || 0) + ")";
+          alert(msg);
           loadUsers();
         } else {
           alert(data.error || "Σφάλμα");
