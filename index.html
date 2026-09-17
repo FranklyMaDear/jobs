@@ -354,6 +354,24 @@
       margin-top: 10px; font-size: 1.35rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
     }
+    .kofi-goal-wrap {
+      margin: 16px auto 4px;
+      max-width: 420px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #f8fafc;
+      border: 2px solid #bfdbfe;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+    }
+    .kofi-goal-label {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #1e40af;
+      padding: 10px 12px 6px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-bottom: 1px solid #bfdbfe;
+    }
     .quota-badge {
       font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 3px 10px;
       border-radius: 999px; font-weight: 600;
@@ -554,8 +572,17 @@
         <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
       </div>
       <!-- Ταμείο Αλληλεγγύης Ko-fi Goal -->
-      <div style="margin: 18px 0 8px; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow);">
-        <iframe src="https://ko-fi.com/franklymadear/goal?g=0" width="100%" height="500" style="border:none; border-radius: 8px; background: transparent;" title="Ταμείο Αλληλεγγύης"></iframe>
+      <div class="kofi-goal-wrap">
+        <div class="kofi-goal-label">💙 Ταμείο Αλληλεγγύης</div>
+        <iframe
+          src="https://ko-fi.com/franklymadear/goal?g=0"
+          width="100%"
+          height="280"
+          style="border:none; border-radius: 0 0 12px 12px; background:#f8fafc; display:block;"
+          title="Ταμείο Αλληλεγγύης"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       </div>
     </div>
 
