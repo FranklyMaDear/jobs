@@ -354,23 +354,51 @@
       margin-top: 10px; font-size: 1.35rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
     }
-    .kofi-goal-wrap {
-      margin: 16px auto 4px;
+    .kofi-goal-card {
+      margin: 16px auto 8px;
       max-width: 420px;
       border-radius: 14px;
       overflow: hidden;
-      background: #f8fafc;
-      border: 2px solid #bfdbfe;
-      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%);
+      border: 2px solid #93c5fd;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.12);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .kofi-goal-label {
-      text-align: center;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #1e40af;
-      padding: 10px 12px 6px;
-      background: linear-gradient(135deg, #eff6ff, #dbeafe);
-      border-bottom: 1px solid #bfdbfe;
+    .kofi-goal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
+    }
+    .kofi-goal-card-inner { padding: 16px 16px 14px; }
+    .kofi-goal-top {
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px;
+    }
+    .kofi-goal-emoji { font-size: 1.6rem; line-height: 1; }
+    .kofi-goal-title {
+      font-weight: 800; font-size: 1rem; color: #1e3a8a; letter-spacing: -0.2px;
+    }
+    .kofi-goal-desc {
+      font-size: 0.78rem; color: #3b82f6; margin-top: 3px; line-height: 1.35;
+    }
+    .kofi-goal-bar-wrap { margin-top: 2px; }
+    .kofi-goal-bar {
+      height: 12px; background: rgba(255,255,255,0.75);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid #93c5fd;
+    }
+    .kofi-goal-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+      border-radius: 999px;
+      transition: width 0.6s ease;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    }
+    .kofi-goal-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 8px; font-size: 0.8rem; font-weight: 600; color: #1e40af;
+    }
+    .kofi-goal-cta {
+      background: #2563eb; color: #fff; padding: 5px 12px;
+      border-radius: 999px; font-size: 0.75rem; font-weight: 700;
     }
     .quota-badge {
       font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 3px 10px;
@@ -571,19 +599,27 @@
         <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε ΔΩΡΟ 1 Αγγελία!</div>
         <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
       </div>
-      <!-- Ταμείο Αλληλεγγύης Ko-fi Goal -->
-      <div class="kofi-goal-wrap">
-        <div class="kofi-goal-label">💙 Ταμείο Αλληλεγγύης</div>
-        <iframe
-          src="https://ko-fi.com/franklymadear/goal?g=0"
-          width="100%"
-          height="280"
-          style="border:none; border-radius: 0 0 12px 12px; background:#f8fafc; display:block;"
-          title="Ταμείο Αλληλεγγύης"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-      </div>
+      <!-- Ταμείο Αλληλεγγύης – custom bar (χωρίς κενό iframe) -->
+      <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-card" style="text-decoration:none;display:block;">
+        <div class="kofi-goal-card-inner">
+          <div class="kofi-goal-top">
+            <span class="kofi-goal-emoji">💙</span>
+            <div>
+              <div class="kofi-goal-title">Ταμείο Αλληλεγγύης</div>
+              <div class="kofi-goal-desc">Στηρίζουμε όσους αναζητούν εργασία · κληρώσεις Premium αγγελιών &amp; κουπόνια</div>
+            </div>
+          </div>
+          <div class="kofi-goal-bar-wrap">
+            <div class="kofi-goal-bar">
+              <div class="kofi-goal-bar-fill" style="width:10%"></div>
+            </div>
+            <div class="kofi-goal-meta">
+              <span>10% · €15 / €150</span>
+              <span class="kofi-goal-cta">Στήριξε →</span>
+            </div>
+          </div>
+        </div>
+      </a>
     </div>
 
     <div id="screen-home" class="screen active">
