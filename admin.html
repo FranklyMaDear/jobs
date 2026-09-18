@@ -405,13 +405,13 @@
         return;
       }
       tbody.innerHTML = usersData.map(u => {
-        const roleLabel = u.role === "worker" ? "Εργάτης" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
+        const roleLabel = u.role === "worker" ? "Εργαζόμενος" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
         const isBlocked = u.blocked == 1;
         return `
           <tr class="${isBlocked ? 'found-row' : ''}" style="${isBlocked ? 'background:#fef2f2' : ''}" data-search="${(u.nickname + " " + u.email + " " + (u.role||"")).toLowerCase()}">
             <td data-label="ID">${u.id}</td>
             <td data-label="Ψευδώνυμο"><strong>${escapeHtml(u.nickname)}</strong></td>
-            <td data-label="Email">${escapeHtml(u.email)}</td>
+            <td data-label="Email">${escapeHtml(u.email || "—")}<br><small style="color:#64748b">${u.phone ? ("📞 " + escapeHtml(u.phone)) : "📞 —"}</small></td>
             <td data-label="Ρόλος">${roleLabel}</td>
             <td data-label="Αγγελίες">${u.ads_used || 0}
               <small style="color:#64748b"> (Ε:${u.ads_workers||0}/Εργ:${u.ads_employers||0})</small>
@@ -601,14 +601,19 @@
         return;
       }
       // CSV με BOM για σωστά ελληνικά στο Excel
-      var header = ["id", "nickname", "email", "role", "created_at", "max_ads", "free_slots", "ads_used", "blocked"];
+      var header = ["id", "nickname", "email", "email_dothike", "phone", "phone_dothike", "role", "created_at", "max_ads", "free_slots", "ads_used", "blocked"];
       var lines = [header.join(",")];
       rows.forEach(function(u) {
         var roleLabel = u.role === "worker" ? "εργαζομενος" : u.role === "employer" ? "εργοδοτης" : "και_τα_δυο";
+        var email = (u.email || "").trim();
+        var phone = (u.phone || "").trim();
         var cells = [
           u.id,
           csvEscape(u.nickname || ""),
-          csvEscape(u.email || ""),
+          csvEscape(email),
+          email ? "ΝΑΙ" : "ΟΧΙ",
+          csvEscape(phone),
+          phone ? "ΝΑΙ" : "ΟΧΙ",
           roleLabel,
           csvEscape(u.created_at || ""),
           u.max_ads != null ? u.max_ads : "",
