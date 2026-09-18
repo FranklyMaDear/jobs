@@ -212,7 +212,7 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('workers')">👷 Εργάτες</button>
+      <button class="tab-btn active" onclick="switchTab('workers')">👷 Εργαζόμενοι</button>
       <button class="tab-btn" onclick="switchTab('employers')">🏢 Εργοδότες</button>
       <button class="tab-btn" onclick="switchTab('users')">👤 Χρήστες</button>
       <button class="tab-btn" onclick="switchTab('matches')">🤝 Επιλογές</button>
@@ -268,12 +268,17 @@
     </div>
 
     <div id="users" class="panel">
-      <div class="toolbar">
+      <div class="toolbar" style="flex-wrap:wrap;gap:8px;">
         <input type="text" id="searchUsers" placeholder="Αναζήτηση χρήστη..." oninput="filterUsers()">
         <button class="btn btn-primary" onclick="loadUsers()">↻ Ανανέωση</button>
+        <button class="btn btn-primary" style="background:#059669;" onclick="exportUsersExcel('worker')" title="Για διαγωνισμούς Tally">📥 Excel Εργαζόμενοι</button>
+        <button class="btn btn-primary" style="background:#2563eb;" onclick="exportUsersExcel('employer')" title="Για διαγωνισμούς Tally">📥 Excel Εργοδότες</button>
+        <button class="btn btn-primary" style="background:#64748b;" onclick="exportUsersExcel('all')">📥 Excel Όλοι</button>
+        <a class="btn btn-secondary" href="https://tally.so/forms/44jy95" target="_blank" rel="noopener" style="text-decoration:none;">Tally Διαγωνισμοί ↗</a>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
         Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
+        Εξαγωγή email σε Excel/CSV για μεταφορά στο Tally (διαγωνισμοί).
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -314,6 +319,7 @@
               <th>Από</th>
               <th>Προς</th>
               <th>Σημειώσεις</th>
+              <th>Ενέργειες</th>
             </tr>
           </thead>
           <tbody id="m-tbody"></tbody>
@@ -514,7 +520,7 @@
         const rows = await res.json();
         const tbody = document.getElementById("m-tbody");
         if (!Array.isArray(rows) || !rows.length) {
-          tbody.innerHTML = `<tr><td colspan="5" class="empty">Καμία επιλογή ακόμα</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="empty">Καμία επιλογή ακόμα</td></tr>`;
           return;
         }
         tbody.innerHTML = rows.map(m => {
@@ -527,10 +533,33 @@
             <td>${from}<br><small>${escapeHtml(m.from_email||"")}</small></td>
             <td>${to}<br><small>${escapeHtml(m.to_email||"")}</small></td>
             <td>${escapeHtml(m.notes||"—")}</td>
+            <td>
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:0.75rem;" onclick="deleteMatch(${m.id})">Διαγραφή</button>
+            </td>
           </tr>`;
         }).join("");
       } catch {
-        document.getElementById("m-tbody").innerHTML = `<tr><td colspan="5" class="empty">Σφάλμα φόρτωσης</td></tr>`;
+        document.getElementById("m-tbody").innerHTML = `<tr><td colspan="6" class="empty">Σφάλμα φόρτωσης</td></tr>`;
+      }
+    }
+
+    async function deleteMatch(id) {
+      if (!id) return;
+      if (!confirm("Διαγραφή αυτής της επιλογής (#" + id + ");")) return;
+      try {
+        const res = await fetch(`${API}/api/admin/delete-match`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: id, pin: "ADMIN999" })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          loadMatches();
+        } else {
+          alert(data.error || "Αδυναμία διαγραφής");
+        }
+      } catch (e) {
+        alert("Σφάλμα δικτύου");
       }
     }
 
@@ -553,6 +582,60 @@
       } catch {
         document.getElementById("r-tbody").innerHTML = `<tr><td colspan="5" class="empty">Σφάλμα φόρτωσης</td></tr>`;
       }
+    }
+
+
+    function exportUsersExcel(filter) {
+      if (!usersData || !usersData.length) {
+        alert("Δεν υπάρχουν χρήστες. Πάτα «Ανανέωση» πρώτα.");
+        return;
+      }
+      var rows = usersData.filter(function(u) {
+        if (filter === "all") return true;
+        if (filter === "worker") return u.role === "worker" || u.role === "both";
+        if (filter === "employer") return u.role === "employer" || u.role === "both";
+        return true;
+      });
+      if (!rows.length) {
+        alert("Κανένας χρήστης σε αυτή την κατηγορία.");
+        return;
+      }
+      // CSV με BOM για σωστά ελληνικά στο Excel
+      var header = ["id", "nickname", "email", "role", "created_at", "max_ads", "free_slots", "ads_used", "blocked"];
+      var lines = [header.join(",")];
+      rows.forEach(function(u) {
+        var roleLabel = u.role === "worker" ? "εργαζομενος" : u.role === "employer" ? "εργοδοτης" : "και_τα_δυο";
+        var cells = [
+          u.id,
+          csvEscape(u.nickname || ""),
+          csvEscape(u.email || ""),
+          roleLabel,
+          csvEscape(u.created_at || ""),
+          u.max_ads != null ? u.max_ads : "",
+          u.free_slots != null ? u.free_slots : "",
+          u.ads_used != null ? u.ads_used : "",
+          u.blocked == 1 ? "blocked" : "active"
+        ];
+        lines.push(cells.join(","));
+      });
+      var csv = "\uFEFF" + lines.join("\r\n");
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var stamp = new Date().toISOString().slice(0, 10);
+      var name = filter === "worker" ? "ergazomenoi" : filter === "employer" ? "ergodotes" : "oloi_xristes";
+      a.href = url;
+      a.download = name + "_" + stamp + ".csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      alert("Κατέβηκε αρχείο με " + rows.length + " εγγραφές.\nΆνοιξέ το με Excel και αντέγραψε τη στήλη email στο Tally.");
+    }
+    function csvEscape(s) {
+      s = String(s).replace(/"/g, '""');
+      if (/[",\n\r]/.test(s)) return '"' + s + '"';
+      return s;
     }
 
     function filterUsers() {
