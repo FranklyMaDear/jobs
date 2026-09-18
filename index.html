@@ -116,7 +116,18 @@
       80%  { transform: rotate(720deg) scale(1.08); }
       100% { transform: rotate(720deg) scale(1); }
     }
-    .welcome-card h1 { font-size: 1.7rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; line-height: 1.3; }
+    .welcome-card h1, .welcome-rotating-title {
+      font-size: 1.35rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
+      transition: opacity 0.35s ease;
+    }
+    .welcome-rotating-title.is-fading { opacity: 0; }
+    .page-rotating-title {
+      font-size: 1.25rem; font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.3;
+      max-width: 420px; transition: opacity 0.35s ease;
+    }
+    .page-rotating-title.is-fading { opacity: 0; }
     .welcome-card p, .welcome-rotating {
       color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;
       min-height: 3.2em; transition: opacity 0.35s ease;
@@ -686,6 +697,7 @@
       <div class="logo-spin-wrap">
         <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
+      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
@@ -698,6 +710,7 @@
 
   <div class="container">
     <div class="header">
+      <h1 id="pageRotatingTitle" class="page-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
@@ -1461,6 +1474,30 @@
     }
 
     
+
+    var TITLE_TEXTS = [
+      "Εύρεση εργασίας στην Θεσσαλία",
+      "Ψαχνς δλεια στου  κάμπου"
+    ];
+    function startTitleRotation() {
+      var welcomeTitle = document.getElementById("welcomeRotatingTitle");
+      var pageTitle = document.getElementById("pageRotatingTitle");
+      if (!TITLE_TEXTS.length) return;
+      var i = 0;
+      if (window._titleRotateTimer) clearInterval(window._titleRotateTimer);
+      window._titleRotateTimer = setInterval(function() {
+        i = (i + 1) % TITLE_TEXTS.length;
+        [welcomeTitle, pageTitle].forEach(function(el) {
+          if (!el) return;
+          el.classList.add("is-fading");
+          setTimeout(function() {
+            el.textContent = TITLE_TEXTS[i];
+            el.classList.remove("is-fading");
+          }, 350);
+        });
+      }, 5000);
+    }
+
     var HEADER_TEXTS = [
       "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
       "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
@@ -2575,6 +2612,7 @@
       loadCurrentUser();
       loadHomeJobs();
       startHeaderTextRotation();
+      startTitleRotation();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
