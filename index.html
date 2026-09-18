@@ -408,6 +408,18 @@
       border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
     }
     .free-promo-title { font-weight: 800; color: #1e40af; font-size: 0.92rem; line-height: 1.35; }
+    .header-rotating {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.92rem;
+      line-height: 1.4;
+      min-height: 2.6em;
+      transition: opacity 0.35s ease;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .header-rotating.is-fading { opacity: 0; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
     .free-promo-timer {
       margin-top: 10px; font-size: 1.35rem; font-weight: 800;
@@ -649,16 +661,9 @@
       <div class="logo-spin-wrap">
         <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
-      <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας δουλειά. Γρήγορα, απλά και εντελώς δωρεάν.</p>
+      <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
-  </div>
-
-  <!-- Συννεφάκι διαλόγου (comic bubble) – μετακινούμενο -->
-  <div id="speechBubble" class="speech-bubble" style="display:none;" aria-live="polite">
-    <button type="button" class="speech-bubble-close" onclick="hideSpeechBubble()" title="Κλείσιμο">×</button>
-    <div class="speech-bubble-text" id="speechBubbleText"></div>
-    <div class="speech-bubble-tail"></div>
   </div>
 
   <div class="top-bar" id="authBar">
@@ -669,7 +674,7 @@
   <div class="container">
     <div class="header">
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p>Βρείτε εργασία ή προσωπικό κοντά σας</p>
+      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
         <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε <span style="white-space:nowrap">ΔΩΡΟ 1 Αγγελία!</span></div>
         <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
@@ -1425,13 +1430,36 @@
         clearInterval(window._welcomeRotateTimer);
         window._welcomeRotateTimer = null;
       }
-      // Μετά το welcome → συννεφάκι
-      setTimeout(showSpeechBubble, 400);
+      // συννεφάκι αφαιρέθηκε – κείμενα κάτω από λογότυπο
+    }
+
+    
+    var HEADER_TEXTS = [
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
+      "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
+    ];
+    function startHeaderTextRotation() {
+      var el = document.getElementById("headerRotatingText");
+      if (!el || !HEADER_TEXTS.length) return;
+      var i = 0;
+      if (window._headerRotateTimer) clearInterval(window._headerRotateTimer);
+      window._headerRotateTimer = setInterval(function() {
+        i = (i + 1) % HEADER_TEXTS.length;
+        el.classList.add("is-fading");
+        setTimeout(function() {
+          el.textContent = HEADER_TEXTS[i];
+          el.classList.remove("is-fading");
+        }, 350);
+      }, 4000);
     }
 
     var WELCOME_TEXTS = [
-      "Βρείτε άμεσα προσωπικό ή τη νέα σας δουλειά. Γρήγορα, απλά και εντελώς δωρεάν.",
-      "Τι φκιάν'ς; Θελ'ς δλειά ή θελ'ς χέρια για δλειά; Αΐ σύρε πάτα το κμπι κ μπες σαμέσα!"
+      "Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.",
+      "Καλώς τα τα πιδιά! Τι τηράς σα χάνος; Άειντι, κάνι μια εγγραφή να βρεις την άκρη σ'. Τζάμπα είνι!",
+      "Τι φκιάνιτι; Κάνι γλήγορα μια εγγραφή να παρ'ς κι το πεσκέσι σ' (μια αγγελία δώρο). Δε ζητάμι φράγκο!",
+      "Πού 'σι συ; Μη χασομεράς! Βάλε τα στοιχεία σ' ιδώ να φκιάξ'ς λογαριασμό, να 'χουμι το νού μας!",
+      "Άειντι, μη στέκιτι! Πάτα να γραφτείς να γίνουμι πολλοί. Τζάμπα πράμα!"
     ];
     function startWelcomeTextRotation() {
       var el = document.getElementById("welcomeRotatingText");
@@ -1453,7 +1481,8 @@
       "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
-    function showSpeechBubble() {
+    function showSpeechBubble() { return; // disabled – bubble removed
+      
       try {
         if (sessionStorage.getItem("speechBubbleDismissed") === "1") return;
       } catch (e) {}
@@ -2500,6 +2529,7 @@
       setupStarsPick();
       loadCurrentUser();
       loadHomeJobs();
+      startHeaderTextRotation();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
