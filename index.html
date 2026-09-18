@@ -117,7 +117,66 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1 { font-size: 1.7rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; line-height: 1.3; }
-    .welcome-card p { color: var(--text-muted); font-size: 1rem; margin-bottom: 28px; }
+    .welcome-card p, .welcome-rotating {
+      color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;
+      min-height: 3.2em; transition: opacity 0.35s ease;
+    }
+    .welcome-rotating.fade { opacity: 0; }
+
+    /* Comic speech bubble */
+    .speech-bubble {
+      position: fixed;
+      z-index: 9000;
+      max-width: min(280px, 78vw);
+      background: #fffef8;
+      border: 2.5px solid #1e293b;
+      border-radius: 22px;
+      padding: 14px 16px 16px;
+      box-shadow: 6px 8px 0 rgba(15, 23, 42, 0.12), 0 12px 28px rgba(15, 23, 42, 0.15);
+      cursor: grab;
+      user-select: none;
+      animation: bubblePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), bubbleFloat 3.5s ease-in-out 0.45s infinite;
+      touch-action: none;
+    }
+    .speech-bubble:active { cursor: grabbing; animation-play-state: paused; }
+    .speech-bubble-text {
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: #0f172a;
+      font-weight: 600;
+      padding-right: 18px;
+    }
+    .speech-bubble-close {
+      position: absolute; top: 4px; right: 8px;
+      border: none; background: transparent;
+      font-size: 1.25rem; line-height: 1; color: #64748b;
+      cursor: pointer; padding: 2px 6px; border-radius: 8px;
+    }
+    .speech-bubble-close:hover { color: #0f172a; background: #f1f5f9; }
+    .speech-bubble-tail {
+      position: absolute;
+      bottom: -14px; left: 28px;
+      width: 0; height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 16px solid #1e293b;
+    }
+    .speech-bubble-tail::after {
+      content: "";
+      position: absolute;
+      left: -9px; top: -18px;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 13px solid #fffef8;
+    }
+    @keyframes bubblePop {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes bubbleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
     .welcome-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
       background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none;
@@ -590,9 +649,16 @@
       <div class="logo-spin-wrap">
         <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
-      <p>Η τοπική πλατφόρμα αγγελιών εργασίας.<br>Δωρεάν, γρήγορα και κοντά σου.</p>
+      <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας δουλειά. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
+  </div>
+
+  <!-- Συννεφάκι διαλόγου (comic bubble) – μετακινούμενο -->
+  <div id="speechBubble" class="speech-bubble" style="display:none;" aria-live="polite">
+    <button type="button" class="speech-bubble-close" onclick="hideSpeechBubble()" title="Κλείσιμο">×</button>
+    <div class="speech-bubble-text" id="speechBubbleText"></div>
+    <div class="speech-bubble-tail"></div>
   </div>
 
   <div class="top-bar" id="authBar">
@@ -1351,11 +1417,107 @@
       var el = document.getElementById("welcomeOverlay");
       if (el) el.classList.add("hidden");
       document.body.classList.remove("welcome-open");
-      // Ξεκλείδωμα scroll στο Safari
       document.body.style.position = "";
       document.body.style.overflow = "";
       document.body.style.width = "";
       document.body.style.height = "";
+      if (window._welcomeRotateTimer) {
+        clearInterval(window._welcomeRotateTimer);
+        window._welcomeRotateTimer = null;
+      }
+      // Μετά το welcome → συννεφάκι
+      setTimeout(showSpeechBubble, 400);
+    }
+
+    var WELCOME_TEXTS = [
+      "Βρείτε άμεσα προσωπικό ή τη νέα σας δουλειά. Γρήγορα, απλά και εντελώς δωρεάν.",
+      "Τι φκιάν'ς; Θελ'ς δλειά ή θελ'ς χέρια για δλειά; Αΐ σύρε πάτα το κμπι κ μπες σαμέσα!"
+    ];
+    function startWelcomeTextRotation() {
+      var el = document.getElementById("welcomeRotatingText");
+      if (!el) return;
+      var i = 0;
+      if (window._welcomeRotateTimer) clearInterval(window._welcomeRotateTimer);
+      window._welcomeRotateTimer = setInterval(function() {
+        el.classList.add("fade");
+        setTimeout(function() {
+          i = (i + 1) % WELCOME_TEXTS.length;
+          el.textContent = WELCOME_TEXTS[i];
+          el.classList.remove("fade");
+        }, 350);
+      }, 4000);
+    }
+
+    var SPEECH_PHRASES = [
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
+      "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
+    ];
+    function showSpeechBubble() {
+      try {
+        if (sessionStorage.getItem("speechBubbleDismissed") === "1") return;
+      } catch (e) {}
+      var bubble = document.getElementById("speechBubble");
+      var textEl = document.getElementById("speechBubbleText");
+      if (!bubble || !textEl) return;
+      var phrase = SPEECH_PHRASES[Math.floor(Math.random() * SPEECH_PHRASES.length)];
+      textEl.textContent = phrase;
+      // Θέση σε κενό σημείο (κάτω-δεξιά / κάτω-αριστερά εναλλάξ)
+      var side = Math.random() > 0.5 ? "right" : "left";
+      bubble.style.top = "";
+      bubble.style.bottom = "90px";
+      if (side === "right") {
+        bubble.style.right = "12px";
+        bubble.style.left = "auto";
+      } else {
+        bubble.style.left = "12px";
+        bubble.style.right = "auto";
+      }
+      bubble.style.display = "block";
+      enableBubbleDrag(bubble);
+    }
+    function hideSpeechBubble() {
+      var bubble = document.getElementById("speechBubble");
+      if (bubble) bubble.style.display = "none";
+      try { sessionStorage.setItem("speechBubbleDismissed", "1"); } catch (e) {}
+    }
+    function enableBubbleDrag(el) {
+      if (el._dragBound) return;
+      el._dragBound = true;
+      var startX, startY, origLeft, origTop, dragging = false;
+      function pointerDown(e) {
+        if (e.target && e.target.classList && e.target.classList.contains("speech-bubble-close")) return;
+        dragging = true;
+        el.style.animation = "none";
+        var rect = el.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+        startX = (e.touches ? e.touches[0].clientX : e.clientX);
+        startY = (e.touches ? e.touches[0].clientY : e.clientY);
+        el.style.left = origLeft + "px";
+        el.style.top = origTop + "px";
+        el.style.right = "auto";
+        el.style.bottom = "auto";
+        e.preventDefault();
+      }
+      function pointerMove(e) {
+        if (!dragging) return;
+        var x = (e.touches ? e.touches[0].clientX : e.clientX);
+        var y = (e.touches ? e.touches[0].clientY : e.clientY);
+        var nx = origLeft + (x - startX);
+        var ny = origTop + (y - startY);
+        nx = Math.max(4, Math.min(window.innerWidth - el.offsetWidth - 4, nx));
+        ny = Math.max(4, Math.min(window.innerHeight - el.offsetHeight - 4, ny));
+        el.style.left = nx + "px";
+        el.style.top = ny + "px";
+      }
+      function pointerUp() { dragging = false; }
+      el.addEventListener("mousedown", pointerDown);
+      el.addEventListener("touchstart", pointerDown, { passive: false });
+      window.addEventListener("mousemove", pointerMove);
+      window.addEventListener("touchmove", pointerMove, { passive: false });
+      window.addEventListener("mouseup", pointerUp);
+      window.addEventListener("touchend", pointerUp);
     }
 
     // Πάντα εμφάνιση welcome σε όλους τους browsers (και Safari)
@@ -1365,6 +1527,7 @@
       el.classList.remove("hidden");
       document.body.classList.add("welcome-open");
       document.body.style.overflow = "hidden";
+      startWelcomeTextRotation();
       // Επαναφορά animation στο logo κάθε φορά που ανοίγει
       var logo = document.getElementById("welcomeLogo");
       if (logo) {
