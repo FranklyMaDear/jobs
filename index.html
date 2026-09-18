@@ -348,7 +348,7 @@
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
       border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
     }
-    .free-promo-title { font-weight: 800; color: #1e40af; font-size: 0.95rem; }
+    .free-promo-title { font-weight: 800; color: #1e40af; font-size: 0.92rem; line-height: 1.35; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
     .free-promo-timer {
       margin-top: 10px; font-size: 1.35rem; font-weight: 800;
@@ -605,7 +605,7 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p>Βρείτε εργασία ή προσωπικό κοντά σας</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε ΔΩΡΟ 1 Αγγελία!</div>
+        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε <span style="white-space:nowrap">ΔΩΡΟ 1 Αγγελία!</span></div>
         <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
@@ -681,7 +681,7 @@
     <div id="screen-ads" class="screen">
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
       <div class="tabs">
-        <button id="tab-workers" class="tab-btn active" onclick="openPublicView('workers')">👷 Εργάτες</button>
+        <button id="tab-workers" class="tab-btn active" onclick="openPublicView('workers')">👷 Εργαζόμενοι</button>
         <button id="tab-employers" class="tab-btn" onclick="openPublicView('employers')">🏢 Εργοδότες</button>
       </div>
       <div class="filter-bar">
@@ -956,7 +956,7 @@
         <div class="form-group" style="margin-bottom:12px">
           <label class="main-label">Είμαι</label>
           <select id="authRole">
-            <option value="both">Εργάτης & Εργοδότης</option>
+            <option value="both">Εργαζόμενος & Εργοδότης</option>
             <option value="worker">Ψάχνω δουλειά</option>
             <option value="employer">Ψάχνω προσωπικό</option>
           </select>
@@ -1024,7 +1024,7 @@
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Ρόλος</label>
         <select id="profileRole">
-          <option value="both">Εργάτης &amp; Εργοδότης</option>
+          <option value="both">Εργαζόμενος &amp; Εργοδότης</option>
           <option value="worker">Ψάχνω δουλειά</option>
           <option value="employer">Ψάχνω προσωπικό</option>
         </select>
