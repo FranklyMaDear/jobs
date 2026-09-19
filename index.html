@@ -14,6 +14,7 @@
   <meta property="og:site_name" content="Θες Δλεια ; Βρες Δλεια">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Θες Δλεια ; Βρες Δλεια">
+  <link rel="canonical" href="https://jobs.franklymadear.com/index.html">
   <meta name="twitter:description" content="Αγγελίες εργασίας στη Θεσσαλία.">
   <meta name="twitter:image" content="https://jobs.franklymadear.com/logo.png">
   <link rel="icon" type="image/png" href="/logo.png">
@@ -714,7 +715,7 @@
       </div>
       <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
-      <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
+      <button type="button" id="welcomeStartBtn" class="welcome-btn" onclick="window.closeWelcome && window.closeWelcome(); return false;">Ας ξεκινήσουμε! 🚀</button>
     </div>
   </div>
 
@@ -1481,19 +1482,36 @@
     // Rating system removed for now
 
     function closeWelcome() {
-      var el = document.getElementById("welcomeOverlay");
-      if (el) el.classList.add("hidden");
-      document.body.classList.remove("welcome-open");
-      document.body.style.position = "";
-      document.body.style.overflow = "";
-      document.body.style.width = "";
-      document.body.style.height = "";
-      if (window._welcomeRotateTimer) {
-        clearInterval(window._welcomeRotateTimer);
-        window._welcomeRotateTimer = null;
+      try {
+        var el = document.getElementById("welcomeOverlay");
+        if (el) {
+          el.classList.add("hidden");
+          el.style.display = "none";
+          el.style.visibility = "hidden";
+          el.style.pointerEvents = "none";
+          el.setAttribute("aria-hidden", "true");
+        }
+        document.body.classList.remove("welcome-open");
+        document.body.style.position = "";
+        document.body.style.overflow = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.width = "";
+        document.body.style.height = "";
+        document.documentElement.style.overflow = "";
+        try { sessionStorage.setItem("welcomeSeen", "1"); } catch (e) {}
+        if (window._welcomeRotateTimer) {
+          clearInterval(window._welcomeRotateTimer);
+          window._welcomeRotateTimer = null;
+        }
+      } catch (err) {
+        var el2 = document.getElementById("welcomeOverlay");
+        if (el2) el2.style.display = "none";
+        document.body.className = (document.body.className || "").replace("welcome-open", "");
       }
-      // συννεφάκι αφαιρέθηκε – κείμενα κάτω από λογότυπο
     }
+    // Global για onclick
+    window.closeWelcome = closeWelcome;
 
     
 
@@ -1635,24 +1653,45 @@
       window.addEventListener("touchend", pointerUp);
     }
 
-    // Πάντα εμφάνιση welcome σε όλους τους browsers (και Safari)
+    // Welcome: εμφάνιση μόνο αν δεν έχει κλείσει σε αυτή τη συνεδρία
     (function showWelcomeAlways() {
       var el = document.getElementById("welcomeOverlay");
       if (!el) return;
+      var seen = false;
+      try { seen = sessionStorage.getItem("welcomeSeen") === "1"; } catch (e) {}
+      if (seen) {
+        el.classList.add("hidden");
+        el.style.display = "none";
+        document.body.classList.remove("welcome-open");
+        return;
+      }
       el.classList.remove("hidden");
+      el.style.display = "";
       document.body.classList.add("welcome-open");
       document.body.style.overflow = "hidden";
-      startWelcomeTextRotation();
-      // Επαναφορά animation στο logo κάθε φορά που ανοίγει
+      if (typeof startWelcomeTextRotation === "function") startWelcomeTextRotation();
+      if (typeof startTitleRotation === "function") startTitleRotation();
       var logo = document.getElementById("welcomeLogo");
       if (logo) {
         logo.style.webkitAnimation = "none";
         logo.style.animation = "none";
-        // force reflow
         void logo.offsetWidth;
         logo.style.webkitAnimation = "";
         logo.style.animation = "";
       }
+      // Extra listener (Safari)
+      var btn = document.getElementById("welcomeStartBtn");
+      if (btn) {
+        btn.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeWelcome();
+        }, { passive: false });
+      }
+      // Κλικ έξω από την κάρτα = κλείσιμο
+      el.addEventListener("click", function(e) {
+        if (e.target === el) closeWelcome();
+      });
     })();
 
     function selectPrefecture(pref) {
@@ -2339,13 +2378,8 @@
           <h4 style="margin:14px 0 6px;color:var(--primary);">Συλλογή Δεδομένων</h4>
           <p><strong>Δεδομένα που παρέχετε εσείς:</strong> Συλλέγουμε μόνο τις πληροφορίες που εσείς επιλέγετε να μοιραστείτε μαζί μας (π.χ. το email σας κατά την εγγραφή ή στοιχεία επικοινωνίας μέσα στις αγγελίες).</p>
           <p><strong>Χρήση των δεδομένων:</strong> Τα στοιχεία αυτά χρησιμοποιούνται αποκλειστικά για την εύρυθμη λειτουργία της πλατφόρμας (δημοσίευση αγγελιών) και δεν πωλούνται, δεν ενοικιάζονται και δεν παραχωρούνται σε τρίτους.</p>
-          <h4 style="margin:14px 0 6px;color:var(--primary);">Cookies και Διαφημίσεις Google AdSense</h4>
-          <p>Ο ιστότοπος ενδέχεται να χρησιμοποιεί υπηρεσίες τρίτων για τη λειτουργία του. Αν στο μέλλον ενεργοποιηθούν διαφημίσεις, θα ενημερωθεί η παρούσα πολιτική.</p>
-          <ul style="margin:8px 0 8px 18px;">
-            <li>Τρίτοι προμηθευτές, συμπεριλαμβανομένης της Google, χρησιμοποιούν cookies για την προβολή διαφημίσεων με βάση προηγούμενες επισκέψεις σας στον ιστότοπό μας ή σε άλλους ιστότοπους στο διαδίκτυο.</li>
-            <li>Η χρήση cookies διαφήμισης επιτρέπει στην Google και στους συνεργάτες της να προβάλλουν διαφημίσεις στους χρήστες μας βάσει της περιήγησής τους.</li>
-            <li>Μπορείτε να εξαιρεθείτε από την εξατομικευμένη διαφήμιση μεταβαίνοντας στις <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">Ρυθμίσεις διαφημίσεων της Google</a>.</li>
-          </ul>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Cookies</h4>
+          <p>Ο ιστότοπος χρησιμοποιεί μόνο απαραίτητα cookies για τη λειτουργία της σύνδεσης (συνεδρία χρήστη). Δεν χρησιμοποιούμε Google AdSense ούτε διαφημιστικά cookies τρίτων.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Εξωτερικοί Σύνδεσμοι</h4>
           <p>Ο ιστότοπός μας ενδέχεται να περιέχει συνδέσμους προς άλλες σελίδες (π.χ. σελίδες εργοδοτών). Δεν φέρουμε ευθύνη για τις πολιτικές απορρήτου αυτών των εξωτερικών ιστότοπων.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Δικαιώματα Χρηστών</h4>
