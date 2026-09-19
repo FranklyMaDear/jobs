@@ -200,7 +200,7 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
-    .welcome-btn {
+    .welcome-btn, a.welcome-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
       background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none;
       padding: 16px 36px; border-radius: 14px; font-size: 1.1rem; font-weight: 700;
@@ -714,7 +714,9 @@
       </div>
       <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
-      <button type="button" id="welcomeStartBtn" class="welcome-btn" onclick="return window.closeWelcome&&window.closeWelcome()" ontouchend="return window.closeWelcome&&window.closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
+      <a href="https://jobs.franklymadear.com/index.html" id="welcomeStartBtn" class="welcome-btn" role="button"
+         onclick="try{sessionStorage.setItem('welcomeSeen','1');}catch(e){} if(window.closeWelcome){closeWelcome();} return true;"
+         style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;">Ας ξεκινήσουμε! 🚀</a>
     </div>
   </div>
 
@@ -1481,33 +1483,30 @@
     // Rating system removed for now
 
     function closeWelcome() {
+      try { sessionStorage.setItem("welcomeSeen", "1"); } catch (e) {}
       try {
         var el = document.getElementById("welcomeOverlay");
         if (el) {
+          el.style.display = "none";
           el.classList.add("hidden");
-          el.style.cssText = "display:none!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;opacity:0!important;";
-          try { el.remove(); } catch (e) { if (el.parentNode) el.parentNode.removeChild(el); }
+          if (el.parentNode) el.parentNode.removeChild(el);
         }
+      } catch (e) {}
+      try {
         document.body.classList.remove("welcome-open");
-        document.body.removeAttribute("style");
+        document.body.style.cssText = "";
         document.documentElement.style.overflow = "";
-        try { sessionStorage.setItem("welcomeSeen", "1"); } catch (e) {}
-        if (window._welcomeRotateTimer) {
-          clearInterval(window._welcomeRotateTimer);
-          window._welcomeRotateTimer = null;
+      } catch (e) {}
+      // Καθαρό URL κεντρικής σελίδας (χωρίς #google_vignette)
+      var target = "https://jobs.franklymadear.com/index.html";
+      try {
+        if (location.hash || /google_vignette/i.test(location.href)) {
+          window.location.replace(target);
+          return false;
         }
-        // Καθάρισμα Google vignette hash
-        if (location.hash && /google_vignette|google_ad/i.test(location.hash)) {
-          history.replaceState(null, "", location.pathname + location.search);
-        }
-      } catch (err) {
-        try {
-          var el2 = document.getElementById("welcomeOverlay");
-          if (el2 && el2.parentNode) el2.parentNode.removeChild(el2);
-        } catch (e2) {}
-        document.body.className = (document.body.className || "").replace(/\bwelcome-open\b/g, "");
-        document.body.removeAttribute("style");
-      }
+      } catch (e) {}
+      // Ίδια σελίδα: απλά κλείσιμο overlay – φαίνεται η κεντρική
+      try { window.scrollTo(0, 0); } catch (e) {}
       return false;
     }
     window.closeWelcome = closeWelcome;
