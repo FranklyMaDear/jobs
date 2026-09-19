@@ -707,16 +707,6 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <div class="welcome-overlay" id="welcomeOverlay">
-    <div class="welcome-card">
-      <div class="logo-spin-wrap">
-        <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
-      </div>
-      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
-      <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
-      <button type="button" id="welcomeStartBtn" class="welcome-btn">Ας ξεκινήσουμε! 🚀</button>
-    </div>
-  </div>
 
   <div class="top-bar" id="authBar">
     <button class="btn-auth primary" onclick="openAuthModal('login')">Σύνδεση</button>
@@ -1493,49 +1483,8 @@
 
     // Rating system removed for now
 
-    function closeWelcome() {
-      try { sessionStorage.setItem("welcomeSeen", "1"); } catch (e) {}
-      var el = document.getElementById("welcomeOverlay");
-      if (el) {
-        el.classList.add("hidden");
-        el.style.display = "none";
-        try { el.remove(); } catch (e) {}
-      }
-      document.body.classList.remove("welcome-open");
-      document.body.style.position = "";
-      document.body.style.overflow = "";
-      document.body.style.width = "";
-      document.body.style.height = "";
-      document.body.style.top = "";
-      document.documentElement.style.overflow = "";
-      if (location.hash && /google_vignette|google_ad/i.test(location.hash)) {
-        try { history.replaceState(null, "", location.pathname + (location.search || "")); } catch (e) {}
-      }
-      return false;
-    }
+    function closeWelcome() { return false; }
     window.closeWelcome = closeWelcome;
-
-    // Anti-AdSense vignette + ξεκλείδωμα σελίδας
-    (function antiVignetteBoot() {
-      function stripHash() {
-        if (location.hash && /google_vignette|google_ad|vignette/i.test(location.hash)) {
-          try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-        }
-      }
-      stripHash();
-      window.addEventListener("hashchange", stripHash);
-      // Αν υπάρχει iframe/overlay AdSense, μην αφήνεις body κλειδωμένο
-      setInterval(function() {
-        stripHash();
-        if (document.body.classList.contains("welcome-open")) {
-          var w = document.getElementById("welcomeOverlay");
-          if (!w || w.classList.contains("hidden") || w.style.display === "none") {
-            document.body.classList.remove("welcome-open");
-            document.body.removeAttribute("style");
-          }
-        }
-      }, 800);
-    })();
 
 
     
@@ -1679,50 +1628,7 @@
     }
 
     // Welcome: εμφάνιση μόνο αν δεν έχει κλείσει σε αυτή τη συνεδρία
-    (function showWelcomeAlways() {
-      var el = document.getElementById("welcomeOverlay");
-      if (!el) return;
-      var seen = false;
-      try { seen = sessionStorage.getItem("welcomeSeen") === "1"; } catch (e) {}
-      var badHash = location.hash && /google_vignette|google_ad|vignette/i.test(location.hash);
-      if (seen || badHash) {
-        el.classList.add("hidden");
-        el.style.display = "none";
-        try { el.remove(); } catch (e) {}
-        document.body.classList.remove("welcome-open");
-        document.body.removeAttribute("style");
-        if (badHash) {
-          try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-        }
-        return;
-      }
-      el.classList.remove("hidden");
-      el.style.display = "";
-      document.body.classList.add("welcome-open");
-      document.body.style.overflow = "hidden";
-      if (typeof startWelcomeTextRotation === "function") startWelcomeTextRotation();
-      if (typeof startTitleRotation === "function") startTitleRotation();
-      var logo = document.getElementById("welcomeLogo");
-      if (logo) {
-        logo.style.webkitAnimation = "none";
-        logo.style.animation = "none";
-        void logo.offsetWidth;
-        logo.style.webkitAnimation = "";
-        logo.style.animation = "";
-      }
-      // Κουμπί: κλείσιμο welcome → φαίνεται η κεντρική σελίδα
-      var btn = document.getElementById("welcomeStartBtn");
-      if (btn) {
-        btn.onclick = function(e) {
-          if (e) e.preventDefault();
-          closeWelcome();
-          return false;
-        };
-      }
-      el.addEventListener("click", function(e) {
-        if (e.target === el) closeWelcome();
-      });
-    })();
+    
 
     function selectPrefecture(pref) {
       if (pref === "trikala" || pref === "karditsa") {
