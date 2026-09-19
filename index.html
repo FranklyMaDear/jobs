@@ -117,23 +117,20 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 1.15rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.25;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
       transition: opacity 0.35s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
       max-width: 100%;
+      padding: 0 6px;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: 1.1rem; font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 10px; line-height: 1.25;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.3;
       max-width: 100%; transition: opacity 0.35s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 8px;
+      white-space: normal;
+      padding: 0 10px;
     }
     .page-rotating-title.is-fading { opacity: 0; }
     .welcome-card p, .welcome-rotating {
@@ -1383,9 +1380,16 @@
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
         workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
       }
-      // Κουμπί δημοσίευσης: κρύβεται μόνο όταν δεν υπάρχει υπόλοιπο
-      if (empSubmit) empSubmit.style.display = remaining > 0 ? "" : "none";
-      if (workSubmit) workSubmit.style.display = remaining > 0 ? "" : "none";
+      // Κουμπί: κρύβεται όταν 0 slots, ΕΚΤΟΣ αν γίνεται τροποποίηση υπάρχουσας αγγελίας
+      const editing = !!(typeof editingAdId !== 'undefined' && editingAdId);
+      if (empSubmit) {
+        empSubmit.style.display = (remaining > 0 || (editing && editingAdType === "employer")) ? "" : "none";
+        if (editing && editingAdType === "employer") empSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
+      }
+      if (workSubmit) {
+        workSubmit.style.display = (remaining > 0 || (editing && editingAdType === "worker")) ? "" : "none";
+        if (editing && editingAdType === "worker") workSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
+      }
     }
 
     function openAuthModal(mode) {
@@ -1967,7 +1971,7 @@
         const card = document.createElement("div");
         card.className = `ad-card ${ad.is_urgent ? "urgent" : ""} ${ad.is_pinned == 1 ? "pinned" : ""}`;
         card.innerHTML = `
-          ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}${ad.is_pinned == 1 ? '<div class="pinned-badge">⭐ Προωθημένη</div>' : ""}${ad.is_edited == 1 ? '<div class="edited-badge">✏️ Τροποποιήθηκε</div>' : ""}
+          ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}${ad.is_pinned == 1 ? '<div class="pinned-badge">⭐ Προωθημένη</div>' : ""}${ad.is_edited == 1 ? '<div class="edited-badge">✏️ Τροποποιήθηκε' + (ad.updated_at ? ' · ' + formatEditDate(ad.updated_at) : '') + '</div>' : ""}
           <div class="ad-header">
             <div style="flex:1">
               <h3 class="ad-title">${escapeHtml(ad.name)}</h3>
@@ -2416,6 +2420,15 @@
     }
 
 
+    function formatEditDate(s) {
+      try {
+        var d = new Date(String(s).replace(" ", "T"));
+        if (isNaN(d.getTime())) return String(s).slice(0, 16);
+        return d.toLocaleDateString("el-GR", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+          " " + d.toLocaleTimeString("el-GR", { hour: "2-digit", minute: "2-digit" });
+      } catch (e) { return ""; }
+    }
+
     let editingAdId = null;
     let editingAdType = null;
 
@@ -2454,8 +2467,15 @@
           renderLocChips(formKey);
         } catch (e) {}
         const btn = document.querySelector("#" + (type === "worker" ? "workerForm" : "employerForm") + " button[type=submit]");
-        if (btn) btn.textContent = "Αποθήκευση τροποποίησης";
-        alert("Επεξεργάζεστε την αγγελία. Αλλάξτε ό,τι θέλετε και πατήστε Αποθήκευση. Θα εμφανιστεί ένδειξη «Τροποποιήθηκε».");
+        if (btn) {
+          btn.style.display = "";
+          btn.disabled = false;
+          btn.textContent = "💾 Αποθήκευση τροποποίησης";
+        }
+        updatePackagesVisibility();
+        // Μην κρύβεις τη φόρμα λόγω 0 slots
+        var pkg = document.getElementById(type === "worker" ? "workerPackages" : "employerPackages");
+        // πακέτα μπορούν να μείνουν ορατά από κάτω
       }, 200);
     }
 
