@@ -14,7 +14,6 @@
   <meta property="og:site_name" content="Θες Δλεια ; Βρες Δλεια">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Θες Δλεια ; Βρες Δλεια">
-  <link rel="canonical" href="https://jobs.franklymadear.com/index.html">
   <meta name="twitter:description" content="Αγγελίες εργασίας στη Θεσσαλία.">
   <meta name="twitter:image" content="https://jobs.franklymadear.com/logo.png">
   <link rel="icon" type="image/png" href="/logo.png">
@@ -82,22 +81,21 @@
       height: 100%;
     }
     .welcome-card {
-      background: white; border-radius: 24px; padding: 28px 20px 24px;
+      background: white; border-radius: 24px; padding: 40px 32px;
       max-width: 420px; width: 100%; text-align: center;
       box-shadow: 0 25px 60px rgba(0,0,0,0.3);
       animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-height: 90vh; overflow-y: auto;
     }
     @keyframes popIn {
       from { opacity: 0; transform: scale(0.8) translateY(30px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .logo-spin-wrap {
-      width: 110px; height: 110px; margin: 0 auto 12px;
+      width: 160px; height: 160px; margin: 0 auto 18px;
       display: flex; align-items: center; justify-content: center;
     }
     .welcome-logo {
-      width: 100px; height: 100px; border-radius: 50%;
+      width: 150px; height: 150px; border-radius: 50%;
       object-fit: cover;
       box-shadow: 0 8px 28px rgba(0,0,0,0.18);
       -webkit-animation: logoSpinStop 1.5s ease-out forwards;
@@ -119,12 +117,14 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 1.05rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.35;
+      font-size: 0.88rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.2;
       transition: opacity 0.35s ease;
-      white-space: normal;
+      white-space: nowrap;
       max-width: 100%;
       padding: 0 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
@@ -199,7 +199,7 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
-    .welcome-btn, a.welcome-btn {
+    .welcome-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
       background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none;
       padding: 16px 36px; border-radius: 14px; font-size: 1.1rem; font-weight: 700;
@@ -700,13 +700,23 @@
     .packages-box h3 { font-size: 1rem !important; }
     .packages-box > p { font-size: 0.82rem !important; }
 
+    .ad-slot-wrap { overflow: hidden; min-height: 50px; }
     .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
     .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
   </style>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3186700611266549" crossorigin="anonymous"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-card">
+      <div class="logo-spin-wrap">
+        <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
+      </div>
+      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
+      <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
+      <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
+    </div>
+  </div>
 
   <div class="top-bar" id="authBar">
     <button class="btn-auth primary" onclick="openAuthModal('login')">Σύνδεση</button>
@@ -1020,19 +1030,6 @@
         </form>
       </div>
     </div>
-  </div>
-
-
-  <!-- Google AdSense -->
-  <div class="ad-wrap" style="max-width:720px;margin:20px auto;padding:0 16px;text-align:center;">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-format="autorelaxed"
-         data-ad-client="ca-pub-3186700611266549"
-         data-ad-slot="6826169932"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
   </div>
 
   <div class="footer">
@@ -1483,9 +1480,20 @@
 
     // Rating system removed for now
 
-    function closeWelcome() { return false; }
-    window.closeWelcome = closeWelcome;
-
+    function closeWelcome() {
+      var el = document.getElementById("welcomeOverlay");
+      if (el) el.classList.add("hidden");
+      document.body.classList.remove("welcome-open");
+      document.body.style.position = "";
+      document.body.style.overflow = "";
+      document.body.style.width = "";
+      document.body.style.height = "";
+      if (window._welcomeRotateTimer) {
+        clearInterval(window._welcomeRotateTimer);
+        window._welcomeRotateTimer = null;
+      }
+      // συννεφάκι αφαιρέθηκε – κείμενα κάτω από λογότυπο
+    }
 
     
 
@@ -1627,8 +1635,25 @@
       window.addEventListener("touchend", pointerUp);
     }
 
-    // Welcome: εμφάνιση μόνο αν δεν έχει κλείσει σε αυτή τη συνεδρία
-    
+    // Πάντα εμφάνιση welcome σε όλους τους browsers (και Safari)
+    (function showWelcomeAlways() {
+      var el = document.getElementById("welcomeOverlay");
+      if (!el) return;
+      el.classList.remove("hidden");
+      document.body.classList.add("welcome-open");
+      document.body.style.overflow = "hidden";
+      startWelcomeTextRotation();
+      // Επαναφορά animation στο logo κάθε φορά που ανοίγει
+      var logo = document.getElementById("welcomeLogo");
+      if (logo) {
+        logo.style.webkitAnimation = "none";
+        logo.style.animation = "none";
+        // force reflow
+        void logo.offsetWidth;
+        logo.style.webkitAnimation = "";
+        logo.style.animation = "";
+      }
+    })();
 
     function selectPrefecture(pref) {
       if (pref === "trikala" || pref === "karditsa") {
@@ -2314,8 +2339,13 @@
           <h4 style="margin:14px 0 6px;color:var(--primary);">Συλλογή Δεδομένων</h4>
           <p><strong>Δεδομένα που παρέχετε εσείς:</strong> Συλλέγουμε μόνο τις πληροφορίες που εσείς επιλέγετε να μοιραστείτε μαζί μας (π.χ. το email σας κατά την εγγραφή ή στοιχεία επικοινωνίας μέσα στις αγγελίες).</p>
           <p><strong>Χρήση των δεδομένων:</strong> Τα στοιχεία αυτά χρησιμοποιούνται αποκλειστικά για την εύρυθμη λειτουργία της πλατφόρμας (δημοσίευση αγγελιών) και δεν πωλούνται, δεν ενοικιάζονται και δεν παραχωρούνται σε τρίτους.</p>
-          <h4 style="margin:14px 0 6px;color:var(--primary);">Cookies</h4>
-          <p>Ο ιστότοπος χρησιμοποιεί μόνο απαραίτητα cookies για τη λειτουργία της σύνδεσης (συνεδρία χρήστη). Δεν χρησιμοποιούμε Google AdSense ούτε διαφημιστικά cookies τρίτων.</p>
+          <h4 style="margin:14px 0 6px;color:var(--primary);">Cookies και Διαφημίσεις Google AdSense</h4>
+          <p>Ο ιστότοπος ενδέχεται να χρησιμοποιεί υπηρεσίες τρίτων για τη λειτουργία του. Αν στο μέλλον ενεργοποιηθούν διαφημίσεις, θα ενημερωθεί η παρούσα πολιτική.</p>
+          <ul style="margin:8px 0 8px 18px;">
+            <li>Τρίτοι προμηθευτές, συμπεριλαμβανομένης της Google, χρησιμοποιούν cookies για την προβολή διαφημίσεων με βάση προηγούμενες επισκέψεις σας στον ιστότοπό μας ή σε άλλους ιστότοπους στο διαδίκτυο.</li>
+            <li>Η χρήση cookies διαφήμισης επιτρέπει στην Google και στους συνεργάτες της να προβάλλουν διαφημίσεις στους χρήστες μας βάσει της περιήγησής τους.</li>
+            <li>Μπορείτε να εξαιρεθείτε από την εξατομικευμένη διαφήμιση μεταβαίνοντας στις <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">Ρυθμίσεις διαφημίσεων της Google</a>.</li>
+          </ul>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Εξωτερικοί Σύνδεσμοι</h4>
           <p>Ο ιστότοπός μας ενδέχεται να περιέχει συνδέσμους προς άλλες σελίδες (π.χ. σελίδες εργοδοτών). Δεν φέρουμε ευθύνη για τις πολιτικές απορρήτου αυτών των εξωτερικών ιστότοπων.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Δικαιώματα Χρηστών</h4>
