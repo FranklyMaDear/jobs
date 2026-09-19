@@ -4,23 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
   <meta name="description" content="Θελς Δλειά; Βρες Δλειά – Αγγελίες εργασίας στη Θεσσαλία. Δωρεάν.">
-  <title>Θελς Δλειά; Βρες Δλειά | Αγγελίες στη Θεσσαλία</title>
+  <title>Θες Δλεια ; Βρες Δλεια | Αγγελίες στη Θεσσαλία</title>
   <!-- Social share & home screen -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Θελς Δλειά! Βρες Δλειά">
+  <meta property="og:title" content="Θες Δλεια ; Βρες Δλεια">
   <meta property="og:description" content="Αγγελίες εργασίας στη Θεσσαλία – δωρεάν και κοντά σου.">
   <meta property="og:image" content="https://jobs.franklymadear.com/logo.png">
   <meta property="og:url" content="https://jobs.franklymadear.com/">
-  <meta property="og:site_name" content="Θελς Δλειά! Βρες Δλειά">
+  <meta property="og:site_name" content="Θες Δλεια ; Βρες Δλεια">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Θελς Δλειά! Βρες Δλειά">
+  <meta name="twitter:title" content="Θες Δλεια ; Βρες Δλεια">
   <meta name="twitter:description" content="Αγγελίες εργασίας στη Θεσσαλία.">
   <meta name="twitter:image" content="https://jobs.franklymadear.com/logo.png">
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
-  <meta name="apple-mobile-web-app-title" content="Θελς Δλειά! Βρες Δλειά">
-  <meta name="application-name" content="Θελς Δλειά! Βρες Δλειά">
+  <meta name="apple-mobile-web-app-title" content="Θες Δλεια ; Βρες Δλεια">
+  <meta name="application-name" content="Θες Δλεια ; Βρες Δλεια">
   <meta name="theme-color" content="#2563eb">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -652,6 +652,10 @@
       border: 2px solid #f59e0b;
       background: linear-gradient(to right, #fffbeb 0%, white 45%);
     }
+    .edited-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 6px; margin-right: 6px;
+    }
     .pinned-badge {
       display: inline-flex; align-items: center; gap: 4px; background: #f59e0b; color: white;
       padding: 3px 9px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; margin-bottom: 8px;
@@ -722,8 +726,8 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή, παίρνετε <span style="white-space:nowrap">ΔΩΡΟ 1 Αγγελία!</span></div>
-        <div class="free-promo-sub">Επιπλέον, το σύστημα σας κάνει δώρο άλλη 1 δωρεάν αγγελία κάθε 1η και 15η του μηνός!</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
+        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1963,7 +1967,7 @@
         const card = document.createElement("div");
         card.className = `ad-card ${ad.is_urgent ? "urgent" : ""} ${ad.is_pinned == 1 ? "pinned" : ""}`;
         card.innerHTML = `
-          ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}${ad.is_pinned == 1 ? '<div class="pinned-badge">⭐ Προωθημένη</div>' : ""}
+          ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}${ad.is_pinned == 1 ? '<div class="pinned-badge">⭐ Προωθημένη</div>' : ""}${ad.is_edited == 1 ? '<div class="edited-badge">✏️ Τροποποιήθηκε</div>' : ""}
           <div class="ad-header">
             <div style="flex:1">
               <h3 class="ad-title">${escapeHtml(ad.name)}</h3>
@@ -1989,6 +1993,7 @@
               const isOwner = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
               let html = "";
               if (isOwner) {
+                html += `<button class="icon-btn" type="button" onclick="openEditAd(${ad.id}, 'worker')">✏️ Τροποποίηση</button>`;
                 const isFound = ad.found == 1;
                 if (isFound) {
                   html += `<button class="icon-btn found-btn-green" type="button">✅ Βρήκα δλεια</button><span class="found-hint">Ο διαχειριστής ενημερώθηκε</span>`;
@@ -2002,11 +2007,17 @@
               }
               return html;
             })()}
-            ${currentViewType === "employers"
-              ? (currentUser
-                  ? `<button class="icon-btn found-btn" onclick='openRequestModal(${JSON.stringify({name: ad.name, email: ad.email || "", phone: ad.phone || ""})})'>📨 Αίτημα</button>`
-                  : `<button class="icon-btn" style="opacity:0.7;background:#e2e8f0;" onclick="requireAuthForRequest()">📨 Αίτημα (σύνδεση)</button>`)
-              : ""}
+            ${currentViewType === "employers" ? (() => {
+              let h = "";
+              const isOwnEmp = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
+              if (isOwnEmp) h += `<button class="icon-btn" type="button" onclick="openEditAd(${ad.id}, 'employer')">✏️ Τροποποίηση</button>`;
+              if (currentUser) {
+                h += `<button class="icon-btn found-btn" onclick='openRequestModal(${JSON.stringify({name: ad.name, email: ad.email || "", phone: ad.phone || ""})})'>📨 Αίτημα</button>`;
+              } else {
+                h += `<button class="icon-btn" style="opacity:0.7;background:#e2e8f0;" onclick="requireAuthForRequest()">📨 Αίτημα (σύνδεση)</button>`;
+              }
+              return h;
+            })() : ""}
           </div>
         `;
         container.appendChild(card);
@@ -2032,10 +2043,10 @@
     }
 
     function shareAd(name, spec) {
-      const title = "Θελς Δλειά! Βρες Δλειά";
+      const title = "Θες Δλεια ; Βρες Δλεια";
       const text = name
         ? `Δες αυτή την αγγελία: ${name} – ${spec || ""} στο Θελς Δλειά! Βρες Δλειά!`
-        : "Θελς Δλειά; Βρες Δλειά – Τοπικές αγγελίες εργασίας στη Θεσσαλία!";
+        : "Θες Δλεια ; Βρες Δλεια – Αγγελίες εργασίας στη Θεσσαλία!";
       if (navigator.share) {
         navigator.share({ title, text, url: window.location.origin + "/" }).catch(() => {});
       } else {
@@ -2404,6 +2415,60 @@
       }
     }
 
+
+    let editingAdId = null;
+    let editingAdType = null;
+
+    async function openEditAd(id, type) {
+      if (!currentUser) { openAuthModal("login"); return; }
+      editingAdId = id;
+      editingAdType = type;
+      const listType = type === "worker" ? "workers" : "employers";
+      let ad = (currentData || []).find(function(a) { return Number(a.id) === Number(id); });
+      if (!ad) {
+        try {
+          const res = await fetch(API_URL + "/" + listType);
+          const arr = await res.json();
+          ad = (arr || []).find(function(a) { return Number(a.id) === Number(id); });
+        } catch (e) {}
+      }
+      if (!ad) { alert("Δεν βρέθηκε η αγγελία"); return; }
+      const prefix = type === "worker" ? "w_" : "e_";
+      const formKey = type === "worker" ? "worker" : "employer";
+      showScreen(type === "worker" ? "screen-worker" : "screen-employer");
+      setTimeout(function() {
+        const setVal = function(id, v) { const el = document.getElementById(id); if (el) el.value = v || ""; };
+        setVal(prefix + "name", ad.name);
+        setVal(prefix + "specialty", ad.specialty);
+        setVal(prefix + "task", ad.task);
+        setVal(prefix + "phone", ad.phone);
+        setVal(prefix + "email", ad.email);
+        setVal(prefix + "comments", ad.comments);
+        const urg = document.getElementById(prefix + "urgent");
+        if (urg) urg.checked = ad.is_urgent == 1;
+        try {
+          selectedLocations[formKey] = (typeof ad.locations === "string" ? JSON.parse(ad.locations) : ad.locations) || [];
+          if (selectedLocations[formKey].length && typeof selectedLocations[formKey][0] === "string") {
+            selectedLocations[formKey] = selectedLocations[formKey].map(function(n) { return { name: n }; });
+          }
+          renderLocChips(formKey);
+        } catch (e) {}
+        const btn = document.querySelector("#" + (type === "worker" ? "workerForm" : "employerForm") + " button[type=submit]");
+        if (btn) btn.textContent = "Αποθήκευση τροποποίησης";
+        alert("Επεξεργάζεστε την αγγελία. Αλλάξτε ό,τι θέλετε και πατήστε Αποθήκευση. Θα εμφανιστεί ένδειξη «Τροποποιήθηκε».");
+      }, 200);
+    }
+
+    function clearEditingState() {
+      editingAdId = null;
+      editingAdType = null;
+      const wb = document.getElementById("workerSubmitBtn");
+      if (wb) wb.textContent = "Δημοσίευση Προφίλ";
+      const eb = document.querySelector("#employerForm button[type=submit]");
+      if (eb) eb.textContent = "Δημοσίευση Αγγελίας";
+    }
+
+
     async function handleFormSubmit(e, type) {
       e.preventDefault();
       if (!currentUser) {
@@ -2457,9 +2522,11 @@
             payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
           }
         })();
-        btn.textContent = "Δημοσίευση...";
+        const isEdit = editingAdId && editingAdType === type;
+        btn.textContent = isEdit ? "Αποθήκευση..." : "Δημοσίευση...";
+        if (isEdit) payload.id = editingAdId;
         const res = await fetch(`${API_URL}/${type}`, {
-          method: "POST", headers: authHeaders(), body: JSON.stringify(payload)
+          method: isEdit ? "PUT" : "POST", headers: authHeaders(), body: JSON.stringify(payload)
         });
         if (res.ok) {
           const dataOk = await res.json().catch(() => ({}));
@@ -2473,7 +2540,8 @@
           } else {
             loadCurrentUser();
           }
-          let msg = "✅ Η αγγελία δημοσιεύτηκε με επιτυχία!";
+          let msg = isEdit ? "✅ Η αγγελία τροποποιήθηκε. Εμφανίζεται ένδειξη «Τροποποιήθηκε»." : "✅ Η αγγελία δημοσιεύτηκε με επιτυχία!";
+          clearEditingState();
           if (photoInput && photoInput.files[0] && !photoUrl) {
             msg += "\n\n(Η φωτογραφία δεν ανέβηκε – η αποθήκευση εικόνων δεν είναι διαθέσιμη ακόμα.)";
           }
