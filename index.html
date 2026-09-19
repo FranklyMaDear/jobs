@@ -117,26 +117,20 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 0.88rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.2;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
       transition: opacity 0.35s ease;
-      white-space: nowrap;
+      white-space: normal;
       max-width: 100%;
-      padding: 0 4px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0 6px;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: clamp(0.72rem, 3.6vw, 1rem);
-      font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 8px; line-height: 1.2;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.3;
       max-width: 100%; transition: opacity 0.35s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 8px;
-      letter-spacing: -0.01em;
+      white-space: normal;
+      padding: 0 10px;
     }
     .page-rotating-title.is-fading { opacity: 0; }
     .welcome-card p, .welcome-rotating {
@@ -2472,38 +2466,16 @@
           }
           renderLocChips(formKey);
         } catch (e) {}
-        const formId = type === "worker" ? "workerForm" : "employerForm";
-        const btn = document.getElementById(type === "worker" ? "workerSubmitBtn") ||
-          document.querySelector("#" + formId + " button[type=submit]");
+        const btn = document.querySelector("#" + (type === "worker" ? "workerForm" : "employerForm") + " button[type=submit]");
         if (btn) {
-          btn.style.display = "block";
-          btn.style.visibility = "visible";
+          btn.style.display = "";
           btn.disabled = false;
           btn.textContent = "💾 Αποθήκευση τροποποίησης";
-          btn.classList.add("btn-primary");
         }
-        // Extra save bar πάνω από τη φόρμα
-        var barId = "editSaveBar";
-        var oldBar = document.getElementById(barId);
-        if (oldBar) oldBar.remove();
-        var bar = document.createElement("div");
-        bar.id = barId;
-        bar.style.cssText = "position:sticky;top:0;z-index:20;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;";
-        bar.innerHTML = '<span style="font-size:0.88rem;font-weight:700;color:#1e40af;">✏️ Τροποποίηση αγγελίας — αλλάξτε ό,τι θέλετε</span>';
-        var saveBtn = document.createElement("button");
-        saveBtn.type = "button";
-        saveBtn.className = "btn btn-primary";
-        saveBtn.textContent = "💾 Αποθήκευση";
-        saveBtn.style.cssText = "flex-shrink:0;";
-        saveBtn.onclick = function() {
-          var form = document.getElementById(formId);
-          if (form) form.requestSubmit();
-        };
-        bar.appendChild(saveBtn);
-        var formCard = document.querySelector("#" + (type === "worker" ? "screen-worker" : "screen-employer") + " .form-card");
-        var formEl = document.getElementById(formId);
-        if (formCard && formEl) formCard.insertBefore(bar, formEl);
         updatePackagesVisibility();
+        // Μην κρύβεις τη φόρμα λόγω 0 slots
+        var pkg = document.getElementById(type === "worker" ? "workerPackages" : "employerPackages");
+        // πακέτα μπορούν να μείνουν ορατά από κάτω
       }, 200);
     }
 
@@ -2514,8 +2486,6 @@
       if (wb) wb.textContent = "Δημοσίευση Προφίλ";
       const eb = document.querySelector("#employerForm button[type=submit]");
       if (eb) eb.textContent = "Δημοσίευση Αγγελίας";
-      var bar = document.getElementById("editSaveBar");
-      if (bar) bar.remove();
     }
 
 
