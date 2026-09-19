@@ -269,7 +269,7 @@
 
     <div id="users" class="panel">
       <div class="toolbar" style="flex-wrap:wrap;gap:8px;">
-        <input type="text" id="searchUsers" placeholder="Αναζήτηση χρήστη..." oninput="filterUsers()">
+        <input type="text" id="searchUsers" placeholder="Αναζήτηση ονόματος, email, τηλεφώνου..." oninput="filterUsers()">
         <button class="btn btn-primary" onclick="loadUsers()">↻ Ανανέωση</button>
         <button class="btn btn-primary" style="background:#059669;" onclick="exportUsersExcel('worker')" title="Για διαγωνισμούς Tally">📥 Excel Εργαζόμενοι</button>
         <button class="btn btn-primary" style="background:#2563eb;" onclick="exportUsersExcel('employer')" title="Για διαγωνισμούς Tally">📥 Excel Εργοδότες</button>
@@ -278,7 +278,7 @@
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
         Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
-        Εξαγωγή email σε Excel/CSV για μεταφορά στο Tally (διαγωνισμοί).
+        Αναζήτηση με όνομα, email ή τηλέφωνο για εύκολη προσαρμογή πόντων (free_slots). Εξαγωγή Excel για Tally.
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -408,7 +408,7 @@
         const roleLabel = u.role === "worker" ? "Εργαζόμενος" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
         const isBlocked = u.blocked == 1;
         return `
-          <tr class="${isBlocked ? 'found-row' : ''}" style="${isBlocked ? 'background:#fef2f2' : ''}" data-search="${(u.nickname + " " + u.email + " " + (u.role||"")).toLowerCase()}">
+          <tr class="${isBlocked ? 'found-row' : ''}" style="${isBlocked ? 'background:#fef2f2' : ''}" data-search="${(u.nickname + " " + u.email + " " + (u.phone||"") + " " + (u.role||"") + " " + (u.id||"")).toLowerCase()}">
             <td data-label="ID">${u.id}</td>
             <td data-label="Ψευδώνυμο"><strong>${escapeHtml(u.nickname)}</strong></td>
             <td data-label="Email">${escapeHtml(u.email || "—")}<br><small style="color:#64748b">${u.phone ? ("📞 " + escapeHtml(u.phone)) : "📞 —"}</small></td>
@@ -644,10 +644,12 @@
     }
 
     function filterUsers() {
-      const q = (document.getElementById("searchUsers").value || "").toLowerCase();
+      const q = (document.getElementById("searchUsers").value || "").toLowerCase().trim();
+      const parts = q.split(/\s+/).filter(Boolean);
       document.querySelectorAll("#u-tbody tr").forEach(tr => {
         const s = tr.getAttribute("data-search") || "";
-        tr.style.display = !q || s.includes(q) ? "" : "none";
+        const ok = !q || parts.every(p => s.includes(p));
+        tr.style.display = ok ? "" : "none";
       });
     }
 
