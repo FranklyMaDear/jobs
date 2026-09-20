@@ -117,29 +117,22 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 1.05rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.35;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
       transition: opacity 0.35s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
       max-width: 100%;
       padding: 0 6px;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: 1.05rem; font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 10px; line-height: 1.35;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.3;
       max-width: 100%; transition: opacity 0.35s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
       padding: 0 10px;
     }
     .page-rotating-title.is-fading { opacity: 0; }
-    @media (max-width: 420px) {
-      .page-rotating-title { font-size: 0.92rem; white-space: normal; }
-    }
     .welcome-card p, .welcome-rotating {
       color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;
       min-height: 3.2em; transition: opacity 0.35s ease;
@@ -279,10 +272,8 @@
     .section-title {
       font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 28px 0 14px;
       display: flex; align-items: center; gap: 8px;
-      white-space: nowrap;
-      flex-wrap: nowrap;
     }
-    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); min-width: 20px; }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
     .action-card {
@@ -443,7 +434,6 @@
       max-width: 420px;
       margin-left: auto;
       margin-right: auto;
-      text-align: center;
     }
     .header-rotating.is-fading { opacity: 0; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
@@ -733,7 +723,7 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά έως τέλη Οκτωβρίου: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> για εργαζόμενους &amp; εργοδότες</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
         <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
@@ -1030,7 +1020,7 @@
               <label for="e_urgent">Επείγουσα Ανάγκη Προσωπικού</label>
             </div>
           </fieldset>
-          <button type="submit" class="btn btn-primary btn-full" id="employerSubmitBtn">Δημοσίευση Αγγελίας</button>
+          <button type="submit" class="btn btn-primary btn-full">Δημοσίευση Αγγελίας</button>
         </form>
       </div>
     </div>
@@ -1348,15 +1338,12 @@
 
     function getRemainingSlots() {
       if (!currentUser) return 0;
+      // Prefer free_slots (new remaining credits model)
+      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
+      // Fallback to old max_ads - ads_used
       const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
       const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
-      const fromMax = Math.max(0, max - used);
-      // free_slots = υπόλοιπο πιστώσεων (π.χ. μετά από αγορά/δωροεπιταγή από διαχειριστή)
-      if (currentUser.free_slots != null) {
-        // Παίρνουμε το μεγαλύτερο από τα δύο, ώστε αύξηση max_ads από admin να μετράει
-        return Math.max(0, Math.max(Number(currentUser.free_slots) || 0, fromMax));
-      }
-      return fromMax;
+      return Math.max(0, max - used);
     }
 
     function updateQuotaInfos() {
@@ -1381,10 +1368,10 @@
       const remaining = getRemainingSlots();
       const empPkg = document.getElementById("employerPackages");
       const workPkg = document.getElementById("workerPackages");
-      const empSubmit = document.getElementById("employerSubmitBtn") || document.querySelector("#employerForm button[type=submit]");
+      const empSubmit = document.querySelector("#employerForm button[type=submit]");
       const workSubmit = document.getElementById("workerSubmitBtn") || document.querySelector("#workerForm button[type=submit]");
 
-      // Πακέτα: εμφανίζονται όταν εξαντληθούν τα slots
+      // Πακέτα: εμφανίζονται κάτω από το «Υπόλοιπο: 0» όταν εξαντληθούν τα slots
       if (empPkg) {
         const isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
         empPkg.style.display = (isEmp && remaining <= 0) ? "block" : "none";
@@ -1393,30 +1380,16 @@
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
         workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
       }
-      // Κουμπί πάντα ορατό: αποθήκευση σε επεξεργασία, δημοσίευση όταν υπάρχουν slots
-      // Αν 0 slots και νέα αγγελία → εμφανίζεται αλλά disabled με επεξήγηση
+      // Κουμπί: κρύβεται όταν 0 slots, ΕΚΤΟΣ αν γίνεται τροποποίηση υπάρχουσας αγγελίας
       const editing = !!(typeof editingAdId !== 'undefined' && editingAdId);
-      function setupSubmit(btn, typeLabel, isEditingThis) {
-        if (!btn) return;
-        btn.style.display = "";
-        if (isEditingThis) {
-          btn.disabled = false;
-          btn.textContent = "💾 Αποθήκευση τροποποίησης";
-          btn.title = "";
-        } else if (remaining > 0) {
-          btn.disabled = false;
-          btn.textContent = typeLabel === "worker" ? "Δημοσίευση Προφίλ" : "Δημοσίευση Αγγελίας";
-          btn.title = "";
-        } else {
-          // Χωρίς υπόλοιπο: κρατάμε το κουμπί ορατό για να φαίνεται, αλλά απενεργοποιημένο
-          // (εκτός αν ο διαχειριστής μόλις πρόσθεσε slots – τότε remaining > 0 μετά ανανέωση)
-          btn.disabled = true;
-          btn.textContent = "Δημοσίευση (χωρίς υπόλοιπο αγγελιών)";
-          btn.title = "Εξαντλήθηκαν οι δωρεάν αγγελίες. Αγοράστε πακέτο ή περιμένετε την προσφορά 1ης/15ης.";
-        }
+      if (empSubmit) {
+        empSubmit.style.display = (remaining > 0 || (editing && editingAdType === "employer")) ? "" : "none";
+        if (editing && editingAdType === "employer") empSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
       }
-      setupSubmit(empSubmit, "employer", editing && editingAdType === "employer");
-      setupSubmit(workSubmit, "worker", editing && editingAdType === "worker");
+      if (workSubmit) {
+        workSubmit.style.display = (remaining > 0 || (editing && editingAdType === "worker")) ? "" : "none";
+        if (editing && editingAdType === "worker") workSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
+      }
     }
 
     function openAuthModal(mode) {
@@ -1898,24 +1871,13 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
       if (id === "screen-worker") {
         setTimeout(function() { initMap("worker"); }, 100);
-        // Ανανέωση υπολοίπου (π.χ. μετά από αγορά/προσθήκη από διαχειριστή)
-        loadCurrentUser().then(function() {
-          updateQuotaInfos();
-          updatePackagesVisibility();
-        }).catch(function() {
-          updateQuotaInfos();
-          updatePackagesVisibility();
-        });
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
       if (id === "screen-employer") {
         setTimeout(function() { initMap("employer"); }, 100);
-        loadCurrentUser().then(function() {
-          updateQuotaInfos();
-          updatePackagesVisibility();
-        }).catch(function() {
-          updateQuotaInfos();
-          updatePackagesVisibility();
-        });
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
     }
 
@@ -1924,10 +1886,7 @@
         openAuthModal("register");
         return;
       }
-      // Ανανέωση προφίλ πριν τη φόρμα ώστε να φαίνονται slots που πρόσθεσε ο διαχειριστής
-      loadCurrentUser().finally(function() {
-        showScreen(screenId);
-      });
+      showScreen(screenId);
     }
 
     function openPublicView(type) {
@@ -2507,33 +2466,16 @@
           }
           renderLocChips(formKey);
         } catch (e) {}
-        const btn = document.getElementById(type === "worker" ? "workerSubmitBtn" : "employerSubmitBtn")
-          || document.querySelector("#" + (type === "worker" ? "workerForm" : "employerForm") + " button[type=submit]");
+        const btn = document.querySelector("#" + (type === "worker" ? "workerForm" : "employerForm") + " button[type=submit]");
         if (btn) {
           btn.style.display = "";
           btn.disabled = false;
           btn.textContent = "💾 Αποθήκευση τροποποίησης";
-          btn.title = "";
-        }
-        // Εμφάνιση τελευταίας ημερομηνίας τροποποίησης πάνω από το κουμπί
-        var editInfoId = type === "worker" ? "workerEditInfo" : "employerEditInfo";
-        var editInfo = document.getElementById(editInfoId);
-        if (!editInfo && btn && btn.parentNode) {
-          editInfo = document.createElement("p");
-          editInfo.id = editInfoId;
-          editInfo.style.cssText = "font-size:0.85rem;color:var(--text-muted);margin:0 0 10px;text-align:center;";
-          btn.parentNode.insertBefore(editInfo, btn);
-        }
-        if (editInfo) {
-          if (ad.updated_at || ad.is_edited == 1) {
-            editInfo.textContent = "✏️ Τελευταία τροποποίηση: " + (ad.updated_at ? formatEditDate(ad.updated_at) : "—");
-            editInfo.style.display = "block";
-          } else {
-            editInfo.textContent = "Επεξεργασία υπάρχουσας αγγελίας · η ημερομηνία τροποποίησης θα ενημερωθεί αυτόματα.";
-            editInfo.style.display = "block";
-          }
         }
         updatePackagesVisibility();
+        // Μην κρύβεις τη φόρμα λόγω 0 slots
+        var pkg = document.getElementById(type === "worker" ? "workerPackages" : "employerPackages");
+        // πακέτα μπορούν να μείνουν ορατά από κάτω
       }, 200);
     }
 
@@ -2541,18 +2483,9 @@
       editingAdId = null;
       editingAdType = null;
       const wb = document.getElementById("workerSubmitBtn");
-      if (wb) {
-        wb.disabled = false;
-        wb.textContent = "Δημοσίευση Προφίλ";
-        wb.title = "";
-      }
-      const eb = document.getElementById("employerSubmitBtn") || document.querySelector("#employerForm button[type=submit]");
-      if (eb) {
-        eb.disabled = false;
-        eb.textContent = "Δημοσίευση Αγγελίας";
-        eb.title = "";
-      }
-      updatePackagesVisibility();
+      if (wb) wb.textContent = "Δημοσίευση Προφίλ";
+      const eb = document.querySelector("#employerForm button[type=submit]");
+      if (eb) eb.textContent = "Δημοσίευση Αγγελίας";
     }
 
 
@@ -2627,13 +2560,8 @@
           } else {
             loadCurrentUser();
           }
-          let msg = isEdit
-            ? "✅ Η αγγελία αποθηκεύτηκε. Εμφανίζεται ένδειξη «Τροποποιήθηκε» με την ημερομηνία/ώρα της τελευταίας αλλαγής."
-            : "✅ Η αγγελία δημοσιεύτηκε με επιτυχία!";
+          let msg = isEdit ? "✅ Η αγγελία τροποποιήθηκε. Εμφανίζεται ένδειξη «Τροποποιήθηκε»." : "✅ Η αγγελία δημοσιεύτηκε με επιτυχία!";
           clearEditingState();
-          // Καθαρισμός ένδειξης επεξεργασίας στη φόρμα
-          var ei = document.getElementById(isWorker ? "workerEditInfo" : "employerEditInfo");
-          if (ei) { ei.style.display = "none"; ei.textContent = ""; }
           if (photoInput && photoInput.files[0] && !photoUrl) {
             msg += "\n\n(Η φωτογραφία δεν ανέβηκε – η αποθήκευση εικόνων δεν είναι διαθέσιμη ακόμα.)";
           }
