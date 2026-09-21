@@ -117,24 +117,23 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: clamp(0.7rem, 3.2vw, 0.92rem); font-weight: 800; color: var(--primary);
-      margin-bottom: 8px; line-height: 1.15;
+      font-size: clamp(0.85rem, 4.2vw, 1.15rem); font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.2;
       transition: opacity 0.35s ease;
       white-space: nowrap !important;
       max-width: 100%;
       padding: 0 4px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow: visible;
+      text-align: center;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: clamp(0.72rem, 3.5vw, 0.98rem); font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 8px; line-height: 1.15;
+      font-size: clamp(0.88rem, 4.5vw, 1.2rem); font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.2;
       max-width: 100%; transition: opacity 0.35s ease;
       white-space: nowrap !important;
       padding: 0 6px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow: visible;
     }
     .page-rotating-title.is-fading { opacity: 0; }
     .welcome-card p, .welcome-rotating {
@@ -727,8 +726,8 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
-        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
+        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> για εργαζόμενους &amp; εργοδότες</div>
+        <div class="free-promo-sub">Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός σε όλους.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1286,10 +1285,11 @@
       if (!bar) return;
       if (currentUser) {
         const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+        const free = getRemainingSlots();
+        const max = Math.max(used + free, currentUser.max_ads != null ? currentUser.max_ads : 1);
         bar.innerHTML = `
           <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
-            <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
+            <span class="quota-badge">Αγγελίες: ${used}/${max} · Υπόλοιπο: ${free}</span>
           </div>
           <button class="btn-auth" onclick="openProfileModal()">Προφίλ</button>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
@@ -1342,11 +1342,17 @@
 
     function getRemainingSlots() {
       if (!currentUser) return 0;
-      // Prefer free_slots (new remaining credits model)
-      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
-      // Fallback to old max_ads - ads_used
       const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
       const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+      // free_slots είναι η πηγή αλήθειας· αν όμως είναι 0 ενώ max > used (αποσυγχρονισμός μετά από deploy),
+      // χρησιμοποιούμε max - used ώστε να φαίνεται το κουμπί Αποθήκευσης
+      if (currentUser.free_slots != null && currentUser.free_slots > 0) {
+        return currentUser.free_slots;
+      }
+      if (currentUser.free_slots != null && currentUser.free_slots === 0 && max > used) {
+        return max - used;
+      }
+      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
       return Math.max(0, max - used);
     }
 
@@ -1375,7 +1381,7 @@
       const empSubmit = document.querySelector("#employerForm button[type=submit]");
       const workSubmit = document.getElementById("workerSubmitBtn") || document.querySelector("#workerForm button[type=submit]");
 
-      // Πακέτα: εμφανίζονται όταν εξαντληθούν τα slots
+      // Πακέτα: εμφανίζονται κάτω από το «Υπόλοιπο: 0» όταν εξαντληθούν τα slots
       if (empPkg) {
         const isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
         empPkg.style.display = (isEmp && remaining <= 0) ? "block" : "none";
@@ -1384,20 +1390,15 @@
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
         workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
       }
-      // Κουμπί αποθήκευσης/δημοσίευσης: πάντα ορατό αν έχει slots Ή αν τροποποιεί αγγελία
-      // (μετά από «Βρήκα δουλειά» επιστρέφεται slot → το κουμπί εμφανίζεται ξανά)
+      // Κουμπί: κρύβεται όταν 0 slots, ΕΚΤΟΣ αν γίνεται τροποποίηση υπάρχουσας αγγελίας
       const editing = !!(typeof editingAdId !== 'undefined' && editingAdId);
       if (empSubmit) {
         empSubmit.style.display = (remaining > 0 || (editing && editingAdType === "employer")) ? "" : "none";
-        empSubmit.disabled = false;
         if (editing && editingAdType === "employer") empSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
-        else if (!editing) empSubmit.textContent = "Δημοσίευση Αγγελίας";
       }
       if (workSubmit) {
         workSubmit.style.display = (remaining > 0 || (editing && editingAdType === "worker")) ? "" : "none";
-        workSubmit.disabled = false;
         if (editing && editingAdType === "worker") workSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
-        else if (!editing) workSubmit.textContent = "Δημοσίευση Προφίλ";
       }
     }
 
@@ -2139,20 +2140,14 @@
         });
         var data = await res.json();
         if (res.ok) {
-          // Ενημέρωση free_slots (επιστροφή slot) ώστε να φαίνεται ξανά το κουμπί Δημοσίευση
-          if (currentUser && data.free_slots != null) {
-            currentUser.free_slots = data.free_slots;
-            renderAuthBar();
-            updateQuotaInfos();
-            updatePackagesVisibility();
-          }
           closeFoundModal();
           loadAds(currentViewType);
-          alert(data.message || "Καταχωρήθηκε επιτυχώς. Μπορείς να ξαναστείλεις νέα αγγελία.");
+          alert(data.message || "Καταχωρήθηκε επιτυχώς. Ο διαχειριστής ενημερώθηκε.");
           if (foundEmployerTarget.id) {
             openRatingModal(foundEmployerTarget.id, data.match_id, foundEmployerTarget.nickname);
           }
         } else {
+          // Φιλικό μήνυμα – όχι τεχνικό σφάλμα στον επισκέπτη
           alert(data.error || "Η επιλογή καταχωρήθηκε. Αν εμφανίστηκε πρόβλημα, ο διαχειριστής θα το δει ούτως ή άλλως.");
           closeFoundModal();
         }
@@ -2253,15 +2248,6 @@
       document.getElementById("profileEmail").value = currentUser.email || "";
       document.getElementById("profileCurPass").value = "";
       document.getElementById("profileNewPass").value = "";
-      // Αν έχει επιλέξει «Ψάχνω δουλειά», κλείδωμα ρόλου – δεν αλλάζει
-      var roleSel = document.getElementById("profileRole");
-      if (currentUser.role === "worker") {
-        roleSel.disabled = true;
-        roleSel.title = "Η επιλογή «Ψάχνω δουλειά» δεν μπορεί να αλλάξει";
-      } else {
-        roleSel.disabled = false;
-        roleSel.title = "";
-      }
       document.getElementById("profileModal").classList.add("active");
     }
     function closeProfileModal() {
@@ -2269,9 +2255,7 @@
     }
     async function saveProfile() {
       var nickname = document.getElementById("profileNickname").value.trim();
-      var roleSel = document.getElementById("profileRole");
-      // Αν ο ρόλος είναι κλειδωμένος (worker), στέλνουμε τον υπάρχοντα
-      var role = roleSel.disabled ? (currentUser.role || "worker") : roleSel.value;
+      var role = document.getElementById("profileRole").value;
       try {
         var res = await fetch(API_URL + "/me", {
           method: "PUT",
