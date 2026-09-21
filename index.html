@@ -117,8 +117,8 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: clamp(0.78rem, 3.6vw, 1.0rem); font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.2;
+      font-size: clamp(0.7rem, 3.2vw, 0.92rem); font-weight: 800; color: var(--primary);
+      margin-bottom: 8px; line-height: 1.15;
       transition: opacity 0.35s ease;
       white-space: nowrap !important;
       max-width: 100%;
@@ -128,11 +128,11 @@
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: clamp(0.82rem, 4vw, 1.1rem); font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 10px; line-height: 1.2;
+      font-size: clamp(0.72rem, 3.5vw, 0.98rem); font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 8px; line-height: 1.15;
       max-width: 100%; transition: opacity 0.35s ease;
       white-space: nowrap !important;
-      padding: 0 8px;
+      padding: 0 6px;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -1066,16 +1066,6 @@
     </div>
   </div>
 
-  <!-- Gift slots modal (admin-granted free ads) -->
-  <div class="modal-overlay" id="giftModal">
-    <div class="modal">
-      <h3>🎁 Δωρεάν αγγελίες από διαχειριστή</h3>
-      <p id="giftModalText">Ο διαχειριστής σας πρόσθεσε δωρεάν αγγελίες. Πατήστε Επιβεβαίωση για να τις ενεργοποιήσετε στο προφίλ σας και να μπορείτε να δημοσιεύσετε νέες.</p>
-      <div class="modal-actions">
-        <button class="btn btn-primary" style="background:var(--success);width:100%;" onclick="confirmGiftSlots()">Επιβεβαίωση</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Auth Modal -->
   <div class="modal-overlay" id="authModal">
@@ -1283,10 +1273,6 @@
         renderAuthBar();
         updateQuotaInfos();
         updatePackagesVisibility();
-        // Αν ο διαχειριστής πρόσθεσε free slots → εμφάνιση popup επιβεβαίωσης
-        if (currentUser && currentUser.gift_pending > 0) {
-          showGiftModal(currentUser.gift_pending);
-        }
       } catch(e) {
         currentUser = null;
         renderAuthBar();
@@ -1389,7 +1375,7 @@
       const empSubmit = document.querySelector("#employerForm button[type=submit]");
       const workSubmit = document.getElementById("workerSubmitBtn") || document.querySelector("#workerForm button[type=submit]");
 
-      // Πακέτα: εμφανίζονται κάτω από το «Υπόλοιπο: 0» όταν εξαντληθούν τα slots
+      // Πακέτα: εμφανίζονται όταν εξαντληθούν τα slots
       if (empPkg) {
         const isEmp = currentUser && (currentUser.role === "employer" || currentUser.role === "both");
         empPkg.style.display = (isEmp && remaining <= 0) ? "block" : "none";
@@ -1398,15 +1384,20 @@
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
         workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
       }
-      // Κουμπί: κρύβεται όταν 0 slots, ΕΚΤΟΣ αν γίνεται τροποποίηση υπάρχουσας αγγελίας
+      // Κουμπί αποθήκευσης/δημοσίευσης: πάντα ορατό αν έχει slots Ή αν τροποποιεί αγγελία
+      // (μετά από «Βρήκα δουλειά» επιστρέφεται slot → το κουμπί εμφανίζεται ξανά)
       const editing = !!(typeof editingAdId !== 'undefined' && editingAdId);
       if (empSubmit) {
         empSubmit.style.display = (remaining > 0 || (editing && editingAdType === "employer")) ? "" : "none";
+        empSubmit.disabled = false;
         if (editing && editingAdType === "employer") empSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
+        else if (!editing) empSubmit.textContent = "Δημοσίευση Αγγελίας";
       }
       if (workSubmit) {
         workSubmit.style.display = (remaining > 0 || (editing && editingAdType === "worker")) ? "" : "none";
+        workSubmit.disabled = false;
         if (editing && editingAdType === "worker") workSubmit.textContent = "💾 Αποθήκευση τροποποίησης";
+        else if (!editing) workSubmit.textContent = "Δημοσίευση Προφίλ";
       }
     }
 
@@ -2104,40 +2095,6 @@
       foundEmployerTarget = null;
     }
 
-    function showGiftModal(count) {
-      var el = document.getElementById("giftModalText");
-      if (el) {
-        el.textContent = "Ο διαχειριστής σας πρόσθεσε " + count + " δωρεάν αγγελί" + (count === 1 ? "α" : "ες") +
-          ". Πατήστε Επιβεβαίωση για να τις ενεργοποιήσετε στο προφίλ σας και να μπορείτε να δημοσιεύσετε νέες αγγελίες.";
-      }
-      document.getElementById("giftModal").classList.add("active");
-    }
-
-    async function confirmGiftSlots() {
-      try {
-        var res = await fetch(API_BASE + "/api/me/confirm-gift", {
-          method: "POST",
-          headers: authHeaders()
-        });
-        var data = await res.json().catch(function() { return {}; });
-        if (res.ok) {
-          if (currentUser) {
-            currentUser.gift_pending = 0;
-            if (data.free_slots != null) currentUser.free_slots = data.free_slots;
-          }
-          renderAuthBar();
-          updateQuotaInfos();
-          updatePackagesVisibility();
-          document.getElementById("giftModal").classList.remove("active");
-          alert(data.message || "Οι δωρεάν αγγελίες ενεργοποιήθηκαν στο προφίλ σας!");
-        } else {
-          alert(data.error || "Σφάλμα επιβεβαίωσης");
-        }
-      } catch (e) {
-        alert("Αδυναμία σύνδεσης");
-      }
-    }
-
     async function searchFoundEmployers() {
       var q = (document.getElementById("foundEmployerSearch").value || "").trim();
       var box = document.getElementById("foundEmployerResults");
@@ -2182,14 +2139,20 @@
         });
         var data = await res.json();
         if (res.ok) {
+          // Ενημέρωση free_slots (επιστροφή slot) ώστε να φαίνεται ξανά το κουμπί Δημοσίευση
+          if (currentUser && data.free_slots != null) {
+            currentUser.free_slots = data.free_slots;
+            renderAuthBar();
+            updateQuotaInfos();
+            updatePackagesVisibility();
+          }
           closeFoundModal();
           loadAds(currentViewType);
-          alert(data.message || "Καταχωρήθηκε επιτυχώς. Ο διαχειριστής ενημερώθηκε.");
+          alert(data.message || "Καταχωρήθηκε επιτυχώς. Μπορείς να ξαναστείλεις νέα αγγελία.");
           if (foundEmployerTarget.id) {
             openRatingModal(foundEmployerTarget.id, data.match_id, foundEmployerTarget.nickname);
           }
         } else {
-          // Φιλικό μήνυμα – όχι τεχνικό σφάλμα στον επισκέπτη
           alert(data.error || "Η επιλογή καταχωρήθηκε. Αν εμφανίστηκε πρόβλημα, ο διαχειριστής θα το δει ούτως ή άλλως.");
           closeFoundModal();
         }
@@ -2290,6 +2253,15 @@
       document.getElementById("profileEmail").value = currentUser.email || "";
       document.getElementById("profileCurPass").value = "";
       document.getElementById("profileNewPass").value = "";
+      // Αν έχει επιλέξει «Ψάχνω δουλειά», κλείδωμα ρόλου – δεν αλλάζει
+      var roleSel = document.getElementById("profileRole");
+      if (currentUser.role === "worker") {
+        roleSel.disabled = true;
+        roleSel.title = "Η επιλογή «Ψάχνω δουλειά» δεν μπορεί να αλλάξει";
+      } else {
+        roleSel.disabled = false;
+        roleSel.title = "";
+      }
       document.getElementById("profileModal").classList.add("active");
     }
     function closeProfileModal() {
@@ -2297,7 +2269,9 @@
     }
     async function saveProfile() {
       var nickname = document.getElementById("profileNickname").value.trim();
-      var role = document.getElementById("profileRole").value;
+      var roleSel = document.getElementById("profileRole");
+      // Αν ο ρόλος είναι κλειδωμένος (worker), στέλνουμε τον υπάρχοντα
+      var role = roleSel.disabled ? (currentUser.role || "worker") : roleSel.value;
       try {
         var res = await fetch(API_URL + "/me", {
           method: "PUT",
