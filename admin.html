@@ -274,11 +274,12 @@
         <button class="btn btn-primary" style="background:#059669;" onclick="exportUsersExcel('worker')" title="Για διαγωνισμούς Tally">📥 Excel Εργαζόμενοι</button>
         <button class="btn btn-primary" style="background:#2563eb;" onclick="exportUsersExcel('employer')" title="Για διαγωνισμούς Tally">📥 Excel Εργοδότες</button>
         <button class="btn btn-primary" style="background:#64748b;" onclick="exportUsersExcel('all')">📥 Excel Όλοι</button>
+        <button class="btn btn-primary" style="background:#7c3aed;" onclick="exportAllAds()" title="Backup όλων των αγγελιών σε JSON">💾 Backup Αγγελιών</button>
         <a class="btn btn-secondary" href="https://tally.so/forms/44jy95" target="_blank" rel="noopener" style="text-decoration:none;">Tally Διαγωνισμοί ↗</a>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
         Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
-        Αναζήτηση με όνομα, email ή τηλέφωνο για εύκολη προσαρμογή πόντων (free_slots). Εξαγωγή Excel για Tally.
+        Η αλλαγή κωδικού <strong>δεν σβήνει</strong> τις αγγελίες. Χρησιμοποίησε «Backup Αγγελιών» για αποθήκευση όλων σε αρχείο JSON.
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -584,6 +585,30 @@
       }
     }
 
+
+    async function exportAllAds() {
+      try {
+        const res = await fetch(`${API}/api/admin/export-ads?pin=ADMIN999`);
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Σφάλμα εξαγωγής");
+          return;
+        }
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+        a.href = url;
+        a.download = "backup_aggelies_" + stamp + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("Αποθηκεύτηκαν " + (data.workers_count || 0) + " αγγελίες εργαζομένων και " + (data.employers_count || 0) + " εργοδοτών.");
+      } catch (e) {
+        alert("Αδυναμία σύνδεσης");
+      }
+    }
 
     function exportUsersExcel(filter) {
       if (!usersData || !usersData.length) {
