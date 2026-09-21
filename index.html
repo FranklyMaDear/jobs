@@ -117,25 +117,34 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: clamp(0.85rem, 4.2vw, 1.15rem); font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.2;
+      font-size: clamp(0.72rem, 3.4vw, 0.95rem); font-weight: 800; color: var(--primary);
+      margin-bottom: 8px; line-height: 1.15;
       transition: opacity 0.35s ease;
       white-space: nowrap !important;
       max-width: 100%;
-      padding: 0 4px;
-      overflow: visible;
+      padding: 0 2px;
+      overflow: hidden;
+      text-overflow: clip;
       text-align: center;
+      letter-spacing: -0.02em;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
     .page-rotating-title {
-      font-size: clamp(0.88rem, 4.5vw, 1.2rem); font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 10px; line-height: 1.2;
+      font-size: clamp(0.7rem, 3.3vw, 0.95rem); font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 8px; line-height: 1.15;
       max-width: 100%; transition: opacity 0.35s ease;
       white-space: nowrap !important;
-      padding: 0 6px;
-      overflow: visible;
+      padding: 0 2px;
+      overflow: hidden;
+      text-overflow: clip;
+      letter-spacing: -0.02em;
     }
     .page-rotating-title.is-fading { opacity: 0; }
+    @media (max-width: 400px) {
+      .page-rotating-title, .welcome-rotating-title {
+        font-size: 0.68rem !important;
+      }
+    }
     .welcome-card p, .welcome-rotating {
       color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;
       min-height: 3.2em; transition: opacity 0.35s ease;
@@ -726,8 +735,8 @@
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> για εργαζόμενους &amp; εργοδότες</div>
-        <div class="free-promo-sub">Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός σε όλους.</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
+        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1285,11 +1294,10 @@
       if (!bar) return;
       if (currentUser) {
         const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-        const free = getRemainingSlots();
-        const max = Math.max(used + free, currentUser.max_ads != null ? currentUser.max_ads : 1);
+        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
         bar.innerHTML = `
           <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
-            <span class="quota-badge">Αγγελίες: ${used}/${max} · Υπόλοιπο: ${free}</span>
+            <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
           </div>
           <button class="btn-auth" onclick="openProfileModal()">Προφίλ</button>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
@@ -1342,17 +1350,11 @@
 
     function getRemainingSlots() {
       if (!currentUser) return 0;
+      // Prefer free_slots (new remaining credits model)
+      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
+      // Fallback to old max_ads - ads_used
       const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
       const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
-      // free_slots είναι η πηγή αλήθειας· αν όμως είναι 0 ενώ max > used (αποσυγχρονισμός μετά από deploy),
-      // χρησιμοποιούμε max - used ώστε να φαίνεται το κουμπί Αποθήκευσης
-      if (currentUser.free_slots != null && currentUser.free_slots > 0) {
-        return currentUser.free_slots;
-      }
-      if (currentUser.free_slots != null && currentUser.free_slots === 0 && max > used) {
-        return max - used;
-      }
-      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
       return Math.max(0, max - used);
     }
 
