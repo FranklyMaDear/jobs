@@ -437,13 +437,10 @@
     }
     .header-rotating.is-fading { opacity: 0; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
-    .free-promo-timer, .promo-countdown {
-      margin-top: 12px; font-size: 1.2rem; font-weight: 800;
+    .free-promo-timer {
+      margin-top: 10px; font-size: 1.35rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
-      line-height: 1.3;
     }
-    .promo-countdown .cd-label { display: block; font-size: 0.75rem; font-weight: 600; color: #1e40af; margin-bottom: 4px; }
-    .page-rotating-title { display: none !important; }
     .kofi-goal-card {
       margin: 16px auto 8px;
       max-width: 420px;
@@ -722,13 +719,12 @@
 
   <div class="container">
     <div class="header">
-      <!-- Τίτλος πάνω από λογότυπο αφαιρέθηκε -->
+      <h1 id="pageRotatingTitle" class="page-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p id="headerRotatingText" class="header-rotating">Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες μέχρι τέλη Οκτωβρίου!</p>
+      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά μέχρι 31 Οκτ. 2026: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> σε κάθε νέα εγγραφή</div>
-        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες. Ισχύει έως τέλος Οκτωβρίου.</div>
-        <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
+        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1080,7 +1076,6 @@
         <div class="form-group" style="margin-bottom:12px">
           <label class="main-label">Είμαι</label>
           <select id="authRole">
-            <option value="both">Εργαζόμενος & Εργοδότης</option>
             <option value="worker">Ψάχνω δουλειά</option>
             <option value="employer">Ψάχνω προσωπικό</option>
           </select>
@@ -1147,8 +1142,7 @@
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Ρόλος</label>
-        <select id="profileRole">
-          <option value="both">Εργαζόμενος &amp; Εργοδότης</option>
+        <select id="profileRole" disabled title="Ο ρόλος κλειδώνεται κατά την εγγραφή">
           <option value="worker">Ψάχνω δουλειά</option>
           <option value="employer">Ψάχνω προσωπικό</option>
         </select>
@@ -1396,17 +1390,33 @@
       }
     }
 
-    function openAuthModal(mode) {
+    var pendingAuthRole = null; // worker | employer όταν ανοίγει από κάρτα αρχικής
+
+    function openAuthModal(mode, forcedRole) {
       authMode = mode || "login";
+      pendingAuthRole = forcedRole || null;
       document.getElementById("authEmail").value = "";
       document.getElementById("authPassword").value = "";
       document.getElementById("authNickname").value = "";
+      var roleEl = document.getElementById("authRole");
+      if (roleEl) {
+        if (forcedRole === "worker" || forcedRole === "employer") {
+          roleEl.value = forcedRole;
+          roleEl.disabled = true;
+        } else {
+          roleEl.disabled = false;
+          if (!roleEl.value || roleEl.value === "both") roleEl.value = "worker";
+        }
+      }
       updateAuthModalUI();
       document.getElementById("authModal").classList.add("active");
       setTimeout(initGoogleButton, 200);
     }
     function closeAuthModal() {
       document.getElementById("authModal").classList.remove("active");
+      pendingAuthRole = null;
+      var roleEl = document.getElementById("authRole");
+      if (roleEl) roleEl.disabled = false;
     }
     function toggleAuthMode(e) {
       if (e) e.preventDefault();
@@ -1416,14 +1426,29 @@
     function updateAuthModalUI() {
       const isReg = authMode === "register";
       document.getElementById("authModalTitle").textContent = isReg ? "Εγγραφή" : "Σύνδεση";
-      document.getElementById("authModalDesc").textContent = isReg
-        ? "Δημιουργήστε λογαριασμό με email, κωδικό και ψευδώνυμο."
-        : "Συνδεθείτε για να δημοσιεύσετε αγγελίες και να στείλετε αιτήματα.";
+      var desc = "Συνδεθείτε για να δημοσιεύσετε αγγελίες και να στείλετε αιτήματα.";
+      if (isReg) {
+        if (pendingAuthRole === "worker") {
+          desc = "Εγγραφή ως εργαζόμενος – Ψάχνω δουλειά. Ο ρόλος κλειδώνει και δεν αλλάζει.";
+        } else if (pendingAuthRole === "employer") {
+          desc = "Εγγραφή ως εργοδότης – Ψάχνω προσωπικό. Ο ρόλος κλειδώνει και δεν αλλάζει.";
+        } else {
+          desc = "Δημιουργήστε λογαριασμό. Επιλέξτε αν ψάχνετε δουλειά ή προσωπικό (ο ρόλος κλειδώνει).";
+        }
+      }
+      document.getElementById("authModalDesc").textContent = desc;
       document.getElementById("authRegisterFields").style.display = isReg ? "block" : "none";
       document.getElementById("authSubmitBtn").textContent = isReg ? "Εγγραφή" : "Σύνδεση";
       document.getElementById("authToggleLink").textContent = isReg
         ? "Έχω ήδη λογαριασμό – Σύνδεση"
         : "Δεν έχω λογαριασμό – Εγγραφή";
+      var roleEl = document.getElementById("authRole");
+      if (roleEl && isReg && pendingAuthRole) {
+        roleEl.value = pendingAuthRole;
+        roleEl.disabled = true;
+      } else if (roleEl && isReg) {
+        roleEl.disabled = false;
+      }
     }
 
     async function submitAuth() {
@@ -1519,7 +1544,8 @@
     }
 
     var HEADER_TEXTS = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες μέχρι τέλη Οκτωβρίου!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function startHeaderTextRotation() {
@@ -1535,31 +1561,6 @@
           el.classList.remove("is-fading");
         }, 350);
       }, 5000);
-    }
-
-    /** Αντίστροφη μέτρηση προσφοράς έως 31 Οκτ 2026 */
-    function startPromoCountdown() {
-      var el = document.getElementById("promoCountdown");
-      if (!el) return;
-      var end = new Date(2026, 9, 31, 23, 59, 59);
-      function tick() {
-        var now = new Date();
-        var diff = end - now;
-        if (diff <= 0) {
-          el.innerHTML = '<span class="cd-label">Η προσφορά έληξε</span>Ευχαριστούμε!';
-          if (window._promoCdTimer) clearInterval(window._promoCdTimer);
-          return;
-        }
-        var d = Math.floor(diff / 86400000);
-        var h = Math.floor((diff % 86400000) / 3600000);
-        var m = Math.floor((diff % 3600000) / 60000);
-        var s = Math.floor((diff % 60000) / 1000);
-        el.innerHTML = '<span class="cd-label">Λήγει σε</span>' +
-          d + 'η ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-      }
-      tick();
-      if (window._promoCdTimer) clearInterval(window._promoCdTimer);
-      window._promoCdTimer = setInterval(tick, 1000);
     }
 
     var WELCOME_TEXTS = [
@@ -1585,7 +1586,8 @@
     }
 
     var SPEECH_PHRASES = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες μέχρι τέλη Οκτωβρίου!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function showSpeechBubble() { return; // disabled – bubble removed
@@ -1910,7 +1912,20 @@
 
     function requireAuthThen(screenId) {
       if (!currentUser) {
-        openAuthModal("register");
+        // Από κάρτα «Ψάχνω εργασία» → μόνο εργαζόμενος · «Ψάχνω προσωπικό» → μόνο εργοδότης
+        var forced = null;
+        if (screenId === "screen-worker") forced = "worker";
+        if (screenId === "screen-employer") forced = "employer";
+        openAuthModal("register", forced);
+        return;
+      }
+      // Αν ο ρόλος δεν ταιριάζει με την κάρτα, μην ανοίγει λάθος φόρμα
+      if (screenId === "screen-worker" && currentUser.role === "employer") {
+        alert("Ο λογαριασμός σας είναι εργοδότης. Δεν μπορείτε να δημοσιεύσετε ως εργαζόμενος.");
+        return;
+      }
+      if (screenId === "screen-employer" && currentUser.role === "worker") {
+        alert("Ο λογαριασμός σας είναι εργαζόμενος. Δεν μπορείτε να δημοσιεύσετε ως εργοδότης.");
         return;
       }
       showScreen(screenId);
@@ -2261,7 +2276,11 @@
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileNickname").value = currentUser.nickname || "";
-      document.getElementById("profileRole").value = currentUser.role || "both";
+      var roleSel = document.getElementById("profileRole");
+      var r = currentUser.role === "employer" ? "employer" : "worker";
+      roleSel.value = r;
+      roleSel.disabled = true; // πάντα κλειδωμένο
+      roleSel.title = "Ο ρόλος κλειδώθηκε κατά την εγγραφή και δεν αλλάζει";
       document.getElementById("profileEmail").value = currentUser.email || "";
       document.getElementById("profileCurPass").value = "";
       document.getElementById("profileNewPass").value = "";
@@ -2272,7 +2291,8 @@
     }
     async function saveProfile() {
       var nickname = document.getElementById("profileNickname").value.trim();
-      var role = document.getElementById("profileRole").value;
+      // Ρόλος δεν αλλάζει – στέλνουμε τον υπάρχοντα
+      var role = currentUser.role === "employer" ? "employer" : "worker";
       try {
         var res = await fetch(API_URL + "/me", {
           method: "PUT",
@@ -2405,7 +2425,8 @@
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) return;
       var roleEl = document.getElementById("authRole");
-      var role = (authMode === "register" && roleEl) ? roleEl.value : "both";
+      var role = (authMode === "register" && roleEl) ? roleEl.value : "worker";
+      if (role !== "worker" && role !== "employer") role = pendingAuthRole || "worker";
       try {
         var res = await fetch(API_BASE + "/api/auth/google", {
           method: "POST",
@@ -2736,7 +2757,6 @@
       loadHomeJobs();
       startHeaderTextRotation();
       startTitleRotation();
-      startPromoCountdown();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
