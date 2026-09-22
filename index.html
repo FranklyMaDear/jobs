@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -117,26 +116,21 @@
       80%  { transform: rotate(720deg) scale(1.08); }
       100% { transform: rotate(720deg) scale(1); }
     }
-    /* Αναδυόμενο (welcome): +100% μέγεθος τίτλου */
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 1.9rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 12px; line-height: 1.2;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
       transition: opacity 0.35s ease;
       white-space: normal;
       max-width: 100%;
       padding: 0 6px;
-      text-align: center;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
-    /* Κεντρική σελίδα: -50% μέγεθος τίτλου (μισό) */
     .page-rotating-title {
-      font-size: 0.48rem; font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 6px; line-height: 1.2;
-      max-width: min(340px, 88vw); transition: opacity 0.35s ease;
-      white-space: nowrap;
-      padding: 0;
-      overflow: hidden;
-      letter-spacing: -0.02em;
+      font-size: 0.95rem; font-weight: 800; color: var(--primary);
+      text-align: center; margin: 0 auto 10px; line-height: 1.3;
+      max-width: 100%; transition: opacity 0.35s ease;
+      white-space: normal;
+      padding: 0 10px;
     }
     .page-rotating-title.is-fading { opacity: 0; }
     .welcome-card p, .welcome-rotating {
@@ -443,10 +437,13 @@
     }
     .header-rotating.is-fading { opacity: 0; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
-    .free-promo-timer {
-      margin-top: 10px; font-size: 1.35rem; font-weight: 800;
+    .free-promo-timer, .promo-countdown {
+      margin-top: 12px; font-size: 1.25rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
+      line-height: 1.3;
     }
+    .promo-countdown .cd-label { display: block; font-size: 0.75rem; font-weight: 600; color: #1e40af; margin-bottom: 4px; }
+    .page-rotating-title { display: none !important; }
     .kofi-goal-card {
       margin: 16px auto 8px;
       max-width: 420px;
@@ -725,12 +722,13 @@
 
   <div class="container">
     <div class="header">
-      <h1 id="pageRotatingTitle" class="page-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
+      <!-- Τίτλος πάνω από λογότυπο αφαιρέθηκε -->
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
+      <p id="headerRotatingText" class="header-rotating">Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες μέχρι τέλη Οκτωβρίου!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
-        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
+        <div class="free-promo-title">🎁 Προσφορά μέχρι 31 Οκτ. 2026: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> σε κάθε νέα εγγραφή</div>
+        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες. Ισχύει έως τέλος Οκτωβρίου.</div>
+        <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1502,27 +1500,23 @@
       "Ψαχνς Δλεια ; Βρες Δλεια!"
     ];
     function startTitleRotation() {
+      // Μόνο στο αναδυόμενο welcome – ο τίτλος στην κεντρική σελίδα αφαιρέθηκε
       var welcomeTitle = document.getElementById("welcomeRotatingTitle");
-      var pageTitle = document.getElementById("pageRotatingTitle");
-      if (!TITLE_TEXTS.length) return;
+      if (!welcomeTitle || !TITLE_TEXTS.length) return;
       var i = 0;
       if (window._titleRotateTimer) clearInterval(window._titleRotateTimer);
       window._titleRotateTimer = setInterval(function() {
         i = (i + 1) % TITLE_TEXTS.length;
-        [welcomeTitle, pageTitle].forEach(function(el) {
-          if (!el) return;
-          el.classList.add("is-fading");
-          setTimeout(function() {
-            el.textContent = TITLE_TEXTS[i];
-            el.classList.remove("is-fading");
-          }, 350);
-        });
+        welcomeTitle.classList.add("is-fading");
+        setTimeout(function() {
+          welcomeTitle.textContent = TITLE_TEXTS[i];
+          welcomeTitle.classList.remove("is-fading");
+        }, 350);
       }, 5000);
     }
 
     var HEADER_TEXTS = [
-      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
-      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
+      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες μέχρι τέλη Οκτωβρίου!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function startHeaderTextRotation() {
@@ -1538,6 +1532,31 @@
           el.classList.remove("is-fading");
         }, 350);
       }, 5000);
+    }
+
+    /** Αντίστροφη μέτρηση προσφοράς έως 31 Οκτ 2026 23:59:59 τοπική */
+    function startPromoCountdown() {
+      var el = document.getElementById("promoCountdown");
+      if (!el) return;
+      var end = new Date(2026, 9, 31, 23, 59, 59); // μήνας 9 = Οκτώβριος
+      function tick() {
+        var now = new Date();
+        var diff = end - now;
+        if (diff <= 0) {
+          el.innerHTML = '<span class="cd-label">Η προσφορά έληξε</span>Ευχαριστούμε!';
+          if (window._promoCdTimer) clearInterval(window._promoCdTimer);
+          return;
+        }
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+        el.innerHTML = '<span class="cd-label">Λήγει σε</span>' +
+          d + 'η ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      }
+      tick();
+      if (window._promoCdTimer) clearInterval(window._promoCdTimer);
+      window._promoCdTimer = setInterval(tick, 1000);
     }
 
     var WELCOME_TEXTS = [
@@ -2240,7 +2259,12 @@
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileNickname").value = currentUser.nickname || "";
-      document.getElementById("profileRole").value = currentUser.role || "both";
+      var roleSel = document.getElementById("profileRole");
+      roleSel.value = currentUser.role || "both";
+      // Κλείδωμα ρόλου: αν έχει επιλέξει εργαζόμενο ή εργοδότη, δεν αλλάζει
+      var locked = (currentUser.role === "worker" || currentUser.role === "employer");
+      roleSel.disabled = locked;
+      roleSel.title = locked ? "Ο ρόλος κλειδώθηκε κατά την εγγραφή και δεν αλλάζει" : "";
       document.getElementById("profileEmail").value = currentUser.email || "";
       document.getElementById("profileCurPass").value = "";
       document.getElementById("profileNewPass").value = "";
@@ -2251,7 +2275,9 @@
     }
     async function saveProfile() {
       var nickname = document.getElementById("profileNickname").value.trim();
-      var role = document.getElementById("profileRole").value;
+      var roleSel = document.getElementById("profileRole");
+      // Αν κλειδωμένος ρόλος, στέλνουμε τον υπάρχοντα (όχι αλλαγή)
+      var role = roleSel.disabled ? (currentUser.role || "both") : roleSel.value;
       try {
         var res = await fetch(API_URL + "/me", {
           method: "PUT",
@@ -2715,6 +2741,7 @@
       loadHomeJobs();
       startHeaderTextRotation();
       startTitleRotation();
+      startPromoCountdown();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
