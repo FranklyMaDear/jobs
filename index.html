@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
   <meta name="description" content="Θελς Δλειά; Βρες Δλειά – Αγγελίες εργασίας στη Θεσσαλία. Δωρεάν.">
-  <title>Θες Δλεια ; Βρες Δλεια | Αγγελίες στη Θεσσαλία</title>
+  <title>ΨΑΧΝΣ ΔΛΕΙΑ · ΒΡΕΣ ΔΛΕΙΑ | Αγγελίες στη Θεσσαλία</title>
   <!-- Social share & home screen -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Θες Δλεια ; Βρες Δλεια">
@@ -706,7 +706,8 @@
       <div class="logo-spin-wrap">
         <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
-      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
+      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title" style="white-space:pre-line">ΨΑΧΝΣ ΔΛΕΙΑ
+ΒΡΕΣ ΔΛΕΙΑ</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
@@ -719,12 +720,13 @@
 
   <div class="container">
     <div class="header">
-      <!-- Τίτλος πάνω από λογότυπο αφαιρέθηκε · χωρίς 1η/15η -->
+      <h1 id="pageRotatingTitle" class="page-rotating-title" style="white-space:pre-line">ΨΑΧΝΣ ΔΛΕΙΑ
+ΒΡΕΣ ΔΛΕΙΑ</h1>
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p id="headerRotatingText" class="header-rotating">Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!</p>
+      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
-        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες.</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
+        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1076,7 +1078,8 @@
         <div class="form-group" style="margin-bottom:12px">
           <label class="main-label">Είμαι</label>
           <select id="authRole">
-            <option value="worker">Ψάχνω εργασία</option>
+            <option value="both">Εργαζόμενος & Εργοδότης</option>
+            <option value="worker">Ψάχνω δουλειά</option>
             <option value="employer">Ψάχνω προσωπικό</option>
           </select>
         </div>
@@ -1142,8 +1145,9 @@
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Ρόλος</label>
-        <select id="profileRole" disabled title="Ο ρόλος κλειδώνεται κατά την εγγραφή">
-          <option value="worker">Ψάχνω εργασία</option>
+        <select id="profileRole">
+          <option value="both">Εργαζόμενος &amp; Εργοδότης</option>
+          <option value="worker">Ψάχνω δουλειά</option>
           <option value="employer">Ψάχνω προσωπικό</option>
         </select>
       </div>
@@ -1490,30 +1494,23 @@
     
 
     var TITLE_TEXTS = [
-      "Εύρεση εργασίας στην Θεσσαλία",
-      "Ψαχνς Δλεια ; Βρες Δλεια!"
+      "ΨΑΧΝΣ ΔΛΕΙΑ\nΒΡΕΣ ΔΛΕΙΑ"
     ];
     function startTitleRotation() {
       var welcomeTitle = document.getElementById("welcomeRotatingTitle");
       var pageTitle = document.getElementById("pageRotatingTitle");
-      if (!TITLE_TEXTS.length) return;
-      var i = 0;
+      // Σταθερός τίτλος – χωρίς εναλλαγή
+      [welcomeTitle, pageTitle].forEach(function(el) {
+        if (!el) return;
+        el.style.whiteSpace = "pre-line";
+        el.textContent = "ΨΑΧΝΣ ΔΛΕΙΑ\nΒΡΕΣ ΔΛΕΙΑ";
+      });
       if (window._titleRotateTimer) clearInterval(window._titleRotateTimer);
-      window._titleRotateTimer = setInterval(function() {
-        i = (i + 1) % TITLE_TEXTS.length;
-        [welcomeTitle, pageTitle].forEach(function(el) {
-          if (!el) return;
-          el.classList.add("is-fading");
-          setTimeout(function() {
-            el.textContent = TITLE_TEXTS[i];
-            el.classList.remove("is-fading");
-          }, 350);
-        });
-      }, 5000);
     }
 
     var HEADER_TEXTS = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function startHeaderTextRotation() {
@@ -1533,7 +1530,7 @@
 
     var WELCOME_TEXTS = [
       "Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.",
-      "Καλώς τα τα πιδιά! Τι τηράς σα χάνος; Άειντι, κάνι μια εγγραφή να βρεις την άκρη σ'. Τζάμπα είνι!",
+      "Καλώς τα τα πιδιά! Άειντι, κάνι μια εγγραφή να βρεις την άκρη σ'. Τζάμπα είνι!",
       "Τι φκιάνιτι; Κάνι γλήγορα μια εγγραφή να παρ'ς κι το πεσκέσι σ' (μια αγγελία δώρο). Δε ζητάμι φράγκο!",
       "Πού 'σι συ; Μη χασομεράς! Βάλε τα στοιχεία σ' ιδώ να φκιάξ'ς λογαριασμό, να 'χουμι το νού μας!",
       "Άειντι, μη στέκιτι! Πάτα να γραφτείς να γίνουμι πολλοί. Τζάμπα πράμα!"
@@ -1554,7 +1551,8 @@
     }
 
     var SPEECH_PHRASES = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function showSpeechBubble() { return; // disabled – bubble removed
