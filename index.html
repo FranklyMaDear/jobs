@@ -587,6 +587,31 @@
       margin-bottom: 6px;
       letter-spacing: 0.02em;
     }
+    .avail-extra { margin-top: 14px; }
+    .avail-extra .sub-lbl {
+      display: block; font-size: 0.82rem; font-weight: 700;
+      color: var(--primary); margin: 10px 0 6px;
+    }
+    .chip-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-opts label {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: #f8fafc; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      user-select: none;
+    }
+    .chip-opts label:has(input:checked) {
+      border-color: var(--accent); background: #eff6ff; color: #1e40af;
+    }
+    .chip-opts input { accent-color: var(--accent); }
+    .work-type-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+    .work-type-row label {
+      flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px;
+      padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border);
+      background: #f8fafc; font-weight: 600; cursor: pointer;
+    }
+    .work-type-row label:has(input:checked) {
+      border-color: #059669; background: #ecfdf5; color: #065f46;
+    }
     .date-field input[type="date"] {
       width: 100%;
       padding: 12px 10px;
@@ -719,12 +744,12 @@
 
   <div class="container">
     <div class="header">
-      <!-- Τίτλος πάνω από λογότυπο αφαιρέθηκε · χωρίς 1η/15η -->
+      <h1 id="pageRotatingTitle" class="page-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p id="headerRotatingText" class="header-rotating">Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!</p>
+      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Με κάθε νέα εγγραφή: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
-        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες.</div>
+        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
+        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -899,6 +924,29 @@
                   <input type="date" id="w_available_to">
                 </div>
               </div>
+              <div class="avail-extra">
+                <span class="sub-lbl">Τύπος απασχόλησης</span>
+                <div class="work-type-row">
+                  <label><input type="radio" name="w_work_type" value="contract" checked> Σύμβαση</label>
+                  <label><input type="radio" name="w_work_type" value="daily"> Μεροκάματο (ημερήσιο)</label>
+                </div>
+                <span class="sub-lbl">Μέρες που μπορώ να εργαστώ</span>
+                <div class="chip-opts" id="w_days">
+                  <label><input type="checkbox" value="Δευ"> Δευ</label>
+                  <label><input type="checkbox" value="Τρι"> Τρι</label>
+                  <label><input type="checkbox" value="Τετ"> Τετ</label>
+                  <label><input type="checkbox" value="Πεμ"> Πεμ</label>
+                  <label><input type="checkbox" value="Παρ"> Παρ</label>
+                  <label><input type="checkbox" value="Σαβ"> Σαβ</label>
+                  <label><input type="checkbox" value="Κυρ"> Κυρ</label>
+                </div>
+                <span class="sub-lbl">Ώρες</span>
+                <div class="chip-opts" id="w_hours">
+                  <label><input type="checkbox" value="Πρωί"> Πρωί</label>
+                  <label><input type="checkbox" value="Μεσημέρι"> Μεσημέρι</label>
+                  <label><input type="checkbox" value="Απόγευμα"> Απόγευμα</label>
+                </div>
+              </div>
             </div>
           </fieldset>
           <fieldset>
@@ -980,15 +1028,15 @@
               <select class="task-select" id="e_task"></select>
             </div>
             <div class="form-group">
-              <label class="main-label">Περιοχές *</label>
+              <label class="main-label">Τοποθεσία επιχείρησης στον χάρτη *</label>
               <div class="loc-map-wrap" data-form="employer">
                 <div class="loc-search-row">
-                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
+                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση διεύθυνσης / πόλης..." autocomplete="off">
                   <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('employer')">Εύρεση</button>
                 </div>
                 <div id="e_loc_map" class="loc-map"></div>
                 <div class="loc-chips" id="e_loc_chips"></div>
-                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες</p>
+                <p class="loc-hint">📍 Βάλε καρφίτσα στο σημείο της επιχείρησης (κλικ στον χάρτη ή αναζήτηση). Οι ενδιαφερόμενοι θα δουν πού βρίσκεται.</p>
               </div>
             </div>
             <div class="form-group">
@@ -1001,6 +1049,29 @@
                 <div class="date-field">
                   <label class="date-lbl">Έως</label>
                   <input type="date" id="e_available_to">
+                </div>
+              </div>
+              <div class="avail-extra">
+                <span class="sub-lbl">Τύπος απασχόλησης</span>
+                <div class="work-type-row">
+                  <label><input type="radio" name="e_work_type" value="contract" checked> Σύμβαση</label>
+                  <label><input type="radio" name="e_work_type" value="daily"> Μεροκάματο (ημερήσιο)</label>
+                </div>
+                <span class="sub-lbl">Μέρες εργασίας</span>
+                <div class="chip-opts" id="e_days">
+                  <label><input type="checkbox" value="Δευ"> Δευ</label>
+                  <label><input type="checkbox" value="Τρι"> Τρι</label>
+                  <label><input type="checkbox" value="Τετ"> Τετ</label>
+                  <label><input type="checkbox" value="Πεμ"> Πεμ</label>
+                  <label><input type="checkbox" value="Παρ"> Παρ</label>
+                  <label><input type="checkbox" value="Σαβ"> Σαβ</label>
+                  <label><input type="checkbox" value="Κυρ"> Κυρ</label>
+                </div>
+                <span class="sub-lbl">Ώρες</span>
+                <div class="chip-opts" id="e_hours">
+                  <label><input type="checkbox" value="Πρωί"> Πρωί</label>
+                  <label><input type="checkbox" value="Μεσημέρι"> Μεσημέρι</label>
+                  <label><input type="checkbox" value="Απόγευμα"> Απόγευμα</label>
                 </div>
               </div>
             </div>
@@ -1076,7 +1147,8 @@
         <div class="form-group" style="margin-bottom:12px">
           <label class="main-label">Είμαι</label>
           <select id="authRole">
-            <option value="worker">Ψάχνω εργασία</option>
+            <option value="both">Εργαζόμενος & Εργοδότης</option>
+            <option value="worker">Ψάχνω δουλειά</option>
             <option value="employer">Ψάχνω προσωπικό</option>
           </select>
         </div>
@@ -1142,8 +1214,9 @@
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Ρόλος</label>
-        <select id="profileRole" disabled title="Ο ρόλος κλειδώνεται κατά την εγγραφή">
-          <option value="worker">Ψάχνω εργασία</option>
+        <select id="profileRole">
+          <option value="both">Εργαζόμενος &amp; Εργοδότης</option>
+          <option value="worker">Ψάχνω δουλειά</option>
           <option value="employer">Ψάχνω προσωπικό</option>
         </select>
       </div>
@@ -1513,7 +1586,8 @@
     }
 
     var HEADER_TEXTS = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function startHeaderTextRotation() {
@@ -1554,7 +1628,8 @@
     }
 
     var SPEECH_PHRASES = [
-      "Με κάθε νέα εγγραφή: 2 δωρεάν αγγελίες για εργαζόμενους και εργοδότες!",
+      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
+      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
       "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
     ];
     function showSpeechBubble() { return; // disabled – bubble removed
@@ -2536,6 +2611,28 @@
             else if (from) line += "Από " + from;
             else line += "Έως " + to;
             payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
+          }
+          // Τύπος απασχόλησης · μέρες · ώρες
+          var p = prefix;
+          var wt = document.querySelector('input[name="' + p + 'work_type"]:checked');
+          if (wt) {
+            var wtLabel = wt.value === "daily" ? "💼 Μεροκάματο (ημερήσιο)" : "📄 Σύμβαση";
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + wtLabel;
+          }
+          var daysBox = document.getElementById(p + "days");
+          if (daysBox) {
+            var days = Array.prototype.slice.call(daysBox.querySelectorAll("input:checked")).map(function(c) { return c.value; });
+            if (days.length) payload.comments = (payload.comments ? payload.comments + "\n" : "") + "📆 Μέρες: " + days.join(", ");
+          }
+          var hoursBox = document.getElementById(p + "hours");
+          if (hoursBox) {
+            var hours = Array.prototype.slice.call(hoursBox.querySelectorAll("input:checked")).map(function(c) { return c.value; });
+            if (hours.length) payload.comments = (payload.comments ? payload.comments + "\n" : "") + "🕐 Ώρες: " + hours.join(", ");
+          }
+          // Εργοδότης: καρφίτσα επιχείρησης (συντεταγμένες πρώτης τοποθεσίας)
+          if (!isWorker && locs.length && locs[0].lat != null && locs[0].lng != null) {
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") +
+              "📍 Επιχείρηση: " + (locs[0].name || "") + " (" + Number(locs[0].lat).toFixed(5) + ", " + Number(locs[0].lng).toFixed(5) + ")";
           }
         })();
         const isEdit = editingAdId && editingAdType === type;
