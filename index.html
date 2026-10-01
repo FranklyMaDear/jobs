@@ -418,7 +418,15 @@
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
       border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
     }
-    .free-promo-title { font-weight: 800; color: #1e40af; font-size: 0.92rem; line-height: 1.35; }
+    .free-promo-img {
+      display: block;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      max-height: 140px;
+      margin: 0 auto 8px;
+      object-fit: contain;
+    }
     .header-rotating {
       color: var(--text-muted);
       margin-top: 6px;
@@ -431,7 +439,6 @@
       margin-right: auto;
     }
     .header-rotating.is-fading { opacity: 0; }
-    .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
     .free-promo-timer, .promo-countdown {
       margin-top: 12px; font-size: 1.2rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
@@ -445,7 +452,7 @@
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
       border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
     }
-    .welcome-promo .free-promo-title { font-size: 0.95rem; }
+    .welcome-promo .free-promo-img { max-height: 120px; }
     .kofi-goal-card {
       margin: 16px auto 8px;
       max-width: 420px;
@@ -714,8 +721,7 @@
       <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <div class="welcome-promo">
-        <div class="free-promo-title">🎁 Προσφορά Οκτωβρίου: 2 δωρεάν αγγελίες σε κάθε νέα εγγραφή</div>
-        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες · έως 31 Οκτ. 2026</div>
+        <img src="/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
         <div id="welcomePromoCountdown" class="promo-countdown" aria-live="polite">…</div>
       </div>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
@@ -732,8 +738,7 @@
       <!-- Τίτλοι (κανονικοί & χωριάτικα) αφαιρέθηκαν από την κεντρική -->
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά Οκτωβρίου: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> σε κάθε νέα εγγραφή</div>
-        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες. Ισχύει έως 31 Οκτωβρίου 2026.</div>
+        <img src="/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
         <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
@@ -1514,8 +1519,7 @@
     }
 
     var WELCOME_TEXTS = [
-      "Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.",
-      "Προσφορά Οκτωβρίου: 2 δωρεάν αγγελίες με κάθε νέα εγγραφή!"
+      "Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν."
     ];
     function startWelcomeTextRotation() {
       var el = document.getElementById("welcomeRotatingText");
