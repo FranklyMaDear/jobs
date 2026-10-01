@@ -117,22 +117,17 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: 0.95rem; font-weight: 800; color: var(--primary);
-      margin-bottom: 10px; line-height: 1.3;
+      font-size: clamp(1.25rem, 5.5vw, 1.65rem); font-weight: 800; color: var(--primary);
+      margin-bottom: 12px; line-height: 1.25;
       transition: opacity 0.35s ease;
       white-space: normal;
       max-width: 100%;
-      padding: 0 6px;
+      padding: 0 8px;
+      text-align: center;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
-    .page-rotating-title {
-      font-size: 0.95rem; font-weight: 800; color: var(--primary);
-      text-align: center; margin: 0 auto 10px; line-height: 1.3;
-      max-width: 100%; transition: opacity 0.35s ease;
-      white-space: normal;
-      padding: 0 10px;
-    }
-    .page-rotating-title.is-fading { opacity: 0; }
+    .page-rotating-title { display: none !important; }
+    .header-rotating { display: none !important; }
     .welcome-card p, .welcome-rotating {
       color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;
       min-height: 3.2em; transition: opacity 0.35s ease;
@@ -437,10 +432,20 @@
     }
     .header-rotating.is-fading { opacity: 0; }
     .free-promo-sub { font-size: 0.8rem; color: #1e3a8a; margin-top: 4px; }
-    .free-promo-timer {
-      margin-top: 10px; font-size: 1.35rem; font-weight: 800;
+    .free-promo-timer, .promo-countdown {
+      margin-top: 12px; font-size: 1.2rem; font-weight: 800;
       color: #1d4ed8; letter-spacing: 0.5px; font-variant-numeric: tabular-nums;
+      line-height: 1.3;
     }
+    .promo-countdown .cd-label {
+      display: block; font-size: 0.75rem; font-weight: 600; color: #1e40af; margin-bottom: 4px;
+    }
+    .welcome-promo {
+      margin: 12px 0 16px; padding: 12px 14px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 2px solid #93c5fd; border-radius: 14px; text-align: center;
+    }
+    .welcome-promo .free-promo-title { font-size: 0.95rem; }
     .kofi-goal-card {
       margin: 16px auto 8px;
       max-width: 420px;
@@ -587,25 +592,6 @@
       margin-bottom: 6px;
       letter-spacing: 0.02em;
     }
-    .avail-extra { margin-top: 14px; }
-    .avail-extra .sub-lbl {
-      display: block; font-size: 0.82rem; font-weight: 700;
-      color: var(--primary); margin: 10px 0 6px;
-    }
-    .work-type-row, .chip-opts {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .work-type-row label, .chip-opts label {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border);
-      background: #f8fafc; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-      user-select: none;
-    }
-    .work-type-row label:has(input:checked),
-    .chip-opts label:has(input:checked) {
-      border-color: #059669; background: #ecfdf5; color: #065f46;
-    }
-    .work-type-row input, .chip-opts input { accent-color: #059669; }
     .date-field input[type="date"] {
       width: 100%;
       padding: 12px 10px;
@@ -727,6 +713,11 @@
       </div>
       <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
+      <div class="welcome-promo">
+        <div class="free-promo-title">🎁 Προσφορά Οκτωβρίου: 2 δωρεάν αγγελίες σε κάθε νέα εγγραφή</div>
+        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες · έως 31 Οκτ. 2026</div>
+        <div id="welcomePromoCountdown" class="promo-countdown" aria-live="polite">…</div>
+      </div>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
   </div>
@@ -738,12 +729,12 @@
 
   <div class="container">
     <div class="header">
-      <h1 id="pageRotatingTitle" class="page-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
+      <!-- Τίτλοι (κανονικοί & χωριάτικα) αφαιρέθηκαν από την κεντρική -->
       <img src="/logo2.png" alt="Θελς Δλειά; Βρες Δλειά" class="site-logo-wide" onerror="this.onerror=null;this.src='/logo.png'">
-      <p id="headerRotatingText" class="header-rotating">Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!</p>
       <div id="freePromoBanner" class="free-promo">
-        <div class="free-promo-title">🎁 Προσφορά Σεπτ.–Οκτ.: Εργαζόμενοι <span style="white-space:nowrap">3 δωρεάν αγγελίες</span> · Εργοδότες <span style="white-space:nowrap">2 δωρεάν αγγελίες</span></div>
-        <div class="free-promo-sub">Με κάθε νέα εγγραφή! Επιπλέον +1 δωρεάν αγγελία κάθε 1η και 15η του μηνός.</div>
+        <div class="free-promo-title">🎁 Προσφορά Οκτωβρίου: <span style="white-space:nowrap">2 δωρεάν αγγελίες</span> σε κάθε νέα εγγραφή</div>
+        <div class="free-promo-sub">Για εργαζόμενους και εργοδότες. Ισχύει έως 31 Οκτωβρίου 2026.</div>
+        <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
       </div>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -908,20 +899,7 @@
             </div>
             <div class="form-group">
               <label class="main-label">Διαθεσιμότητα</label>
-              <div class="avail-extra" style="margin-top:0">
-                <span class="sub-lbl">Τύπος απασχόλησης</span>
-                <div class="work-type-row">
-                  <label><input type="radio" name="w_work_type" value="contract" checked> Σύμβαση</label>
-                  <label><input type="radio" name="w_work_type" value="daily"> Μεροκάματο</label>
-                </div>
-                <span class="sub-lbl">Διάρκεια (μεροκάματο)</span>
-                <div class="chip-opts" id="w_duration">
-                  <label><input type="radio" name="w_duration" value="1"> 1 ημέρα</label>
-                  <label><input type="radio" name="w_duration" value="2"> 2 ημέρες</label>
-                  <label><input type="radio" name="w_duration" value="more" checked> Περισσότερες (ημερολόγιο)</label>
-                </div>
-              </div>
-              <div class="date-row" style="margin-top:12px">
+              <div class="date-row">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
                   <input type="date" id="w_available_from">
@@ -931,7 +909,6 @@
                   <input type="date" id="w_available_to">
                 </div>
               </div>
-              <p class="loc-hint">Για μεροκάματο 1–2 ημερών μπορείτε να βάλετε μόνο την ημερομηνία «Από».</p>
             </div>
           </fieldset>
           <fieldset>
@@ -1013,33 +990,20 @@
               <select class="task-select" id="e_task"></select>
             </div>
             <div class="form-group">
-              <label class="main-label">Τοποθεσία επιχείρησης στον χάρτη *</label>
+              <label class="main-label">Περιοχές *</label>
               <div class="loc-map-wrap" data-form="employer">
                 <div class="loc-search-row">
-                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση διεύθυνσης / πόλης..." autocomplete="off">
+                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
                   <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('employer')">Εύρεση</button>
                 </div>
                 <div id="e_loc_map" class="loc-map"></div>
                 <div class="loc-chips" id="e_loc_chips"></div>
-                <p class="loc-hint">📍 Κλικ στον χάρτη ή αναζήτηση — τοποθετήστε καρφίτσα στο σημείο της επιχείρησης. Οι ενδιαφερόμενοι θα δουν πού βρίσκεται.</p>
+                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες</p>
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Διάστημα / Μεροκάματο</label>
-              <div class="avail-extra" style="margin-top:0">
-                <span class="sub-lbl">Τύπος απασχόλησης</span>
-                <div class="work-type-row">
-                  <label><input type="radio" name="e_work_type" value="contract" checked> Σύμβαση</label>
-                  <label><input type="radio" name="e_work_type" value="daily"> Μεροκάματο</label>
-                </div>
-                <span class="sub-lbl">Διάρκεια (μεροκάματο)</span>
-                <div class="chip-opts" id="e_duration">
-                  <label><input type="radio" name="e_duration" value="1"> 1 ημέρα</label>
-                  <label><input type="radio" name="e_duration" value="2"> 2 ημέρες</label>
-                  <label><input type="radio" name="e_duration" value="more" checked> Περισσότερες (ημερολόγιο)</label>
-                </div>
-              </div>
-              <div class="date-row" style="margin-top:12px">
+              <label class="main-label">Διάστημα</label>
+              <div class="date-row">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
                   <input type="date" id="e_available_from">
@@ -1049,7 +1013,6 @@
                   <input type="date" id="e_available_to">
                 </div>
               </div>
-              <p class="loc-hint">Για εργασία 1–2 ημερών επιλέξτε Μεροκάματο και την αντίστοιχη διάρκεια.</p>
             </div>
           </fieldset>
           <fieldset>
@@ -1538,55 +1501,21 @@
 
     
 
-    var TITLE_TEXTS = [
-      "Εύρεση εργασίας στην Θεσσαλία",
-      "Ψαχνς Δλεια ; Βρες Δλεια!"
-    ];
     function startTitleRotation() {
+      // Σταθερός τίτλος μόνο στο αναδυόμενο – χωρίς χωριάτικα / εναλλαγή
       var welcomeTitle = document.getElementById("welcomeRotatingTitle");
-      var pageTitle = document.getElementById("pageRotatingTitle");
-      if (!TITLE_TEXTS.length) return;
-      var i = 0;
+      if (welcomeTitle) welcomeTitle.textContent = "Εύρεση εργασίας στην Θεσσαλία";
       if (window._titleRotateTimer) clearInterval(window._titleRotateTimer);
-      window._titleRotateTimer = setInterval(function() {
-        i = (i + 1) % TITLE_TEXTS.length;
-        [welcomeTitle, pageTitle].forEach(function(el) {
-          if (!el) return;
-          el.classList.add("is-fading");
-          setTimeout(function() {
-            el.textContent = TITLE_TEXTS[i];
-            el.classList.remove("is-fading");
-          }, 350);
-        });
-      }, 5000);
     }
 
-    var HEADER_TEXTS = [
-      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
-      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
-      "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
-    ];
     function startHeaderTextRotation() {
-      var el = document.getElementById("headerRotatingText");
-      if (!el || !HEADER_TEXTS.length) return;
-      var i = 0;
+      // Αφαιρέθηκαν τα χωριάτικα κείμενα κάτω από το λογότυπο
       if (window._headerRotateTimer) clearInterval(window._headerRotateTimer);
-      window._headerRotateTimer = setInterval(function() {
-        i = (i + 1) % HEADER_TEXTS.length;
-        el.classList.add("is-fading");
-        setTimeout(function() {
-          el.textContent = HEADER_TEXTS[i];
-          el.classList.remove("is-fading");
-        }, 350);
-      }, 5000);
     }
 
     var WELCOME_TEXTS = [
       "Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.",
-      "Καλώς τα τα πιδιά! Τι τηράς σα χάνος; Άειντι, κάνι μια εγγραφή να βρεις την άκρη σ'. Τζάμπα είνι!",
-      "Τι φκιάνιτι; Κάνι γλήγορα μια εγγραφή να παρ'ς κι το πεσκέσι σ' (μια αγγελία δώρο). Δε ζητάμι φράγκο!",
-      "Πού 'σι συ; Μη χασομεράς! Βάλε τα στοιχεία σ' ιδώ να φκιάξ'ς λογαριασμό, να 'χουμι το νού μας!",
-      "Άειντι, μη στέκιτι! Πάτα να γραφτείς να γίνουμι πολλοί. Τζάμπα πράμα!"
+      "Προσφορά Οκτωβρίου: 2 δωρεάν αγγελίες με κάθε νέα εγγραφή!"
     ];
     function startWelcomeTextRotation() {
       var el = document.getElementById("welcomeRotatingText");
@@ -1603,11 +1532,36 @@
       }, 5000);
     }
 
-    var SPEECH_PHRASES = [
-      "Κάθι 1η κι 15 τ' μηνός, ιμείς σι κερνάμι άλλη μία τζάμπα αγγελία!",
-      "Έννοια σ'! Κάθι 1η κι 15 τ' μηνός, σι βάζω τζάμπα αγγελία στ' λογαριασμό σ'!",
-      "Έι αφεντικό! Ρίξι κάνα ψιλό ιδώ να βγάλουμι δωροεπιταγές για τα πιδιά π' ψάχν'ν μεροκάματο!"
-    ];
+    /** Αντίστροφη μέτρηση προσφοράς Οκτωβρίου έως 31/10/2026 */
+    function startPromoCountdown() {
+      var els = [
+        document.getElementById("promoCountdown"),
+        document.getElementById("welcomePromoCountdown")
+      ].filter(Boolean);
+      if (!els.length) return;
+      var end = new Date(2026, 9, 31, 23, 59, 59); // Οκτ = μήνας 9
+      function tick() {
+        var now = new Date();
+        var diff = end - now;
+        var html;
+        if (diff <= 0) {
+          html = '<span class="cd-label">Η προσφορά Οκτωβρίου έληξε</span>Ευχαριστούμε!';
+          if (window._promoCdTimer) clearInterval(window._promoCdTimer);
+        } else {
+          var d = Math.floor(diff / 86400000);
+          var h = Math.floor((diff % 86400000) / 3600000);
+          var m = Math.floor((diff % 3600000) / 60000);
+          var s = Math.floor((diff % 60000) / 1000);
+          html = '<span class="cd-label">Λήγει σε</span>' +
+            d + 'η ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+        }
+        els.forEach(function(el) { el.innerHTML = html; });
+      }
+      tick();
+      if (window._promoCdTimer) clearInterval(window._promoCdTimer);
+      window._promoCdTimer = setInterval(tick, 1000);
+    }
+
     function showSpeechBubble() { return; // disabled – bubble removed
       
       try {
@@ -2588,23 +2542,6 @@
             else line += "Έως " + to;
             payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
           }
-          var p = prefix;
-          var wt = document.querySelector('input[name="' + p + 'work_type"]:checked');
-          if (wt) {
-            var wtLabel = wt.value === "daily" ? "💼 Μεροκάματο" : "📄 Σύμβαση";
-            payload.comments = (payload.comments ? payload.comments + "\n" : "") + wtLabel;
-          }
-          var dur = document.querySelector('input[name="' + p + 'duration"]:checked');
-          if (dur && wt && wt.value === "daily") {
-            var durLabel = dur.value === "1" ? "1 ημέρα" : (dur.value === "2" ? "2 ημέρες" : "περισσότερες μέρες");
-            payload.comments = (payload.comments ? payload.comments + "\n" : "") + "📆 Διάρκεια: " + durLabel;
-          }
-          // Εργοδότης: συντεταγμένες καρφίτσας επιχείρησης
-          if (!isWorker && locs.length && locs[0].lat != null && locs[0].lng != null) {
-            payload.comments = (payload.comments ? payload.comments + "\n" : "") +
-              "📍 Επιχείρηση: " + (locs[0].name || "") +
-              " (" + Number(locs[0].lat).toFixed(5) + ", " + Number(locs[0].lng).toFixed(5) + ")";
-          }
         })();
         const isEdit = editingAdId && editingAdType === type;
         btn.textContent = isEdit ? "Αποθήκευση..." : "Δημοσίευση...";
@@ -2773,6 +2710,8 @@
       loadHomeJobs();
       startHeaderTextRotation();
       startTitleRotation();
+      startWelcomeTextRotation();
+      startPromoCountdown();
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
