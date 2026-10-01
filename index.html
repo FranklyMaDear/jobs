@@ -587,6 +587,25 @@
       margin-bottom: 6px;
       letter-spacing: 0.02em;
     }
+    .avail-extra { margin-top: 14px; }
+    .avail-extra .sub-lbl {
+      display: block; font-size: 0.82rem; font-weight: 700;
+      color: var(--primary); margin: 10px 0 6px;
+    }
+    .work-type-row, .chip-opts {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .work-type-row label, .chip-opts label {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: #f8fafc; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      user-select: none;
+    }
+    .work-type-row label:has(input:checked),
+    .chip-opts label:has(input:checked) {
+      border-color: #059669; background: #ecfdf5; color: #065f46;
+    }
+    .work-type-row input, .chip-opts input { accent-color: #059669; }
     .date-field input[type="date"] {
       width: 100%;
       padding: 12px 10px;
@@ -889,7 +908,20 @@
             </div>
             <div class="form-group">
               <label class="main-label">Διαθεσιμότητα</label>
-              <div class="date-row">
+              <div class="avail-extra" style="margin-top:0">
+                <span class="sub-lbl">Τύπος απασχόλησης</span>
+                <div class="work-type-row">
+                  <label><input type="radio" name="w_work_type" value="contract" checked> Σύμβαση</label>
+                  <label><input type="radio" name="w_work_type" value="daily"> Μεροκάματο</label>
+                </div>
+                <span class="sub-lbl">Διάρκεια (μεροκάματο)</span>
+                <div class="chip-opts" id="w_duration">
+                  <label><input type="radio" name="w_duration" value="1"> 1 ημέρα</label>
+                  <label><input type="radio" name="w_duration" value="2"> 2 ημέρες</label>
+                  <label><input type="radio" name="w_duration" value="more" checked> Περισσότερες (ημερολόγιο)</label>
+                </div>
+              </div>
+              <div class="date-row" style="margin-top:12px">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
                   <input type="date" id="w_available_from">
@@ -899,6 +931,7 @@
                   <input type="date" id="w_available_to">
                 </div>
               </div>
+              <p class="loc-hint">Για μεροκάματο 1–2 ημερών μπορείτε να βάλετε μόνο την ημερομηνία «Από».</p>
             </div>
           </fieldset>
           <fieldset>
@@ -980,20 +1013,33 @@
               <select class="task-select" id="e_task"></select>
             </div>
             <div class="form-group">
-              <label class="main-label">Περιοχές *</label>
+              <label class="main-label">Τοποθεσία επιχείρησης στον χάρτη *</label>
               <div class="loc-map-wrap" data-form="employer">
                 <div class="loc-search-row">
-                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
+                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση διεύθυνσης / πόλης..." autocomplete="off">
                   <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('employer')">Εύρεση</button>
                 </div>
                 <div id="e_loc_map" class="loc-map"></div>
                 <div class="loc-chips" id="e_loc_chips"></div>
-                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες</p>
+                <p class="loc-hint">📍 Κλικ στον χάρτη ή αναζήτηση — τοποθετήστε καρφίτσα στο σημείο της επιχείρησης. Οι ενδιαφερόμενοι θα δουν πού βρίσκεται.</p>
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Διάστημα</label>
-              <div class="date-row">
+              <label class="main-label">Διάστημα / Μεροκάματο</label>
+              <div class="avail-extra" style="margin-top:0">
+                <span class="sub-lbl">Τύπος απασχόλησης</span>
+                <div class="work-type-row">
+                  <label><input type="radio" name="e_work_type" value="contract" checked> Σύμβαση</label>
+                  <label><input type="radio" name="e_work_type" value="daily"> Μεροκάματο</label>
+                </div>
+                <span class="sub-lbl">Διάρκεια (μεροκάματο)</span>
+                <div class="chip-opts" id="e_duration">
+                  <label><input type="radio" name="e_duration" value="1"> 1 ημέρα</label>
+                  <label><input type="radio" name="e_duration" value="2"> 2 ημέρες</label>
+                  <label><input type="radio" name="e_duration" value="more" checked> Περισσότερες (ημερολόγιο)</label>
+                </div>
+              </div>
+              <div class="date-row" style="margin-top:12px">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
                   <input type="date" id="e_available_from">
@@ -1003,6 +1049,7 @@
                   <input type="date" id="e_available_to">
                 </div>
               </div>
+              <p class="loc-hint">Για εργασία 1–2 ημερών επιλέξτε Μεροκάματο και την αντίστοιχη διάρκεια.</p>
             </div>
           </fieldset>
           <fieldset>
@@ -1282,11 +1329,10 @@
       if (!bar) return;
       if (currentUser) {
         const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-        const free = getRemainingSlots();
-        const max = Math.max(used + free, currentUser.max_ads != null ? currentUser.max_ads : 1);
+        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
         bar.innerHTML = `
           <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
-            <span class="quota-badge">Αγγελίες: ${used}/${max} · Υπόλοιπο: ${free}</span>
+            <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
           </div>
           <button class="btn-auth" onclick="openProfileModal()">Προφίλ</button>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
@@ -1339,16 +1385,11 @@
 
     function getRemainingSlots() {
       if (!currentUser) return 0;
+      // Prefer free_slots (new remaining credits model)
+      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
+      // Fallback to old max_ads - ads_used
       const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
       const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
-      if (currentUser.free_slots != null && currentUser.free_slots > 0) {
-        return currentUser.free_slots;
-      }
-      // Αν admin αύξησε max αλλά free=0 → δείξε max-used ώστε να φαίνεται κουμπί
-      if (currentUser.free_slots != null && currentUser.free_slots === 0 && max > used) {
-        return max - used;
-      }
-      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
       return Math.max(0, max - used);
     }
 
@@ -1875,33 +1916,15 @@
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
-      if (id === "screen-worker" || id === "screen-employer") {
-        // Ανανέωση slots από server (π.χ. μετά από δώρο διαχειριστή)
-        loadCurrentUser().then(function() {
-          updateQuotaInfos();
-          updatePackagesVisibility();
-          renderAuthBar();
-        });
-        setTimeout(function() { initMap(id === "screen-worker" ? "worker" : "employer"); }, 100);
-        startQuotaAutoRefresh();
-      } else {
-        stopQuotaAutoRefresh();
+      if (id === "screen-worker") {
+        setTimeout(function() { initMap("worker"); }, 100);
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
-    }
-
-    var _quotaRefreshTimer = null;
-    function startQuotaAutoRefresh() {
-      stopQuotaAutoRefresh();
-      // Κάθε 15 δευτ. όσο είναι στη φόρμα → βλέπει αμέσως αγγελίες που έδωσε ο admin
-      _quotaRefreshTimer = setInterval(function() {
-        if (!getToken()) return;
-        loadCurrentUser();
-      }, 15000);
-    }
-    function stopQuotaAutoRefresh() {
-      if (_quotaRefreshTimer) {
-        clearInterval(_quotaRefreshTimer);
-        _quotaRefreshTimer = null;
+      if (id === "screen-employer") {
+        setTimeout(function() { initMap("employer"); }, 100);
+        updateQuotaInfos();
+        updatePackagesVisibility();
       }
     }
 
@@ -2564,6 +2587,23 @@
             else if (from) line += "Από " + from;
             else line += "Έως " + to;
             payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
+          }
+          var p = prefix;
+          var wt = document.querySelector('input[name="' + p + 'work_type"]:checked');
+          if (wt) {
+            var wtLabel = wt.value === "daily" ? "💼 Μεροκάματο" : "📄 Σύμβαση";
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + wtLabel;
+          }
+          var dur = document.querySelector('input[name="' + p + 'duration"]:checked');
+          if (dur && wt && wt.value === "daily") {
+            var durLabel = dur.value === "1" ? "1 ημέρα" : (dur.value === "2" ? "2 ημέρες" : "περισσότερες μέρες");
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + "📆 Διάρκεια: " + durLabel;
+          }
+          // Εργοδότης: συντεταγμένες καρφίτσας επιχείρησης
+          if (!isWorker && locs.length && locs[0].lat != null && locs[0].lng != null) {
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") +
+              "📍 Επιχείρηση: " + (locs[0].name || "") +
+              " (" + Number(locs[0].lat).toFixed(5) + ", " + Number(locs[0].lng).toFixed(5) + ")";
           }
         })();
         const isEdit = editingAdId && editingAdType === type;
