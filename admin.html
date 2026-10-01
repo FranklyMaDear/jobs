@@ -274,12 +274,11 @@
         <button class="btn btn-primary" style="background:#059669;" onclick="exportUsersExcel('worker')" title="Για διαγωνισμούς Tally">📥 Excel Εργαζόμενοι</button>
         <button class="btn btn-primary" style="background:#2563eb;" onclick="exportUsersExcel('employer')" title="Για διαγωνισμούς Tally">📥 Excel Εργοδότες</button>
         <button class="btn btn-primary" style="background:#64748b;" onclick="exportUsersExcel('all')">📥 Excel Όλοι</button>
-        <button class="btn btn-primary" style="background:#7c3aed;" onclick="exportAllAds()" title="Backup όλων των αγγελιών σε JSON">💾 Backup Αγγελιών</button>
         <a class="btn btn-secondary" href="https://tally.so/forms/44jy95" target="_blank" rel="noopener" style="text-decoration:none;">Tally Διαγωνισμοί ↗</a>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
         Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
-        Η αλλαγή κωδικού <strong>δεν σβήνει</strong> τις αγγελίες. Χρησιμοποίησε «Backup Αγγελιών» για αποθήκευση όλων σε αρχείο JSON.
+        Αναζήτηση με όνομα, email ή τηλέφωνο για εύκολη προσαρμογή πόντων (free_slots). Εξαγωγή Excel για Tally.
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -417,10 +416,16 @@
             <td data-label="Αγγελίες">${u.ads_used || 0}
               <small style="color:#64748b"> (Ε:${u.ads_workers||0}/Εργ:${u.ads_employers||0})</small>
             </td>
-            <td data-label="Όριο">
-              <input type="number" min="0" max="999" value="${u.max_ads != null ? u.max_ads : 1}"
-                id="quota-${u.id}" style="width:64px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;">
-              <button class="btn btn-primary" style="padding:4px 8px;font-size:0.75rem;margin-left:4px;" onclick="saveQuota(${u.id})">OK</button>
+            <td data-label="Όριο / Free">
+              <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
+                <label style="font-size:0.7rem;color:#64748b;">max</label>
+                <input type="number" min="0" max="999" value="${u.max_ads != null ? u.max_ads : 1}"
+                  id="quota-${u.id}" style="width:56px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;" title="Συνολικό όριο max_ads">
+                <label style="font-size:0.7rem;color:#64748b;">free</label>
+                <input type="number" min="0" max="999" value="${u.free_slots != null ? u.free_slots : 0}"
+                  id="freeslots-${u.id}" style="width:56px;padding:6px 8px;border:1.5px solid #93c5fd;border-radius:8px;background:#eff6ff;" title="Υπόλοιπο δωρεάν αγγελιών (αυτό βλέπει ο χρήστης)">
+                <button class="btn btn-primary" style="padding:4px 8px;font-size:0.75rem;" onclick="saveQuota(${u.id})">OK</button>
+              </div>
             </td>
             <td data-label="Κατάσταση">${isBlocked ? '<strong style="color:#dc2626">Μπλοκαρισμένος</strong>' : 'Ενεργός'}</td>
             <td data-label="Ενέργειες" style="white-space:nowrap">
@@ -586,30 +591,6 @@
     }
 
 
-    async function exportAllAds() {
-      try {
-        const res = await fetch(`${API}/api/admin/export-ads?pin=ADMIN999`);
-        const data = await res.json();
-        if (!res.ok) {
-          alert(data.error || "Σφάλμα εξαγωγής");
-          return;
-        }
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-        a.href = url;
-        a.download = "backup_aggelies_" + stamp + ".json";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert("Αποθηκεύτηκαν " + (data.workers_count || 0) + " αγγελίες εργαζομένων και " + (data.employers_count || 0) + " εργοδοτών.");
-      } catch (e) {
-        alert("Αδυναμία σύνδεσης");
-      }
-    }
-
     function exportUsersExcel(filter) {
       if (!usersData || !usersData.length) {
         alert("Δεν υπάρχουν χρήστες. Πάτα «Ανανέωση» πρώτα.");
@@ -682,18 +663,18 @@
       const input = document.getElementById("quota-" + userId);
       const freeInput = document.getElementById("freeslots-" + userId);
       const maxAds = parseInt(input.value, 10);
-      const freeSlots = freeInput ? parseInt(freeInput.value, 10) : null;
+      const freeSlots = freeInput ? parseInt(freeInput.value, 10) : 0;
       if (isNaN(maxAds) || maxAds < 0) {
-        alert("Μη έγκυρος αριθμός για max_ads");
+        alert("Μη έγκυρος αριθμός για max (όριο)");
         return;
       }
-      if (freeInput && (isNaN(freeSlots) || freeSlots < 0)) {
-        alert("Μη έγκυρος αριθμός για free_slots");
+      if (isNaN(freeSlots) || freeSlots < 0) {
+        alert("Μη έγκυρος αριθμός για free (υπόλοιπο αγγελιών)");
         return;
       }
       try {
-        const body = { user_id: userId, max_ads: maxAds, pin: "ADMIN999" };
-        if (freeSlots != null && !isNaN(freeSlots)) body.free_slots = freeSlots;
+        // Πάντα στέλνουμε και τα δύο ώστε ο χρήστης να βλέπει υπόλοιπο + κουμπί Αποθήκευσης
+        const body = { user_id: userId, max_ads: maxAds, free_slots: freeSlots, pin: "ADMIN999" };
         const res = await fetch(`${API}/api/admin/quota`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -701,10 +682,10 @@
         });
         const data = await res.json();
         if (res.ok) {
-          let msg = "Ενημερώθηκε: max_ads=" + maxAds;
-          if (freeSlots != null) msg += ", free_slots=" + freeSlots;
-          msg += " (χρησιμοποιημένες: " + (data.ads_used || 0) + ")";
-          alert(msg);
+          alert("✅ Ενημερώθηκε!\nΥπόλοιπο αγγελιών (free): " + (data.free_slots != null ? data.free_slots : freeSlots) +
+            "\nmax: " + (data.max_ads != null ? data.max_ads : maxAds) +
+            "\nΧρησιμοποιημένες: " + (data.ads_used || 0) +
+            "\n\nΟ χρήστης θα δει το νέο υπόλοιπο μετά από ανανέωση / άνοιγμα φόρμας.");
           loadUsers();
         } else {
           alert(data.error || "Σφάλμα");
