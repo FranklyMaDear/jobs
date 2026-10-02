@@ -1374,11 +1374,10 @@
       const bar = document.getElementById("authBar");
       if (!bar) return;
       if (currentUser) {
-        const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-        const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
+        const points = getRemainingSlots();
         bar.innerHTML = `
           <div class="auth-user">👤 ${escapeHtml(currentUser.nickname)}
-            <span class="quota-badge">Αγγελίες: ${used}/${max}</span>
+            <span class="quota-badge" title="Κάθε πόντος = 1 αγγελία">Πόντοι: ${points}</span>
           </div>
           <button class="btn-auth" onclick="openProfileModal()">Προφίλ</button>
           <button class="btn-auth" onclick="doLogout()">Αποσύνδεση</button>
@@ -1431,12 +1430,9 @@
 
     function getRemainingSlots() {
       if (!currentUser) return 0;
-      // Prefer free_slots (new remaining credits model)
-      if (currentUser.free_slots != null) return Math.max(0, currentUser.free_slots);
-      // Fallback to old max_ads - ads_used
-      const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-      const max = currentUser.max_ads != null ? currentUser.max_ads : 1;
-      return Math.max(0, max - used);
+      // Ένας μετρητής: free_slots = πόντοι (1 πόντος = 1 αγγελία)
+      if (currentUser.free_slots != null) return Math.max(0, Number(currentUser.free_slots) || 0);
+      return 0;
     }
 
     function updateQuotaInfos() {
@@ -1445,13 +1441,13 @@
           el.style.display = "none";
           return;
         }
-        const remaining = getRemainingSlots();
+        const points = getRemainingSlots();
         el.style.display = "block";
-        if (remaining > 0) {
-          el.textContent = "Υπόλοιπο δωρεάν αγγελιών: " + remaining;
+        if (points > 0) {
+          el.innerHTML = "⭐ Οι πόντοι σας: <strong>" + points + "</strong> &nbsp;·&nbsp; 1 πόντος = 1 αγγελία";
           el.style.color = "";
         } else {
-          el.textContent = "Υπόλοιπο: 0 · Έχετε εξαντλήσει τις δωρεάν αγγελίες";
+          el.innerHTML = "⭐ Πόντοι: <strong>0</strong> · Δεν έχετε υπόλοιπο αγγελιών. Επιλέξτε πακέτο παρακάτω.";
           el.style.color = "#dc2626";
         }
       });
