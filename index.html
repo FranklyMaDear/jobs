@@ -1478,8 +1478,17 @@
       }
     }
 
-    function openAuthModal(mode) {
+    let preferredAuthRole = null; // "worker" | "employer" | null (και τα δύο)
+    let pendingAfterAuthScreen = null;
+
+    function openAuthModal(mode, preferredRole) {
       authMode = mode || "login";
+      // Μόνο αν περνάει ρητά preferredRole· από πάνω μπάρα μένει null (και οι δύο επιλογές)
+      if (arguments.length >= 2) {
+        preferredAuthRole = preferredRole || null;
+      } else {
+        preferredAuthRole = null;
+      }
       document.getElementById("authEmail").value = "";
       document.getElementById("authPassword").value = "";
       document.getElementById("authNickname").value = "";
@@ -1506,6 +1515,39 @@
       document.getElementById("authToggleLink").textContent = isReg
         ? "Έχω ήδη λογαριασμό – Σύνδεση"
         : "Δεν έχω λογαριασμό – Εγγραφή";
+      // Ρόλος «Είμαι»: φιλτράρισμα όταν ήρθε από Δημοσίευση Αγγελίας
+      var roleSel = document.getElementById("authRole");
+      if (roleSel) {
+        var opts = roleSel.querySelectorAll("option");
+        opts.forEach(function(opt) {
+          if (!opt.value) {
+            opt.hidden = !!preferredAuthRole;
+            opt.disabled = !!preferredAuthRole;
+            return;
+          }
+          if (preferredAuthRole === "worker") {
+            opt.hidden = opt.value !== "worker";
+            opt.disabled = opt.value !== "worker";
+          } else if (preferredAuthRole === "employer") {
+            opt.hidden = opt.value !== "employer";
+            opt.disabled = opt.value !== "employer";
+          } else {
+            opt.hidden = false;
+            opt.disabled = false;
+          }
+        });
+        if (preferredAuthRole === "worker" || preferredAuthRole === "employer") {
+          roleSel.value = preferredAuthRole;
+        } else if (!roleSel.value || roleSel.value === "worker" || roleSel.value === "employer") {
+          // επαναφορά placeholder όταν φαίνονται και οι δύο
+          var placeholder = roleSel.querySelector('option[value=""]');
+          if (placeholder) {
+            placeholder.hidden = false;
+            placeholder.disabled = false;
+            roleSel.value = "";
+          }
+        }
+      }
     }
 
     async function submitAuth() {
@@ -1540,7 +1582,11 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        showScreen("screen-home");
+        var goTo = pendingAfterAuthScreen;
+        pendingAfterAuthScreen = null;
+        preferredAuthRole = null;
+        if (goTo) showScreen(goTo);
+        else showScreen("screen-home");
         window.scrollTo({ top: 0, behavior: "smooth" });
         loadCurrentUser();
         loadHomeJobs();
@@ -2012,9 +2058,14 @@
 
     function requireAuthThen(screenId) {
       if (!currentUser) {
-        openAuthModal("register");
+        pendingAfterAuthScreen = screenId || null;
+        var roleHint = null;
+        if (screenId === "screen-worker") roleHint = "worker";
+        else if (screenId === "screen-employer") roleHint = "employer";
+        openAuthModal("register", roleHint);
         return;
       }
+      pendingAfterAuthScreen = null;
       showScreen(screenId);
     }
 
@@ -2508,7 +2559,7 @@
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) return;
       var roleEl = document.getElementById("authRole");
-      var role = (authMode === "register" && roleEl) ? roleEl.value : "worker";
+      var role = preferredAuthRole || ((authMode === "register" && roleEl) ? roleEl.value : "worker");
       if (authMode === "register" && role !== "worker" && role !== "employer") {
         alert("Επιλέξτε αν είστε εργαζόμενος ή εργοδότης πριν τη σύνδεση με Google");
         return;
@@ -2525,7 +2576,11 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        showScreen("screen-home");
+        var goTo = pendingAfterAuthScreen;
+        pendingAfterAuthScreen = null;
+        preferredAuthRole = null;
+        if (goTo) showScreen(goTo);
+        else showScreen("screen-home");
         window.scrollTo({ top: 0, behavior: "smooth" });
         loadHomeJobs();
       } catch (e) {
