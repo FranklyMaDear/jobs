@@ -1159,11 +1159,11 @@
           <input type="text" id="authNickname" placeholder="π.χ. Γιάννης_Τρικαλα" maxlength="40">
         </div>
         <div class="form-group" style="margin-bottom:12px">
-          <label class="main-label">Είμαι</label>
-          <select id="authRole">
-            <option value="both">Εργαζόμενος & Εργοδότης</option>
-            <option value="worker">Ψάχνω δουλειά</option>
-            <option value="employer">Ψάχνω προσωπικό</option>
+          <label class="main-label">Είμαι *</label>
+          <select id="authRole" required>
+            <option value="" disabled selected>Επιλέξτε ρόλο</option>
+            <option value="worker">Εργαζόμενος – Ψάχνω δουλειά</option>
+            <option value="employer">Εργοδότης – Ψάχνω προσωπικό</option>
           </select>
         </div>
       </div>
@@ -1229,9 +1229,8 @@
       <div class="form-group" style="margin-bottom:12px">
         <label class="main-label">Ρόλος</label>
         <select id="profileRole">
-          <option value="both">Εργαζόμενος &amp; Εργοδότης</option>
-          <option value="worker">Ψάχνω δουλειά</option>
-          <option value="employer">Ψάχνω προσωπικό</option>
+          <option value="worker">Εργαζόμενος – Ψάχνω δουλειά</option>
+          <option value="employer">Εργοδότης – Ψάχνω προσωπικό</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:12px">
@@ -1514,6 +1513,9 @@
       const role = document.getElementById("authRole").value;
       if (!email || !password) return alert("Συμπληρώστε email και κωδικό");
       if (authMode === "register" && !nickname) return alert("Βάλτε ψευδώνυμο");
+      if (authMode === "register" && role !== "worker" && role !== "employer") {
+        return alert("Επιλέξτε αν είστε εργαζόμενος ή εργοδότης");
+      }
 
       const btn = document.getElementById("authSubmitBtn");
       btn.disabled = true;
@@ -2359,7 +2361,8 @@
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileNickname").value = currentUser.nickname || "";
-      document.getElementById("profileRole").value = currentUser.role || "both";
+      document.getElementById("profileRole").value =
+        (currentUser.role === "employer") ? "employer" : "worker";
       document.getElementById("profileEmail").value = currentUser.email || "";
       document.getElementById("profileCurPass").value = "";
       document.getElementById("profileNewPass").value = "";
@@ -2503,7 +2506,11 @@
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) return;
       var roleEl = document.getElementById("authRole");
-      var role = (authMode === "register" && roleEl) ? roleEl.value : "both";
+      var role = (authMode === "register" && roleEl) ? roleEl.value : "worker";
+      if (authMode === "register" && role !== "worker" && role !== "employer") {
+        alert("Επιλέξτε αν είστε εργαζόμενος ή εργοδότης πριν τη σύνδεση με Google");
+        return;
+      }
       try {
         var res = await fetch(API_BASE + "/api/auth/google", {
           method: "POST",
