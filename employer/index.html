@@ -1,1 +1,1263 @@
-.
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <meta name="description" content="Μαστόρια Θεσσαλίας – Βρες μάστορα για το σπίτι ή το χωράφι. Υδραυλικοί, ηλεκτρολόγοι, ψυκτικοί, αγροτικές εργασίες. Δωρεάν.">
+  <title>Μαστόρια Θεσσαλίας – Βρες Μάστορα</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Μαστόρια Θεσσαλίας – Βρες Μάστορα">
+  <meta property="og:description" content="Βρες αξιόπιστο μάστορα κοντά σου – οικιακές & αγροτικές υπηρεσίες στη Θεσσαλία.">
+  <meta property="og:image" content="https://jobs.franklymadear.com/logo3.png">
+  <meta property="og:url" content="https://jobs.franklymadear.com/employer/">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="icon" type="image/png" href="/logo3.png">
+  <link rel="apple-touch-icon" href="/logo3.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --accent: #0f766e;
+      --accent-hover: #0d9488;
+      --accent-soft: #ccfbf1;
+      --home: #2563eb;
+      --home-soft: #dbeafe;
+      --field: #b45309;
+      --field-soft: #fef3c7;
+      --success: #059669;
+      --danger: #dc2626;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .welcome-overlay {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #0f766e 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 99999; padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
+      overflow-y: auto;
+    }
+    .welcome-overlay.hidden { display: none !important; }
+    body.welcome-open { overflow: hidden; position: fixed; width: 100%; height: 100%; }
+    .welcome-card {
+      background: white; border-radius: 20px; padding: 20px 18px 22px;
+      max-width: 400px; width: 100%; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+      animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; flex-direction: column; align-items: center;
+      max-height: calc(100dvh - 24px); overflow-y: auto;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92) translateY(16px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .logo-spin-wrap {
+      width: 140px; height: 140px; margin: 4px auto 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .welcome-logo {
+      width: 140px; height: 140px; border-radius: 50%; object-fit: cover; background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      animation: logoSpinStop 1.4s ease-out forwards;
+    }
+    @keyframes logoSpinStop {
+      0%   { transform: rotate(0deg) scale(0.55); opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { transform: rotate(720deg) scale(1.05); }
+      100% { transform: rotate(720deg) scale(1); }
+    }
+    .welcome-card h1 {
+      font-size: clamp(1.15rem, 5vw, 1.4rem); font-weight: 800; color: var(--primary);
+      margin: 0 0 8px; line-height: 1.25;
+    }
+    .welcome-card p { color: var(--text-muted); font-size: 0.88rem; margin: 0 0 14px; }
+    .welcome-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, #0f766e, #0d9488); color: white; border: none;
+      padding: 14px 28px; border-radius: 12px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(15, 118, 110, 0.35); transition: all 0.25s;
+      width: 100%; max-width: 280px; font-family: inherit;
+    }
+    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15, 118, 110, 0.45); }
+
+    .top-bar {
+      background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+      color: white; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      min-height: 52px;
+    }
+    .top-bar .btn-auth {
+      padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+      border: 1.5px solid rgba(255,255,255,0.35); background: transparent; color: white;
+      cursor: pointer; font-family: inherit;
+    }
+    .top-bar .btn-auth.primary { background: #0f766e; border-color: #0f766e; }
+    .top-bar .btn-auth:hover { background: rgba(255,255,255,0.12); }
+    .top-bar .btn-auth.primary:hover { background: #0d9488; }
+    .top-bar .auth-user { color: white; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 20px 16px 80px; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .site-logo-wide {
+      max-width: min(300px, 85vw); width: 100%; height: auto;
+      margin: 0 auto 10px; display: block; object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(15,23,42,0.12));
+    }
+    .header h1 { font-size: 1.55rem; font-weight: 800; color: var(--primary); letter-spacing: -0.4px; }
+    .header p { color: var(--text-muted); margin-top: 4px; font-size: 0.95rem; }
+
+    .screen { display: none; animation: fadeIn 0.25s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 22px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); background: #f8fafc; }
+    .btn-ghost { background: transparent; color: var(--text-muted); padding: 8px 12px; }
+    .btn-full { width: 100%; }
+    .btn-sm { padding: 8px 14px; font-size: 0.85rem; border-radius: 8px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px; background: none; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 500; cursor: pointer;
+      margin-bottom: 16px; padding: 0; font-family: inherit;
+    }
+    .back-btn:hover { color: var(--accent); }
+
+    /* Category split cards */
+    .cat-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px;
+    }
+    @media (max-width: 520px) { .cat-split { grid-template-columns: 1fr; } }
+    .cat-card {
+      background: var(--card); border: 2px solid var(--border); border-radius: 16px;
+      padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.22s;
+      box-shadow: var(--shadow);
+    }
+    .cat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .cat-card.home { border-color: #93c5fd; }
+    .cat-card.home:hover, .cat-card.home.active { border-color: var(--home); background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+    .cat-card.field { border-color: #fcd34d; }
+    .cat-card.field:hover, .cat-card.field.active { border-color: var(--field); background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+    .cat-card .icon { font-size: 2.2rem; margin-bottom: 8px; }
+    .cat-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .cat-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.35; }
+
+    .section-title {
+      font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 24px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    /* Specialty chips */
+    .spec-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+    }
+    .spec-chip {
+      padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+      border: 1.5px solid var(--border); background: white; cursor: pointer;
+      transition: all 0.2s; font-family: inherit; color: var(--text);
+    }
+    .spec-chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .spec-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .spec-chip.home-tone.active { background: var(--home); border-color: var(--home); }
+    .spec-chip.field-tone.active { background: var(--field); border-color: var(--field); }
+
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
+    .action-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 16px; cursor: pointer; transition: all 0.22s; text-align: left;
+      box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px;
+    }
+    .action-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .action-card .icon {
+      width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; background: var(--accent-soft);
+    }
+    .action-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
+    .action-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* Master cards */
+    .master-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); transition: box-shadow 0.2s;
+      display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .master-card:hover { box-shadow: var(--shadow-lg); }
+    .master-card.home-type { border-left: 4px solid var(--home); }
+    .master-card.field-type { border-left: 4px solid var(--field); }
+    .mc-photo {
+      width: 72px; height: 72px; border-radius: 12px; object-fit: cover;
+      border: 1px solid var(--border); flex-shrink: 0; background: #f8fafc;
+    }
+    .mc-body { flex: 1; min-width: 180px; }
+    .mc-name { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .mc-spec { color: var(--accent); font-weight: 600; font-size: 0.9rem; margin: 2px 0 6px; }
+    .badge {
+      display: inline-block; background: #e0f2fe; color: #0369a1; padding: 3px 9px;
+      border-radius: 999px; font-size: 0.72rem; font-weight: 500; margin: 2px 3px 2px 0;
+    }
+    .badge.home-b { background: #dbeafe; color: #1d4ed8; }
+    .badge.field-b { background: #fef3c7; color: #92400e; }
+    .mc-desc { font-size: 0.88rem; color: var(--text); margin: 8px 0; line-height: 1.45; }
+    .mc-contact {
+      background: #f8fafc; padding: 10px 12px; border-radius: 10px; margin-top: 8px;
+      font-size: 0.88rem; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .mc-contact a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .mc-contact a:hover { text-decoration: underline; }
+    .mc-gallery {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+    }
+    .mc-gallery img {
+      width: 56px; height: 56px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .filter-bar {
+      background: var(--card); padding: 14px; border-radius: var(--radius); margin-bottom: 16px;
+      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px;
+    }
+    .filter-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .filter-row input, .filter-row select {
+      flex: 1; min-width: 130px; padding: 11px 12px; border: 1.5px solid var(--border);
+      border-radius: 9px; font-size: 0.95rem; font-family: inherit;
+    }
+
+    .form-card {
+      background: var(--card); border-radius: var(--radius); padding: 22px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    fieldset {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 18px; background: #f8fafc;
+    }
+    legend {
+      font-weight: 700; color: var(--accent); background: white; padding: 4px 12px;
+      border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem;
+    }
+    .form-group { margin-bottom: 14px; }
+    label.main-label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary); font-size: 0.9rem; }
+    input[type="text"], input[type="tel"], input[type="email"], input[type="password"], select, textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 16px; font-family: inherit; transition: border-color 0.2s; background: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    .photo-upload {
+      border: 2px dashed var(--border); border-radius: 12px; padding: 18px; text-align: center;
+      cursor: pointer; transition: all 0.2s; background: #f8fafc;
+    }
+    .photo-upload:hover, .photo-upload.dragover { border-color: var(--accent); background: var(--accent-soft); }
+    .photo-upload input { display: none; }
+    .photo-preview { margin-top: 10px; display: none; flex-wrap: wrap; gap: 8px; }
+    .photo-preview.active { display: flex; }
+    .photo-preview img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); }
+
+    .loc-map-wrap { margin-top: 8px; }
+    .loc-search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .loc-search-row input { flex: 1; }
+    .loc-map { height: 220px; border-radius: 12px; border: 1.5px solid var(--border); z-index: 1; }
+    .loc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .loc-chip {
+      background: var(--accent-soft); color: #0f766e; padding: 5px 10px; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .loc-chip button {
+      border: none; background: transparent; color: #0f766e; cursor: pointer;
+      font-size: 1rem; line-height: 1; padding: 0 2px;
+    }
+
+    .state-box { text-align: center; padding: 36px 16px; color: var(--text-muted); }
+    .state-box .emoji { font-size: 2.2rem; margin-bottom: 8px; }
+
+    /* Auth modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 10000;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: white; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+    .modal-box h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 14px; color: var(--primary); }
+    .modal-close {
+      float: right; border: none; background: #f1f5f9; width: 32px; height: 32px;
+      border-radius: 8px; cursor: pointer; font-size: 1.1rem; color: var(--text-muted);
+    }
+    .tabs {
+      display: flex; gap: 6px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px; background: transparent; border: none; border-radius: 8px;
+      font-weight: 600; font-size: 0.88rem; cursor: pointer; color: var(--text-muted);
+      font-family: inherit; transition: all 0.2s;
+    }
+    .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+    .quota-info {
+      background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
+      padding: 10px 14px; font-size: 0.88rem; color: #065f46; margin-bottom: 14px;
+    }
+    .footer-legal {
+      text-align: center; padding: 20px 16px; font-size: 0.8rem; color: var(--text-muted);
+    }
+    .footer-legal a { color: var(--accent); text-decoration: none; }
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 8px; }
+    .lightbox-close {
+      position: absolute; top: 16px; right: 16px; background: white; border: none;
+      width: 40px; height: 40px; border-radius: 50%; font-size: 1.3rem; cursor: pointer;
+    }
+  </style>
+</head>
+<body class="welcome-open">
+
+  <!-- Welcome -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-card">
+      <div class="logo-spin-wrap">
+        <img src="https://jobs.franklymadear.com/logo3.png" alt="Μαστόρια Θεσσαλίας" class="welcome-logo" id="welcomeLogo"
+             onerror="this.src='https://jobs.franklymadear.com/logo.png'">
+      </div>
+      <h1>Μαστόρια Θεσσαλίας</h1>
+      <p>Βρες αξιόπιστο μάστορα για το σπίτι ή το χωράφι – υδραυλικοί, ηλεκτρολόγοι, ψυκτικοί, αγροτικές εργασίες και άλλα.</p>
+      <button type="button" class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε →</button>
+    </div>
+  </div>
+
+  <!-- Top bar -->
+  <div class="top-bar" id="topBar">
+    <div id="authBar">
+      <button type="button" class="btn-auth" onclick="openAuthModal('login')">Σύνδεση</button>
+      <button type="button" class="btn-auth primary" onclick="openAuthModal('register')">Εγγραφή Μάστορα</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- HOME -->
+    <div id="screen-home" class="screen active">
+      <div class="header">
+        <img src="https://jobs.franklymadear.com/logo3.png" alt="Μαστόρια Θεσσαλίας" class="site-logo-wide"
+             onerror="this.onerror=null;this.src='https://jobs.franklymadear.com/logo.png'">
+        <h1>Βρες Μάστορα κοντά σου</h1>
+        <p>Οικιακές υπηρεσίες · Αγροτικές εργασίες · Θεσσαλία</p>
+      </div>
+
+      <div class="cat-split">
+        <div class="cat-card home" onclick="browseCategory('home')">
+          <div class="icon">🏠</div>
+          <h3>Οικιακές Υπηρεσίες</h3>
+          <p>Υδραυλικός, ηλεκτρολόγος, ψυκτικός, πλακάκια, βάψιμο, ανακαίνιση – για το σπίτι.</p>
+        </div>
+        <div class="cat-card field" onclick="browseCategory('field')">
+          <div class="icon">🌾</div>
+          <h3>Αγροτικές / Υπαίθριες</h3>
+          <p>Χωράφια, κλάδεμα, άρδευση, μηχανήματα, περίφραξη, γεωργικές εργασίες.</p>
+        </div>
+      </div>
+
+      <div class="section-title">Τι θέλετε να κάνετε;</div>
+      <div class="action-grid">
+        <div class="action-card" onclick="browseCategory('all')">
+          <div class="icon">🔍</div>
+          <h3>Δες όλα τα μαστόρια</h3>
+          <p>Περιήγηση σε όλους τους εγγεγραμμένους τεχνίτες της περιοχής.</p>
+        </div>
+        <div class="action-card" onclick="requireAuthThen('screen-post')">
+          <div class="icon">🛠️</div>
+          <h3>Είμαι μάστορας</h3>
+          <p>Εγγραφή & δημοσίευση προφίλ – περιοχή, τηλέφωνο, φωτογραφίες δουλειών.</p>
+        </div>
+      </div>
+
+      <div class="section-title">Πρόσφατα προφίλ</div>
+      <div id="home-masters-list">
+        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση…</div>
+      </div>
+      <div style="text-align:center;margin-top:12px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="browseCategory('all')">Δες όλα →</button>
+      </div>
+    </div>
+
+    <!-- BROWSE -->
+    <div id="screen-browse" class="screen">
+      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
+      <h2 id="browseTitle" style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:12px;">Όλα τα μαστόρια</h2>
+
+      <div class="filter-bar">
+        <div class="filter-row">
+          <input type="text" id="filterSearch" placeholder="Αναζήτηση ονόματος, ειδικότητας…" oninput="filterMasters()">
+          <select id="filterSpec" onchange="filterMasters()">
+            <option value="">Όλες οι ειδικότητες</option>
+          </select>
+          <select id="filterLoc" onchange="filterMasters()">
+            <option value="">Όλες οι περιοχές</option>
+          </select>
+        </div>
+        <div class="spec-grid" id="specChips"></div>
+      </div>
+
+      <div id="browse-list">
+        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση…</div>
+      </div>
+    </div>
+
+    <!-- POST / EDIT PROFILE -->
+    <div id="screen-post" class="screen">
+      <button class="back-btn" onclick="showScreen('screen-home'); clearEditing();">← Πίσω</button>
+      <h2 style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:6px;" id="postTitle">Δημοσίευση προφίλ μάστορα</h2>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:14px;">Συμπληρώστε τα στοιχεία σας. Οι επισκέπτες θα σας βρίσκουν ανά κατηγορία και περιοχή.</p>
+
+      <div class="quota-info" id="quotaInfo">Φορτώνει υπόλοιπο αγγελιών…</div>
+
+      <form id="masterForm" class="form-card" onsubmit="handleMasterSubmit(event)">
+        <fieldset>
+          <legend>Βασικά στοιχεία</legend>
+          <div class="form-group">
+            <label class="main-label" for="m_name">Όνομα / Επωνυμία επιχείρησης *</label>
+            <input type="text" id="m_name" required maxlength="80" placeholder="π.χ. Γιώργος Παπαδόπουλος ή Υδραυλικά Παπαδόπουλος">
+          </div>
+          <div class="form-group">
+            <label class="main-label" for="m_specialty">Κατηγορία / Ειδικότητα *</label>
+            <select id="m_specialty" required></select>
+          </div>
+          <div class="form-group">
+            <label class="main-label" for="m_address">Διεύθυνση έδρας (προαιρετικά)</label>
+            <input type="text" id="m_address" maxlength="120" placeholder="π.χ. Οδός Παπαναστασίου 12, Τρίκαλα">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Επικοινωνία</legend>
+          <div class="form-group">
+            <label class="main-label" for="m_phone">Τηλέφωνο *</label>
+            <input type="tel" id="m_phone" required placeholder="69xxxxxxxx">
+          </div>
+          <div class="form-group">
+            <label class="main-label" for="m_email">Email *</label>
+            <input type="email" id="m_email" required placeholder="email@example.com">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Περιοχές που εξυπηρετείτε *</legend>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:8px;">Κάντε κλικ στον χάρτη ή αναζητήστε περιοχή (μέχρι 5).</p>
+          <div class="loc-map-wrap" data-form="master">
+            <div class="loc-search-row">
+              <input type="text" id="m_loc_search" placeholder="Αναζήτηση περιοχής…">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="searchLocation('master')">Εύρεση</button>
+            </div>
+            <div id="m_loc_map" class="loc-map"></div>
+            <div class="loc-chips" id="m_loc_chips"></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Περιγραφή & φωτογραφίες</legend>
+          <div class="form-group">
+            <label class="main-label" for="m_comments">Περιγραφή εργασιών / εμπειρία</label>
+            <textarea id="m_comments" placeholder="Τι εργασίες αναλαμβάνετε, χρόνια εμπειρίας, ωράριο κ.λπ."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="main-label">Λογότυπο ή κύρια φωτογραφία</label>
+            <div class="photo-upload" id="m_logo_box" onclick="document.getElementById('m_logo').click()">
+              <div>📷 Πατήστε για ανέβασμα λογοτύπου</div>
+              <input type="file" id="m_logo" accept="image/*" onchange="previewPhoto('m_logo','m_logo_preview')">
+            </div>
+            <div class="photo-preview" id="m_logo_preview"></div>
+          </div>
+          <div class="form-group">
+            <label class="main-label">Φωτογραφίες δουλειών / επιχείρησης (έως 4)</label>
+            <div class="photo-upload" id="m_photos_box" onclick="document.getElementById('m_photos').click()">
+              <div>🖼️ Πατήστε για ανέβασμα φωτογραφιών</div>
+              <input type="file" id="m_photos" accept="image/*" multiple onchange="previewPhotos('m_photos','m_photos_preview')">
+            </div>
+            <div class="photo-preview" id="m_photos_preview"></div>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary btn-full" id="masterSubmitBtn">Δημοσίευση προφίλ</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer-legal">
+    <a href="https://jobs.franklymadear.com/">Ψαχνς Δλεια</a> ·
+    <a href="#" onclick="openLegal('terms');return false;">Όροι</a> ·
+    <a href="#" onclick="openLegal('privacy');return false;">Απόρρητο</a><br>
+    © Μαστόρια Θεσσαλίας · franklymadear.com
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-box">
+      <button type="button" class="modal-close" onclick="closeAuthModal()">×</button>
+      <h2 id="authTitle">Σύνδεση</h2>
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="tabLogin" onclick="setAuthMode('login')">Σύνδεση</button>
+        <button type="button" class="tab-btn" id="tabRegister" onclick="setAuthMode('register')">Εγγραφή</button>
+      </div>
+      <form id="authForm" onsubmit="handleAuth(event)">
+        <div class="form-group" id="authNickWrap" style="display:none;">
+          <label class="main-label">Ψευδώνυμο / Όνομα</label>
+          <input type="text" id="authNickname" maxlength="40" placeholder="π.χ. Γιώργος Υδραυλικός">
+        </div>
+        <div class="form-group">
+          <label class="main-label">Email</label>
+          <input type="email" id="authEmail" required placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+          <label class="main-label">Κωδικός</label>
+          <input type="password" id="authPassword" required minlength="6" placeholder="τουλάχιστον 6 χαρακτήρες">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">Σύνδεση</button>
+      </form>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px;text-align:center;">
+        Η εγγραφή είναι δωρεάν. Νέοι μάστορες ξεκινούν με 2 δωρεάν προφίλ.
+      </p>
+    </div>
+  </div>
+
+  <!-- Legal Modal -->
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal-box" style="max-width:520px;">
+      <button type="button" class="modal-close" onclick="closeLegal()">×</button>
+      <h2 id="legalTitle"></h2>
+      <div id="legalBody" style="font-size:0.9rem;line-height:1.55;"></div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button type="button" class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <script>
+    // ========== CONFIG ==========
+    const API_BASE = "https://jobs.kafevolta.workers.dev";
+    const API_URL = API_BASE + "/api";
+    // Χρησιμοποιούμε /api/master για νέα endpoints (backend extension)
+    // Αν δεν υπάρχει ακόμα, fallback σε /api/employer με specialty prefixes
+
+    // Κατηγορίες μαστόρων – ξεκάθαρος διαχωρισμός σπίτι / χωράφι
+    const MASTER_CATEGORIES = {
+      "🏠 Οικιακές Υπηρεσίες (Σπίτι)": [
+        "Υδραυλικός",
+        "Ηλεκτρολόγος",
+        "Ψυκτικός / Κλιματισμός",
+        "Πλακάκια / Επενδύσεις",
+        "Βάψιμο / Ζωγραφική",
+        "Χτίσιμο / Σοβάτισμα",
+        "Ανακαίνιση",
+        "Σιδηρουργός / Κάγκελα",
+        "Ξυλουργός / Έπιπλα",
+        "Σκεπές / Μονώσεις",
+        "Μερεμέτια σπιτιού",
+        "Συναρμολόγηση επίπλων",
+        "Καθαρισμοί / Απολύμανση"
+      ],
+      "🌾 Αγροτικές / Υπαίθριες": [
+        "Αγροτικά μηχανήματα / Service",
+        "Κλάδεμα / Δεντροκομία",
+        "Άρδευση / Πηγάδια",
+        "Περίφραξη χωραφιών",
+        "Ελαιοσυλλογή / Συγκομιδή",
+        "Κηπουρική / Τοπίο",
+        "Γεωργικές κατασκευές",
+        "Μεταφορές αγροτικές",
+        "Χωματουργικά",
+        "Άλλες αγροτικές εργασίες"
+      ]
+    };
+
+    const HOME_SPECS = new Set(MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"]);
+    const FIELD_SPECS = new Set(MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"]);
+
+    let currentUser = null;
+    let authMode = "login";
+    let currentMasters = [];
+    let browseFilter = "all"; // all | home | field
+    let editingId = null;
+    let selectedLocations = { master: [] };
+    let mapInstance = null;
+    let mapMarkers = [];
+    const THESSALY_CENTER = [39.55, 22.05];
+
+    // ========== AUTH HELPERS ==========
+    function getToken() { return localStorage.getItem("masters_token") || ""; }
+    function setToken(t) {
+      if (t) localStorage.setItem("masters_token", t);
+      else localStorage.removeItem("masters_token");
+    }
+    function authHeaders() {
+      const h = { "Content-Type": "application/json" };
+      const t = getToken();
+      if (t) h["Authorization"] = "Bearer " + t;
+      return h;
+    }
+
+    function closeWelcome() {
+      document.getElementById("welcomeOverlay").classList.add("hidden");
+      document.body.classList.remove("welcome-open");
+      try { localStorage.setItem("masters_welcome_seen", "1"); } catch(e) {}
+    }
+    if (localStorage.getItem("masters_welcome_seen") === "1") {
+      document.getElementById("welcomeOverlay").classList.add("hidden");
+      document.body.classList.remove("welcome-open");
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      const el = document.getElementById(id);
+      if (el) el.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (id === "screen-post") {
+        setTimeout(() => initMap("master"), 200);
+        updateQuotaInfo();
+      }
+    }
+
+    function requireAuthThen(screenId) {
+      if (!currentUser) {
+        openAuthModal("register");
+        return;
+      }
+      showScreen(screenId);
+    }
+
+    // ========== AUTH UI ==========
+    function openAuthModal(mode) {
+      setAuthMode(mode || "login");
+      document.getElementById("authModal").classList.add("active");
+    }
+    function closeAuthModal() {
+      document.getElementById("authModal").classList.remove("active");
+    }
+    function setAuthMode(mode) {
+      authMode = mode;
+      document.getElementById("tabLogin").classList.toggle("active", mode === "login");
+      document.getElementById("tabRegister").classList.toggle("active", mode === "register");
+      document.getElementById("authTitle").textContent = mode === "login" ? "Σύνδεση" : "Εγγραφή Μάστορα";
+      document.getElementById("authSubmitBtn").textContent = mode === "login" ? "Σύνδεση" : "Εγγραφή";
+      document.getElementById("authNickWrap").style.display = mode === "register" ? "block" : "none";
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById("authEmail").value.trim().toLowerCase();
+      const password = document.getElementById("authPassword").value;
+      const nickname = (document.getElementById("authNickname").value || "").trim();
+      const btn = document.getElementById("authSubmitBtn");
+      btn.disabled = true;
+      try {
+        if (authMode === "register") {
+          if (!nickname || nickname.length < 2) { alert("Συμπληρώστε ψευδώνυμο / όνομα"); return; }
+          const res = await fetch(API_BASE + "/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, nickname, role: "employer" })
+          });
+          const data = await res.json();
+          if (!res.ok) { alert(data.error || "Σφάλμα εγγραφής"); return; }
+          setToken(data.token);
+          currentUser = data.user;
+        } else {
+          const res = await fetch(API_BASE + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (!res.ok) { alert(data.error || "Λάθος στοιχεία"); return; }
+          setToken(data.token);
+          currentUser = data.user;
+        }
+        closeAuthModal();
+        renderAuthBar();
+        updateQuotaInfo();
+        loadHomeMasters();
+      } catch (err) {
+        alert("Αδυναμία σύνδεσης με τον διακομιστή");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function loadCurrentUser() {
+      if (!getToken()) { currentUser = null; renderAuthBar(); return; }
+      try {
+        const res = await fetch(API_URL + "/me", { headers: authHeaders() });
+        if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); return; }
+        currentUser = await res.json();
+        renderAuthBar();
+      } catch (e) {
+        currentUser = null;
+        renderAuthBar();
+      }
+    }
+
+    function renderAuthBar() {
+      const bar = document.getElementById("authBar");
+      if (!currentUser) {
+        bar.innerHTML =
+          '<button type="button" class="btn-auth" onclick="openAuthModal(\'login\')">Σύνδεση</button>' +
+          '<button type="button" class="btn-auth primary" onclick="openAuthModal(\'register\')">Εγγραφή Μάστορα</button>';
+        return;
+      }
+      const slots = currentUser.free_slots != null ? currentUser.free_slots : "?";
+      bar.innerHTML =
+        '<span class="auth-user">👤 ' + escapeHtml(currentUser.nickname || currentUser.email) +
+        ' · <span style="color:#5eead4">' + slots + ' δωρεάν</span></span>' +
+        '<button type="button" class="btn-auth" onclick="showScreen(\'screen-post\')">+ Προφίλ</button>' +
+        '<button type="button" class="btn-auth" onclick="logout()">Έξοδος</button>';
+    }
+
+    async function logout() {
+      try { await fetch(API_BASE + "/api/logout", { method: "POST", headers: authHeaders() }); } catch(e) {}
+      setToken("");
+      currentUser = null;
+      renderAuthBar();
+      showScreen("screen-home");
+    }
+
+    function updateQuotaInfo() {
+      const el = document.getElementById("quotaInfo");
+      if (!el) return;
+      if (!currentUser) {
+        el.textContent = "Απαιτείται σύνδεση για δημοσίευση.";
+        return;
+      }
+      const free = currentUser.free_slots != null ? currentUser.free_slots : 0;
+      const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
+      el.innerHTML = free > 0
+        ? "✅ Υπόλοιπο: <strong>" + free + "</strong> δωρεάν προφίλ (έχετε χρησιμοποιήσει " + used + ")."
+        : "⚠️ Έχετε εξαντλήσει τις δωρεάν αγγελίες. Επικοινωνήστε για αναβάθμιση (Ko-fi / email).";
+    }
+
+    // ========== CATEGORIES INIT ==========
+    function initSpecialtySelect() {
+      const sel = document.getElementById("m_specialty");
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- Επιλέξτε ειδικότητα --</option>';
+      for (const [group, items] of Object.entries(MASTER_CATEGORIES)) {
+        const og = document.createElement("optgroup");
+        og.label = group;
+        items.forEach(i => {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = i;
+          og.appendChild(opt);
+        });
+        sel.appendChild(og);
+      }
+    }
+
+    // ========== MAP ==========
+    function initMap(form) {
+      const el = document.getElementById("m_loc_map");
+      if (!el) return;
+      if (mapInstance) {
+        setTimeout(() => mapInstance.invalidateSize(), 150);
+        return;
+      }
+      const bounds = L.latLngBounds([38.85, 20.85], [40.25, 23.55]);
+      mapInstance = L.map("m_loc_map", {
+        scrollWheelZoom: true,
+        maxBounds: bounds,
+        maxBoundsViscosity: 1.0,
+        minZoom: 7,
+        maxZoom: 16
+      }).setView(THESSALY_CENTER, 8);
+      mapInstance.setMaxBounds(bounds);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 16, attribution: "&copy; OpenStreetMap"
+      }).addTo(mapInstance);
+      L.rectangle(bounds, { color: "#0f766e", weight: 1, fillOpacity: 0.03, interactive: false }).addTo(mapInstance);
+      mapInstance.on("click", async function(e) {
+        try {
+          const url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + e.latlng.lat +
+            "&lon=" + e.latlng.lng + "&zoom=14&addressdetails=1&accept-language=el";
+          const res = await fetch(url, { headers: { "Accept-Language": "el" } });
+          const data = await res.json();
+          let name = (data.address && (data.address.village || data.address.town || data.address.city || data.address.municipality)) ||
+            (data.display_name || "").split(",")[0];
+          if (name) addLocation(form, name, e.latlng.lat, e.latlng.lng);
+        } catch (err) {
+          addLocation(form, e.latlng.lat.toFixed(4) + ", " + e.latlng.lng.toFixed(4), e.latlng.lat, e.latlng.lng);
+        }
+      });
+      setTimeout(() => mapInstance.invalidateSize(), 250);
+    }
+
+    async function searchLocation(form) {
+      const input = document.getElementById("m_loc_search");
+      const q = (input.value || "").trim();
+      if (!q) return;
+      try {
+        let url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+          encodeURIComponent(q + ", Θεσσαλία, Ελλάδα") + "&limit=5&accept-language=el&countrycodes=gr";
+        let res = await fetch(url, { headers: { "Accept-Language": "el" } });
+        let data = await res.json();
+        if (!data.length) {
+          url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+            encodeURIComponent(q + ", Ελλάδα") + "&limit=5&accept-language=el&countrycodes=gr";
+          res = await fetch(url, { headers: { "Accept-Language": "el" } });
+          data = await res.json();
+        }
+        if (!data.length) return alert("Δεν βρέθηκε τοποθεσία");
+        const item = data[0];
+        const name = (item.display_name || "").split(",")[0].trim();
+        addLocation(form, name, parseFloat(item.lat), parseFloat(item.lon));
+        input.value = "";
+      } catch (e) {
+        alert("Σφάλμα αναζήτησης");
+      }
+    }
+
+    function addLocation(form, name, lat, lng) {
+      if (!name) return;
+      if (selectedLocations.master.length >= 5) return alert("Μέχρι 5 τοποθεσίες");
+      if (selectedLocations.master.some(l => l.name.toLowerCase() === name.toLowerCase())) return;
+      selectedLocations.master.push({ name, lat, lng });
+      renderLocChips();
+      if (mapInstance && lat && lng) {
+        const m = L.marker([lat, lng]).addTo(mapInstance).bindPopup(name);
+        mapMarkers.push(m);
+        mapInstance.setView([lat, lng], 11);
+      }
+    }
+
+    function removeLocation(idx) {
+      selectedLocations.master.splice(idx, 1);
+      if (mapInstance) {
+        mapMarkers.forEach(m => { try { mapInstance.removeLayer(m); } catch(e) {} });
+        mapMarkers = [];
+        selectedLocations.master.forEach(l => {
+          if (l.lat && l.lng) {
+            const m = L.marker([l.lat, l.lng]).addTo(mapInstance).bindPopup(l.name);
+            mapMarkers.push(m);
+          }
+        });
+      }
+      renderLocChips();
+    }
+
+    function renderLocChips() {
+      const box = document.getElementById("m_loc_chips");
+      if (!box) return;
+      box.innerHTML = selectedLocations.master.map((l, i) =>
+        '<span class="loc-chip">' + escapeHtml(l.name) +
+        ' <button type="button" onclick="removeLocation(' + i + ')">×</button></span>'
+      ).join("");
+    }
+
+    // ========== PHOTOS ==========
+    function previewPhoto(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const prev = document.getElementById(previewId);
+      if (!input.files || !input.files[0]) return;
+      const url = URL.createObjectURL(input.files[0]);
+      prev.innerHTML = '<img src="' + url + '" alt="">';
+      prev.classList.add("active");
+    }
+    function previewPhotos(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const prev = document.getElementById(previewId);
+      if (!input.files || !input.files.length) return;
+      const files = Array.from(input.files).slice(0, 4);
+      prev.innerHTML = files.map(f => '<img src="' + URL.createObjectURL(f) + '" alt="">').join("");
+      prev.classList.add("active");
+    }
+
+    async function uploadPhoto(file) {
+      if (!file) return "";
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const res = await fetch(API_BASE + "/api/upload", { method: "POST", body: formData });
+        if (!res.ok) return "";
+        const data = await res.json();
+        return data.url || "";
+      } catch (e) { return ""; }
+    }
+
+    // ========== SUBMIT ==========
+    async function handleMasterSubmit(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        alert("Απαιτείται εγγραφή / σύνδεση.");
+        openAuthModal("register");
+        return;
+      }
+      const locs = selectedLocations.master || [];
+      if (!locs.length) { alert("Επιλέξτε τουλάχιστον μία περιοχή στον χάρτη."); return; }
+      const specialty = (document.getElementById("m_specialty").value || "").trim();
+      if (!specialty) { alert("Επιλέξτε ειδικότητα."); return; }
+
+      const btn = document.getElementById("masterSubmitBtn");
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Αποστολή…";
+
+      try {
+        let logoUrl = "";
+        const logoInput = document.getElementById("m_logo");
+        if (logoInput && logoInput.files && logoInput.files[0]) {
+          btn.textContent = "Ανέβασμα λογοτύπου…";
+          logoUrl = await uploadPhoto(logoInput.files[0]);
+        }
+        const photoUrls = [];
+        const photosInput = document.getElementById("m_photos");
+        if (photosInput && photosInput.files && photosInput.files.length) {
+          btn.textContent = "Ανέβασμα φωτογραφιών…";
+          const files = Array.from(photosInput.files).slice(0, 4);
+          for (const f of files) {
+            const u = await uploadPhoto(f);
+            if (u) photoUrls.push(u);
+          }
+        }
+
+        const address = (document.getElementById("m_address").value || "").trim();
+        let comments = (document.getElementById("m_comments").value || "").trim();
+        if (address) comments = (comments ? comments + "\n" : "") + "📍 Διεύθυνση: " + address;
+        if (photoUrls.length) {
+          comments = (comments ? comments + "\n" : "") + "PHOTOS:" + JSON.stringify(photoUrls);
+        }
+
+        const payload = {
+          name: document.getElementById("m_name").value.trim(),
+          specialty: specialty,
+          task: specialty,
+          locations: locs.map(l => l.name),
+          phone: document.getElementById("m_phone").value.trim(),
+          email: document.getElementById("m_email").value.trim(),
+          comments: comments,
+          is_urgent: false,
+          photo_url: logoUrl,
+          logo_url: logoUrl
+        };
+
+        btn.textContent = editingId ? "Αποθήκευση…" : "Δημοσίευση…";
+        const isEdit = !!editingId;
+        if (isEdit) payload.id = editingId;
+
+        // Prefer /api/master if exists, else /api/employer (same quota system)
+        let res = await fetch(API_URL + "/master", {
+          method: isEdit ? "PUT" : "POST",
+          headers: authHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.status === 404) {
+          res = await fetch(API_URL + "/employer", {
+            method: isEdit ? "PUT" : "POST",
+            headers: authHeaders(),
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          if (data.free_slots != null) currentUser.free_slots = data.free_slots;
+          if (data.ads_used != null) currentUser.ads_used = data.ads_used;
+          renderAuthBar();
+          updateQuotaInfo();
+          alert(isEdit ? "✅ Το προφίλ ενημερώθηκε." : "✅ Το προφίλ δημοσιεύτηκε!");
+          clearEditing();
+          e.target.reset();
+          selectedLocations.master = [];
+          renderLocChips();
+          document.getElementById("m_logo_preview").classList.remove("active");
+          document.getElementById("m_logo_preview").innerHTML = "";
+          document.getElementById("m_photos_preview").classList.remove("active");
+          document.getElementById("m_photos_preview").innerHTML = "";
+          showScreen("screen-home");
+          loadHomeMasters();
+        } else {
+          const err = await res.json().catch(() => ({}));
+          alert(err.error || "Σφάλμα κατά τη δημοσίευση");
+        }
+      } catch (err) {
+        alert(err.message || "Αδυναμία σύνδεσης");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    }
+
+    function clearEditing() {
+      editingId = null;
+      document.getElementById("postTitle").textContent = "Δημοσίευση προφίλ μάστορα";
+      document.getElementById("masterSubmitBtn").textContent = "Δημοσίευση προφίλ";
+    }
+
+    // ========== LOAD & RENDER ==========
+    function isMasterAd(ad) {
+      const s = (ad.specialty || ad.task || "").trim();
+      return HOME_SPECS.has(s) || FIELD_SPECS.has(s) ||
+        /υδραυλ|ηλεκτρολ|ψυκτ|πλακ|βάψ|χτίσ|ανακαίν|σιδηρ|ξυλουργ|σκεπ|μερεμ|αγροτ|κλάδ|άρδευ|περίφρα|ελαιο|κηπουρ|χωμάτ/i.test(s);
+    }
+
+    function adType(ad) {
+      const s = (ad.specialty || ad.task || "").trim();
+      if (FIELD_SPECS.has(s) || /αγροτ|κλάδ|άρδευ|περίφρα|ελαιο|κηπουρ|χωμάτ|γεωργ/i.test(s)) return "field";
+      return "home";
+    }
+
+    function parsePhotos(comments) {
+      if (!comments) return [];
+      const m = String(comments).match(/PHOTOS:(\[[^\]]*\])/);
+      if (!m) return [];
+      try { return JSON.parse(m[1]); } catch(e) { return []; }
+    }
+
+    function cleanComments(comments) {
+      if (!comments) return "";
+      return String(comments)
+        .replace(/PHOTOS:\[[^\]]*\]/g, "")
+        .replace(/📍 Διεύθυνση:.*$/gm, "")
+        .trim();
+    }
+
+    function extractAddress(comments) {
+      if (!comments) return "";
+      const m = String(comments).match(/📍 Διεύθυνση:\s*(.+)/);
+      return m ? m[1].trim() : "";
+    }
+
+    async function loadMasters() {
+      try {
+        // Try dedicated endpoint first
+        let res = await fetch(API_URL + "/masters");
+        if (!res.ok) res = await fetch(API_URL + "/employers");
+        let arr = await res.json();
+        if (!Array.isArray(arr)) arr = [];
+        currentMasters = arr.filter(isMasterAd);
+        return currentMasters;
+      } catch (e) {
+        currentMasters = [];
+        return [];
+      }
+    }
+
+    function renderMasterCard(ad) {
+      const type = adType(ad);
+      let locs = [];
+      try { locs = typeof ad.locations === "string" ? JSON.parse(ad.locations || "[]") : (ad.locations || []); } catch(e) {}
+      const photo = ad.logo_url || ad.photo_url || "";
+      const photos = parsePhotos(ad.comments);
+      const desc = cleanComments(ad.comments);
+      const address = extractAddress(ad.comments);
+      const typeBadge = type === "field"
+        ? '<span class="badge field-b">🌾 Αγροτική</span>'
+        : '<span class="badge home-b">🏠 Οικιακή</span>';
+
+      let gallery = "";
+      if (photos.length) {
+        gallery = '<div class="mc-gallery">' + photos.map(u =>
+          '<img src="' + escapeHtml(u) + '" alt="" onclick="openLightbox(\'' + escapeHtml(u) + '\')" onerror="this.style.display=\'none\'">'
+        ).join("") + '</div>';
+      }
+
+      return '<div class="master-card ' + type + '-type">' +
+        (photo
+          ? '<img class="mc-photo" src="' + escapeHtml(photo) + '" alt="" onerror="this.style.display=\'none\'">'
+          : '<div class="mc-photo" style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🛠️</div>') +
+        '<div class="mc-body">' +
+          '<div class="mc-name">' + escapeHtml(ad.name) + '</div>' +
+          '<div class="mc-spec">' + escapeHtml(ad.specialty || ad.task || "") + ' ' + typeBadge + '</div>' +
+          '<div>' + (locs.slice(0, 4).map(l => '<span class="badge">' + escapeHtml(l) + '</span>').join("")) + '</div>' +
+          (address ? '<div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;">📍 ' + escapeHtml(address) + '</div>' : "") +
+          (desc ? '<div class="mc-desc">' + escapeHtml(desc.slice(0, 200)) + (desc.length > 200 ? "…" : "") + '</div>' : "") +
+          gallery +
+          '<div class="mc-contact">' +
+            (ad.phone ? '<a href="tel:' + escapeHtml(String(ad.phone).replace(/\s/g,"")) + '">📞 ' + escapeHtml(ad.phone) + '</a>' : "") +
+            (ad.email ? '<a href="mailto:' + escapeHtml(ad.email) + '">✉️ Email</a>' : "") +
+          '</div>' +
+        '</div></div>';
+    }
+
+    async function loadHomeMasters() {
+      const box = document.getElementById("home-masters-list");
+      if (!box) return;
+      await loadMasters();
+      if (!currentMasters.length) {
+        box.innerHTML = '<div class="state-box"><div class="emoji">🛠️</div>Δεν υπάρχουν ακόμα προφίλ μαστόρων.<br><small>Γίνετε ο πρώτος!</small></div>';
+        return;
+      }
+      const slice = currentMasters.slice(0, 8);
+      box.innerHTML = slice.map(renderMasterCard).join("");
+    }
+
+    function browseCategory(cat) {
+      browseFilter = cat || "all";
+      const titles = {
+        all: "Όλα τα μαστόρια",
+        home: "🏠 Οικιακές Υπηρεσίες",
+        field: "🌾 Αγροτικές / Υπαίθριες"
+      };
+      document.getElementById("browseTitle").textContent = titles[cat] || titles.all;
+      showScreen("screen-browse");
+      renderBrowse();
+    }
+
+    async function renderBrowse() {
+      const box = document.getElementById("browse-list");
+      box.innerHTML = '<div class="state-box"><div class="emoji">⏳</div>Φόρτωση…</div>';
+      await loadMasters();
+
+      let list = currentMasters;
+      if (browseFilter === "home") list = list.filter(a => adType(a) === "home");
+      if (browseFilter === "field") list = list.filter(a => adType(a) === "field");
+
+      // Fill filters
+      const specs = new Set();
+      const locs = new Set();
+      list.forEach(ad => {
+        if (ad.specialty) specs.add(ad.specialty);
+        try {
+          const L = typeof ad.locations === "string" ? JSON.parse(ad.locations || "[]") : (ad.locations || []);
+          L.forEach(x => locs.add(x));
+        } catch(e) {}
+      });
+      const specSel = document.getElementById("filterSpec");
+      const locSel = document.getElementById("filterLoc");
+      const curSpec = specSel.value;
+      const curLoc = locSel.value;
+      specSel.innerHTML = '<option value="">Όλες οι ειδικότητες</option>' +
+        [...specs].sort().map(s => '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>').join("");
+      locSel.innerHTML = '<option value="">Όλες οι περιοχές</option>' +
+        [...locs].sort().map(l => '<option value="' + escapeHtml(l) + '">' + escapeHtml(l) + '</option>').join("");
+      if (curSpec) specSel.value = curSpec;
+      if (curLoc) locSel.value = curLoc;
+
+      // Chips for current group
+      const chipsBox = document.getElementById("specChips");
+      const chipSource = browseFilter === "field"
+        ? MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"]
+        : browseFilter === "home"
+          ? MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"]
+          : [...MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"], ...MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"]];
+      const tone = browseFilter === "field" ? "field-tone" : "home-tone";
+      chipsBox.innerHTML = chipSource.map(s =>
+        '<button type="button" class="spec-chip ' + tone + (specSel.value === s ? ' active' : '') +
+        '" onclick="document.getElementById(\'filterSpec\').value=\'' + s.replace(/'/g,"\\'") + '\';filterMasters();">' +
+        escapeHtml(s) + '</button>'
+      ).join("");
+
+      filterMasters();
+    }
+
+    function filterMasters() {
+      const box = document.getElementById("browse-list");
+      const q = (document.getElementById("filterSearch").value || "").toLowerCase().trim();
+      const spec = document.getElementById("filterSpec").value;
+      const loc = document.getElementById("filterLoc").value;
+
+      let list = currentMasters;
+      if (browseFilter === "home") list = list.filter(a => adType(a) === "home");
+      if (browseFilter === "field") list = list.filter(a => adType(a) === "field");
+
+      list = list.filter(ad => {
+        let locs = [];
+        try { locs = typeof ad.locations === "string" ? JSON.parse(ad.locations || "[]") : (ad.locations || []); } catch(e) {}
+        const str = (ad.name + " " + (ad.specialty||"") + " " + (ad.task||"") + " " + locs.join(" ") + " " + (ad.comments||"")).toLowerCase();
+        if (q && !str.includes(q)) return false;
+        if (spec && ad.specialty !== spec && ad.task !== spec) return false;
+        if (loc && !locs.includes(loc)) return false;
+        return true;
+      });
+
+      // Update chip active states
+      document.querySelectorAll("#specChips .spec-chip").forEach(c => {
+        c.classList.toggle("active", c.textContent.trim() === spec);
+      });
+
+      if (!list.length) {
+        box.innerHTML = '<div class="state-box"><div class="emoji">🔍</div>Δεν βρέθηκαν μαστόρια με αυτά τα κριτήρια.</div>';
+        return;
+      }
+      box.innerHTML = list.map(renderMasterCard).join("");
+    }
+
+    // ========== LIGHTBOX / LEGAL ==========
+    function openLightbox(url) {
+      document.getElementById("lightboxImg").src = url;
+      document.getElementById("lightbox").classList.add("active");
+    }
+    function closeLightbox() {
+      document.getElementById("lightbox").classList.remove("active");
+    }
+
+    function openLegal(key) {
+      const content = {
+        terms: {
+          title: "Όροι Χρήσης",
+          html: "<p>Η πλατφόρμα Μαστόρια Θεσσαλίας παρέχει χώρο για δημοσίευση προφίλ τεχνιτών. Οι χρήστες είναι υπεύθυνοι για την ακρίβεια των στοιχείων τους. Η πλατφόρμα δεν μεσολαβεί σε συμφωνίες και δεν εγγυάται ποιότητα εργασιών.</p><p>Επικοινωνία: <a href=\"mailto:info.franklydear@gmail.com\">info.franklydear@gmail.com</a></p>"
+        },
+        privacy: {
+          title: "Πολιτική Απορρήτου",
+          html: "<p>Συλλέγουμε μόνο τα στοιχεία που εσείς δηλώνετε (email, τηλέφωνο, προφίλ). Δεν πωλούνται σε τρίτους. Μπορείτε να ζητήσετε διαγραφή ανά πάσα στιγμή.</p><p>Επικοινωνία: <a href=\"mailto:info.franklydear@gmail.com\">info.franklydear@gmail.com</a></p>"
+        }
+      };
+      const item = content[key];
+      if (!item) return;
+      document.getElementById("legalTitle").textContent = item.title;
+      document.getElementById("legalBody").innerHTML = item.html;
+      document.getElementById("legalModal").classList.add("active");
+    }
+    function closeLegal() {
+      document.getElementById("legalModal").classList.remove("active");
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    // ========== INIT ==========
+    window.onload = function() {
+      initSpecialtySelect();
+      loadCurrentUser();
+      loadHomeMasters();
+      document.getElementById("m_loc_search").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") { e.preventDefault(); searchLocation("master"); }
+      });
+    };
+  </script>
+</body>
+</html>
