@@ -19,9 +19,15 @@
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
-  <meta name="apple-mobile-web-app-title" content="Θες Δλεια ; Βρες Δλεια">
-  <meta name="application-name" content="Θες Δλεια ; Βρες Δλεια">
+  <link rel="apple-touch-icon" sizes="152x152" href="/logo.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/logo.png">
+  <meta name="apple-mobile-web-app-title" content="Θες Δλεια">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Θες Δλεια">
   <meta name="theme-color" content="#2563eb">
+  <link rel="manifest" href="/manifest.json">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -117,15 +123,31 @@
       100% { transform: rotate(720deg) scale(1); }
     }
     .welcome-card h1, .welcome-rotating-title {
-      font-size: clamp(1.25rem, 5.5vw, 1.65rem); font-weight: 800; color: var(--primary);
-      margin-bottom: 12px; line-height: 1.25;
+      font-size: clamp(1.05rem, 4.2vw, 1.28rem); font-weight: 800; color: var(--primary);
+      margin-bottom: 10px; line-height: 1.3;
       transition: opacity 0.35s ease;
       white-space: normal;
       max-width: 100%;
-      padding: 0 8px;
+      padding: 0 6px;
       text-align: center;
+      letter-spacing: -0.02em;
     }
     .welcome-rotating-title.is-fading { opacity: 0; }
+    .btn-add-home {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      margin: 0 auto 16px; padding: 10px 18px;
+      background: #f1f5f9; color: #0f172a; border: 1.5px solid #cbd5e1;
+      border-radius: 12px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-add-home:hover { background: #e2e8f0; border-color: #94a3b8; }
+    .btn-add-home.hidden { display: none; }
+    .add-home-hint {
+      display: none; margin: 0 auto 14px; max-width: 320px;
+      padding: 10px 14px; background: #eff6ff; border: 1px solid #93c5fd;
+      border-radius: 12px; font-size: 0.82rem; color: #1e40af; line-height: 1.4; text-align: left;
+    }
+    .add-home-hint.show { display: block; }
     .page-rotating-title { display: none !important; }
     .header-rotating { display: none !important; }
     .welcome-card p, .welcome-rotating {
@@ -565,7 +587,7 @@
     .loc-search-row input { flex: 1; }
     .loc-search-row button { white-space: nowrap; }
     .loc-map {
-      height: 220px; width: 100%; border-radius: 12px; border: 1.5px solid var(--border);
+      height: 260px; width: 100%; border-radius: 12px; border: 1.5px solid var(--border);
       z-index: 1;
     }
     .loc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 28px; }
@@ -724,7 +746,11 @@
       <div class="logo-spin-wrap">
         <img src="/logo.png" alt="Θελς Δλειά" class="welcome-logo" id="welcomeLogo">
       </div>
-      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας στην Θεσσαλία</h1>
+      <h1 id="welcomeRotatingTitle" class="welcome-rotating-title">Εύρεση εργασίας<br>στην Θεσσαλία</h1>
+      <button type="button" class="btn-add-home" id="btnAddHome" onclick="promptAddToHome()">
+        📲 Προσθήκη στην αρχική οθόνη
+      </button>
+      <div class="add-home-hint" id="addHomeHint"></div>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
       <div class="welcome-promo">
         <img src="/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
@@ -897,7 +923,7 @@
               <select class="task-select" id="w_task"></select>
             </div>
             <div class="form-group">
-              <label class="main-label">Περιοχές *</label>
+              <label class="main-label">Περιοχές εργασίας *</label>
               <div class="loc-map-wrap" data-form="worker">
                 <div class="loc-search-row">
                   <input type="text" id="w_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
@@ -905,11 +931,11 @@
                 </div>
                 <div id="w_loc_map" class="loc-map"></div>
                 <div class="loc-chips" id="w_loc_chips"></div>
-                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες (Θεσσαλία)</p>
+                <p class="loc-hint">Κλικ στον χάρτη για πινέζα ή αναζήτηση · έως 5 περιοχές (Θεσσαλία)</p>
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Διαθεσιμότητα</label>
+              <label class="main-label">Διαθεσιμότητα (ημερομηνίες)</label>
               <div class="date-row">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
@@ -920,6 +946,14 @@
                   <input type="date" id="w_available_to">
                 </div>
               </div>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Μεροκάματο (προαιρετικά)</label>
+              <input type="text" id="w_wage" placeholder="π.χ. 40€ / ημέρα, 5€/ώρα, συμφωνία">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Ώρες εργασίας (προαιρετικά)</label>
+              <input type="text" id="w_hours" placeholder="π.χ. 08:00–16:00, βάρδιες, πρωί/απόγευμα">
             </div>
           </fieldset>
           <fieldset>
@@ -1001,19 +1035,19 @@
               <select class="task-select" id="e_task"></select>
             </div>
             <div class="form-group">
-              <label class="main-label">Περιοχές *</label>
+              <label class="main-label">Τοποθεσία επιχείρησης *</label>
               <div class="loc-map-wrap" data-form="employer">
                 <div class="loc-search-row">
-                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση πόλης / χωριού..." autocomplete="off">
+                  <input type="text" id="e_loc_search" placeholder="🔍 Αναζήτηση διεύθυνσης / πόλης..." autocomplete="off">
                   <button type="button" class="btn btn-sm btn-primary" onclick="searchLocation('employer')">Εύρεση</button>
                 </div>
                 <div id="e_loc_map" class="loc-map"></div>
                 <div class="loc-chips" id="e_loc_chips"></div>
-                <p class="loc-hint">Κλικ στον χάρτη ή αναζήτηση · έως 5 τοποθεσίες</p>
+                <p class="loc-hint">Κλικ στον χάρτη για πινέζα καταστήματος · έως 5 τοποθεσίες αν έχετε περισσότερες επιχειρήσεις</p>
               </div>
             </div>
             <div class="form-group">
-              <label class="main-label">Διάστημα</label>
+              <label class="main-label">Διάστημα (ημερομηνίες)</label>
               <div class="date-row">
                 <div class="date-field">
                   <label class="date-lbl">Από</label>
@@ -1024,6 +1058,14 @@
                   <input type="date" id="e_available_to">
                 </div>
               </div>
+            </div>
+            <div class="form-group">
+              <label class="main-label">Μεροκάματο (προαιρετικά)</label>
+              <input type="text" id="e_wage" placeholder="π.χ. 45€ / ημέρα, 6€/ώρα, συμφωνία">
+            </div>
+            <div class="form-group">
+              <label class="main-label">Ώρες εργασίας (προαιρετικά)</label>
+              <input type="text" id="e_hours" placeholder="π.χ. 09:00–17:00, βάρδιες, πλήρες/μερικό">
             </div>
           </fieldset>
           <fieldset>
@@ -1513,10 +1555,61 @@
     
 
     function startTitleRotation() {
-      // Σταθερός τίτλος μόνο στο αναδυόμενο – χωρίς χωριάτικα / εναλλαγή
+      // Σταθερός τίτλος σε δύο σειρές
       var welcomeTitle = document.getElementById("welcomeRotatingTitle");
-      if (welcomeTitle) welcomeTitle.textContent = "Εύρεση εργασίας στην Θεσσαλία";
+      if (welcomeTitle) welcomeTitle.innerHTML = "Εύρεση εργασίας<br>στην Θεσσαλία";
       if (window._titleRotateTimer) clearInterval(window._titleRotateTimer);
+    }
+
+    // ========== ΠΡΟΣΘΗΚΗ ΣΤΗΝ ΑΡΧΙΚΗ ΟΘΟΝΗ ==========
+    var deferredInstallPrompt = null;
+    window.addEventListener("beforeinstallprompt", function(e) {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      var btn = document.getElementById("btnAddHome");
+      if (btn) btn.classList.remove("hidden");
+    });
+    window.addEventListener("appinstalled", function() {
+      deferredInstallPrompt = null;
+      var btn = document.getElementById("btnAddHome");
+      if (btn) btn.classList.add("hidden");
+      var hint = document.getElementById("addHomeHint");
+      if (hint) { hint.classList.remove("show"); hint.innerHTML = ""; }
+    });
+    function isIos() {
+      return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+    function isInStandalone() {
+      return window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+    }
+    function promptAddToHome() {
+      var hint = document.getElementById("addHomeHint");
+      if (isInStandalone()) {
+        if (hint) {
+          hint.innerHTML = "✅ Η εφαρμογή είναι ήδη στην αρχική οθόνη.";
+          hint.classList.add("show");
+        }
+        return;
+      }
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function(choice) {
+          if (choice.outcome === "accepted") {
+            deferredInstallPrompt = null;
+          }
+        });
+        return;
+      }
+      if (hint) {
+        if (isIos()) {
+          hint.innerHTML = "Στο iPhone/iPad: πατήστε <strong>Κοινή χρήση</strong> (□↑) κάτω στη γραμμή και μετά <strong>«Προσθήκη στην αρχική οθόνη»</strong>.";
+        } else {
+          hint.innerHTML = "Από το μενού του browser (⋮ ή ⋯) επιλέξτε <strong>«Προσθήκη στην αρχική οθόνη»</strong> ή «Install app».";
+        }
+        hint.classList.add("show");
+      }
     }
 
     function startHeaderTextRotation() {
@@ -2551,6 +2644,16 @@
             else if (from) line += "Από " + from;
             else line += "Έως " + to;
             payload.comments = (payload.comments ? payload.comments + "\n" : "") + line;
+          }
+          var wageEl = document.getElementById(prefix + "wage");
+          var hoursEl = document.getElementById(prefix + "hours");
+          var wage = wageEl ? (wageEl.value || "").trim() : "";
+          var hours = hoursEl ? (hoursEl.value || "").trim() : "";
+          if (wage) {
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + "💶 Μεροκάματο: " + wage;
+          }
+          if (hours) {
+            payload.comments = (payload.comments ? payload.comments + "\n" : "") + "🕐 Ώρες: " + hours;
           }
         })();
         const isEdit = editingAdId && editingAdType === type;
