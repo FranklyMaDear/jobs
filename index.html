@@ -583,6 +583,30 @@
     .modal p { color: var(--text-muted); margin-bottom: 18px; font-size: 0.95rem; }
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .modal-actions .btn { flex: 1; }
+    .share-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .share-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      font-family: inherit;
+      transition: transform 0.12s, opacity 0.12s;
+    }
+    .share-btn:active { transform: scale(0.97); opacity: 0.9; }
+    .share-fb { background: #1877f2; }
+    .share-msg { background: #0084ff; }
+    .share-x { background: #0f1419; }
+    .share-wa { background: #25d366; }
+    .share-vb { background: #7360f2; }
+    .share-mail { background: #64748b; }
+    .share-copy { background: #2563eb; }
     
     /* Auth */
     .auth-bar {
@@ -1295,6 +1319,26 @@
 
 
   <!-- Request / Contact Modal -->
+  <!-- Share modal – όλα τα social -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal" style="max-width:380px;">
+      <h3 style="margin-bottom:6px;">Κοινοποίηση αγγελίας</h3>
+      <p id="shareModalTitle" style="font-size:0.9rem;color:var(--text-muted);margin-bottom:16px;line-height:1.4;"></p>
+      <div class="share-grid">
+        <button type="button" class="share-btn share-fb" onclick="doSharePlatform('facebook')">Facebook</button>
+        <button type="button" class="share-btn share-msg" onclick="doSharePlatform('messenger')">Messenger</button>
+        <button type="button" class="share-btn share-x" onclick="doSharePlatform('x')">X / Twitter</button>
+        <button type="button" class="share-btn share-wa" onclick="doSharePlatform('whatsapp')">WhatsApp</button>
+        <button type="button" class="share-btn share-vb" onclick="doSharePlatform('viber')">Viber</button>
+        <button type="button" class="share-btn share-mail" onclick="doSharePlatform('email')">Email</button>
+        <button type="button" class="share-btn share-copy" onclick="doSharePlatform('copy')" style="grid-column:1/-1;">📋 Αντιγραφή συνδέσμου</button>
+      </div>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn btn-secondary" onclick="closeShareModal()">Κλείσιμο</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="requestModal">
     <div class="modal">
       <h3 id="requestModalTitle">Αίτημα</h3>
@@ -2275,44 +2319,92 @@
       localStorage.setItem("savedAds", JSON.stringify(favs));
     }
 
-    function shareAd(name, spec, kind, adId, dateStr) {
-      // kind: "worker" | "employer" | ""
-      // URL μέσω /share στο worker → δυναμικό og:image (photo2.png για εργαζόμενο)
+    var lastSharePayload = { title: "", text: "", url: "" };
+
+    function buildSharePayload(name, spec, kind, adId, dateStr) {
       var site = "Ψαχνς Δλεια - Βρες Δλεια";
       var category = (spec || "").trim();
       var datePart = (dateStr || "").trim() || new Date().toLocaleDateString("el-GR");
       var typeParam = kind === "employer" ? "employer" : (kind === "worker" ? "worker" : "");
-      var title;
-      var text;
+      var title, text;
       if (kind === "employer") {
-        // Εργοδότης: τίτλος + κατηγορία + ημερομηνία (μπορεί να φαίνεται όνομα επιχείρησης στο κείμενο)
         title = "Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + " · " + datePart;
         text = title + "\n" + site;
       } else if (kind === "worker") {
-        // Εργαζόμενος: ΧΩΡΙΣ όνομα – μόνο ιδιότητα + ημερομηνία
         title = "Ψάχνω για εργασία" + (category ? " – " + category : "") + " · " + datePart;
         text = title + "\n" + site;
       } else {
         title = site;
         text = site + " – Αγγελίες εργασίας στη Θεσσαλία!";
+        typeParam = "";
       }
-      // Share preview URL (Open Graph) → μετά redirect στην αγγελία
-      var url = API_BASE + "/share?type=" + encodeURIComponent(typeParam || "worker");
+      var url = API_BASE + "/share?type=" + encodeURIComponent(typeParam || "site");
       if (category) url += "&spec=" + encodeURIComponent(category);
-      if (datePart) url += "&date=" + encodeURIComponent(datePart);
+      if (datePart && typeParam) url += "&date=" + encodeURIComponent(datePart);
       if (adId) url += "&ad=" + encodeURIComponent(adId);
-      if (navigator.share) {
-        navigator.share({ title: title, text: text, url: url }).catch(function() {});
-      } else {
-        var shareText = title + "\n" + text + "\n" + url;
+      return { title: title, text: text, url: url };
+    }
+
+    function shareAd(name, spec, kind, adId, dateStr) {
+      lastSharePayload = buildSharePayload(name, spec, kind, adId, dateStr);
+      var titleEl = document.getElementById("shareModalTitle");
+      if (titleEl) titleEl.textContent = lastSharePayload.title;
+      var modal = document.getElementById("shareModal");
+      if (modal) modal.classList.add("active");
+    }
+
+    function closeShareModal() {
+      var modal = document.getElementById("shareModal");
+      if (modal) modal.classList.remove("active");
+    }
+
+    function doSharePlatform(platform) {
+      var title = lastSharePayload.title || "Ψαχνς Δλεια - Βρες Δλεια";
+      var text = lastSharePayload.text || title;
+      var url = lastSharePayload.url || (window.location.origin + "/");
+      var fullText = text + "\n" + url;
+      var enc = encodeURIComponent;
+      if (platform === "facebook") {
+        window.open("https://www.facebook.com/sharer/sharer.php?u=" + enc(url), "_blank", "noopener,width=600,height=500");
+      } else if (platform === "messenger") {
+        var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile) {
+          // Άνοιγμα Messenger app με σύνδεσμο
+          window.location.href = "fb-messenger://share/?link=" + enc(url);
+          setTimeout(function() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(fullText).then(function() {
+                alert("Αν δεν άνοιξε το Messenger, ο σύνδεσμος αντιγράφηκε – επικολλήστε τον στη συνομιλία.");
+              }).catch(function() {});
+            }
+          }, 900);
+        } else {
+          // Desktop: κοινοποίηση μέσω Facebook (Messenger desktop απαιτεί app)
+          window.open("https://www.facebook.com/sharer/sharer.php?u=" + enc(url), "_blank", "noopener,width=600,height=500");
+        }
+      } else if (platform === "x") {
+        window.open("https://twitter.com/intent/tweet?text=" + enc(title) + "&url=" + enc(url), "_blank", "noopener,width=600,height=500");
+      } else if (platform === "whatsapp") {
+        window.open("https://wa.me/?text=" + enc(fullText), "_blank", "noopener");
+      } else if (platform === "viber") {
+        window.open("viber://forward?text=" + enc(fullText), "_blank");
+        // Fallback: αντίγραφο αν δεν ανοίξει Viber
+        setTimeout(function() {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullText).catch(function() {});
+          }
+        }, 800);
+      } else if (platform === "email") {
+        window.location.href = "mailto:?subject=" + enc(title) + "&body=" + enc(fullText);
+      } else if (platform === "copy") {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(shareText).then(function() {
-            alert("Αντιγράφηκε για κοινοποίηση:\n\n" + title + "\n\nΣτα social θα εμφανίζεται η σχετική φωτογραφία κοινοποίησης.");
+          navigator.clipboard.writeText(fullText).then(function() {
+            alert("Ο σύνδεσμος αντιγράφηκε!\nΜπορείτε να τον επικολλήσετε οπουδήποτε.");
           }).catch(function() {
-            prompt("Αντιγράψτε για κοινοποίηση:", shareText);
+            prompt("Αντιγράψτε τον σύνδεσμο:", fullText);
           });
         } else {
-          prompt("Αντιγράψτε για κοινοποίηση:", shareText);
+          prompt("Αντιγράψτε τον σύνδεσμο:", fullText);
         }
       }
     }
