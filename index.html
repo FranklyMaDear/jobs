@@ -1354,7 +1354,29 @@
 
     async function loadCurrentUser() {
       const t = getToken();
-      if (!t) { currentUser = null; renderAuthBar(); updateQuotaInfos(); updatePackagesVisibility(); return; }
+      if (!t) {
+        currentUser = null;
+        renderAuthBar();
+        updateQuotaInfos();
+        updatePackagesVisibility();
+        // Deep link χωρίς σύνδεση → αποθήκευση και προτροπή εγγραφής
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var adId = params.get("ad");
+          var type = params.get("type");
+          if (adId && type) {
+            pendingAdView = {
+              type: type === "employer" ? "employers" : "workers",
+              id: parseInt(adId, 10) || null
+            };
+            setTimeout(function() {
+              alert("Για να δείτε την αγγελία χρειάζεται εγγραφή ή σύνδεση.");
+              openAuthModal("register");
+            }, 600);
+          }
+        } catch (e) {}
+        return;
+      }
       try {
         const res = await fetch(API_URL + "/me", { headers: authHeaders() });
         if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); updateQuotaInfos(); updatePackagesVisibility(); return; }
@@ -1362,6 +1384,8 @@
         renderAuthBar();
         updateQuotaInfos();
         updatePackagesVisibility();
+        // Συνδεδεμένος + deep link → άνοιγμα αγγελίας
+        setTimeout(function() { consumeDeepLink(); }, 300);
       } catch(e) {
         currentUser = null;
         renderAuthBar();
@@ -1585,14 +1609,10 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        var goTo = pendingAfterAuthScreen;
-        pendingAfterAuthScreen = null;
-        preferredAuthRole = null;
-        if (goTo) showScreen(goTo);
-        else showScreen("screen-home");
         window.scrollTo({ top: 0, behavior: "smooth" });
         loadCurrentUser();
         loadHomeJobs();
+        afterAuthNavigate();
       } catch(e) {
         alert("Αδυναμία σύνδεσης με τον διακομιστή");
       } finally {
@@ -2075,17 +2095,21 @@
       showScreen(screenId);
     }
 
-    function openPublicView(type) {
-      // Προφίλ εργατών μόνο για εγγεγραμμένους → απευθείας φόρμα σύνδεσης/εγγραφής
-      if (type === "workers" && !currentUser) {
-        openAuthModal("login");
+    let pendingAdView = null; // { type: "workers"|"employers", id: number }
+
+    function openPublicView(type, adId) {
+      // Όλες οι αγγελίες μόνο για εγγεγραμμένους
+      if (!currentUser) {
+        pendingAdView = adId ? { type: type, id: adId } : { type: type, id: null };
+        alert("Για να δείτε τις αγγελίες χρειάζεται εγγραφή ή σύνδεση.");
+        openAuthModal("register");
         return;
       }
       showScreen("screen-ads");
-      loadAds(type);
+      loadAds(type, adId || null);
     }
 
-    async function loadAds(type) {
+    async function loadAds(type, scrollToAdId) {
       currentViewType = type;
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       document.getElementById(`tab-${type}`).classList.add("active");
@@ -2097,6 +2121,8 @@
         currentData = await res.json();
         if (!Array.isArray(currentData)) currentData = [];
         populateFilters();
+        // κρατάμε για μετά το render
+        window._scrollToAdId = scrollToAdId || null;
         renderCards();
       } catch (e) {
         container.innerHTML = `<div class="state-box"><div class="emoji">⚠️</div>Σφάλμα φόρτωσης. Δοκιμάστε ξανά.</div>`;
@@ -2156,6 +2182,10 @@
 
         const card = document.createElement("div");
         card.className = `ad-card ${ad.is_urgent ? "urgent" : ""} ${ad.is_pinned == 1 ? "pinned" : ""}`;
+        card.id = "ad-card-" + ad.id;
+        card.setAttribute("data-ad-id", ad.id);
+        const adDate = ad.created_at ? new Date(String(ad.created_at).replace(" ", "T")).toLocaleDateString("el-GR") : "";
+        const shareKind = currentViewType === "employers" ? "employer" : "worker";
         card.innerHTML = `
           ${ad.is_urgent ? '<div class="urgent-badge">⚡ ΕΠΕΙΓΟΝ</div>' : ""}${ad.is_pinned == 1 ? '<div class="pinned-badge">⭐ Προωθημένη</div>' : ""}${ad.is_edited == 1 ? '<div class="edited-badge">✏️ Τροποποιήθηκε' + (ad.updated_at ? ' · ' + formatEditDate(ad.updated_at) : '') + '</div>' : ""}
           <div class="ad-header">
@@ -2177,7 +2207,7 @@
             <button class="icon-btn ${isFav ? "fav-active" : ""}" onclick="toggleFav('${currentViewType}_${ad.id}', this)">
               ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
             </button>
-            <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}', '${currentViewType === "employers" ? "employer" : "worker"}')">📤 Κοινοποίηση</button>
+            <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}', '${shareKind}', ${ad.id}, '${adDate}')">📤 Κοινοποίηση</button>
             ${(() => {
               if (currentViewType !== "workers") return "";
               const isOwner = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
@@ -2212,6 +2242,19 @@
         `;
         container.appendChild(card);
       });
+      // Μετά από deep link: κύλιση στην αγγελία
+      if (window._scrollToAdId) {
+        var targetId = window._scrollToAdId;
+        window._scrollToAdId = null;
+        setTimeout(function() {
+          var el = document.getElementById("ad-card-" + targetId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.style.boxShadow = "0 0 0 3px #2563eb";
+            setTimeout(function() { el.style.boxShadow = ""; }, 2500);
+          }
+        }, 200);
+      }
     }
 
     function filterCards() { renderCards(); }
@@ -2232,27 +2275,26 @@
       localStorage.setItem("savedAds", JSON.stringify(favs));
     }
 
-    function shareAd(name, spec, kind) {
+    function shareAd(name, spec, kind, adId, dateStr) {
       // kind: "worker" | "employer" | ""
+      // Κοινό URL με deep link → στα social εμφανίζεται logo.png / og-image
       var site = "Ψαχνς Δλεια - Βρες Δλεια";
-      var url = window.location.origin + "/";
       var category = (spec || "").trim();
       var who = (name || "").trim();
+      var datePart = (dateStr || "").trim();
+      var typeParam = kind === "employer" ? "employer" : (kind === "worker" ? "worker" : "");
+      var url = window.location.origin + "/";
+      if (adId && typeParam) {
+        url += "?ad=" + encodeURIComponent(adId) + "&type=" + encodeURIComponent(typeParam);
+      }
       var title;
       var text;
-      if (kind === "employer" || (!kind && who && category)) {
-        // Εργοδότης: τίτλος = ειδικότητα / επιχείρηση
-        title = category
-          ? (category + (who ? " – " + who : "") + " | " + site)
-          : ((who || site) + " | " + site);
-        text = "Θέση: " + (category || "Εργασία") +
-          (who ? " · " + who : "") +
-          "\nΒρες λεπτομέρειες στο " + site + "\n" + url;
-      } else if (who || category) {
-        title = (category || who) + " | " + site;
-        text = "Αγγελία: " + (who || "") +
-          (category ? " – " + category : "") +
-          "\nΣτο " + site + "\n" + url;
+      if (kind === "employer") {
+        title = "Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + (datePart ? " · " + datePart : "");
+        text = title + (who ? "\n" + who : "") + "\n" + site + "\n" + url;
+      } else if (kind === "worker") {
+        title = "Ψάχνω για εργασία" + (category ? " – " + category : "");
+        text = title + (who ? "\n" + who : "") + "\n" + site + "\n" + url;
       } else {
         title = site;
         text = site + " – Αγγελίες εργασίας στη Θεσσαλία!\n" + url;
@@ -2275,6 +2317,42 @@
 
     function shareSite() {
       shareAd("", "", "");
+    }
+
+    function consumeDeepLink() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var adId = params.get("ad");
+        var type = params.get("type");
+        if (!adId || !type) return false;
+        var listType = type === "employer" ? "employers" : "workers";
+        var idNum = parseInt(adId, 10);
+        if (!idNum) return false;
+        // Καθαρίζουμε το URL χωρίς να χάσουμε το ιστορικό άσκοπα
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+        openPublicView(listType, idNum);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function afterAuthNavigate() {
+      var goTo = pendingAfterAuthScreen;
+      pendingAfterAuthScreen = null;
+      preferredAuthRole = null;
+      if (pendingAdView) {
+        var p = pendingAdView;
+        pendingAdView = null;
+        openPublicView(p.type, p.id || null);
+        return;
+      }
+      // Deep link από URL αν υπάρχει ακόμα
+      if (consumeDeepLink()) return;
+      if (goTo) showScreen(goTo);
+      else showScreen("screen-home");
     }
 
     function openFoundModalWorker(id) {
@@ -2611,13 +2689,9 @@
         currentUser = data.user;
         closeAuthModal();
         renderAuthBar();
-        var goTo = pendingAfterAuthScreen;
-        pendingAfterAuthScreen = null;
-        preferredAuthRole = null;
-        if (goTo) showScreen(goTo);
-        else showScreen("screen-home");
         window.scrollTo({ top: 0, behavior: "smooth" });
         loadHomeJobs();
+        afterAuthNavigate();
       } catch (e) {
         alert("Αδυναμία σύνδεσης");
       }
@@ -2814,8 +2888,9 @@
           // Πρόταση κοινοποίησης μετά τη δημοσίευση (όχι μετά από απλή επεξεργασία)
           if (!isEdit) {
             setTimeout(function() {
-              if (confirm("Θέλετε να κοινοποιήσετε την αγγελία σας;\n\nΘα εμφανιστεί το λογότυπο της σελίδας και τίτλος με την ειδικότητα / επιχείρηση.")) {
-                shareAd(shareName, shareSpec, shareKind);
+              if (confirm("Θέλετε να κοινοποιήσετε την αγγελία σας;\n\nΘα εμφανιστεί το λογότυπο της σελίδας και ο τίτλος της αγγελίας.")) {
+                var today = new Date().toLocaleDateString("el-GR");
+                shareAd(shareName, shareSpec, shareKind, null, today);
               }
             }, 300);
           }
