@@ -277,8 +277,8 @@
         <a class="btn btn-secondary" href="https://tally.so/forms/44jy95" target="_blank" rel="noopener" style="text-decoration:none;">Tally Διαγωνισμοί ↗</a>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
-        Όρια αγγελιών, μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
-        Αναζήτηση με όνομα, email ή τηλέφωνο για εύκολη προσαρμογή πόντων (free_slots). Εξαγωγή Excel για Tally.
+        Πόντοι (1 πόντος = 1 αγγελία), μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
+        Νέοι χρήστες ξεκινούν με 2 πόντους. Μετά από αγορά πακέτου συμπληρώνετε εδώ τους νέους πόντους.
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -292,8 +292,8 @@
               <th>Ψευδώνυμο</th>
               <th>Email</th>
               <th>Ρόλος</th>
-              <th>Αγγελίες</th>
-              <th>Όριο</th>
+              <th>Δημοσιευμένες</th>
+              <th>Πόντοι</th>
               <th>Κατάσταση</th>
               <th>Ενέργειες</th>
             </tr>
@@ -413,18 +413,14 @@
             <td data-label="Ψευδώνυμο"><strong>${escapeHtml(u.nickname)}</strong></td>
             <td data-label="Email">${escapeHtml(u.email || "—")}<br><small style="color:#64748b">${u.phone ? ("📞 " + escapeHtml(u.phone)) : "📞 —"}</small></td>
             <td data-label="Ρόλος">${roleLabel}</td>
-            <td data-label="Αγγελίες">${u.ads_used || 0}
-              <small style="color:#64748b"> (Ε:${u.ads_workers||0}/Εργ:${u.ads_employers||0})</small>
+            <td data-label="Δημοσιευμένες">${u.ads_used || 0}
+              <small style="color:#64748b"> (Εργαζ:${u.ads_workers||0}/Εργοδ:${u.ads_employers||0})</small>
             </td>
-            <td data-label="Όριο / Free">
-              <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
-                <label style="font-size:0.7rem;color:#64748b;">max</label>
-                <input type="number" min="0" max="999" value="${u.max_ads != null ? u.max_ads : 1}"
-                  id="quota-${u.id}" style="width:56px;padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:8px;" title="Συνολικό όριο max_ads">
-                <label style="font-size:0.7rem;color:#64748b;">free</label>
+            <td data-label="Πόντοι">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
                 <input type="number" min="0" max="999" value="${u.free_slots != null ? u.free_slots : 0}"
-                  id="freeslots-${u.id}" style="width:56px;padding:6px 8px;border:1.5px solid #93c5fd;border-radius:8px;background:#eff6ff;" title="Υπόλοιπο δωρεάν αγγελιών (αυτό βλέπει ο χρήστης)">
-                <button class="btn btn-primary" style="padding:4px 8px;font-size:0.75rem;" onclick="saveQuota(${u.id})">OK</button>
+                  id="points-${u.id}" style="width:64px;padding:6px 8px;border:1.5px solid #93c5fd;border-radius:8px;background:#eff6ff;font-weight:700;" title="Πόντοι χρήστη (1 πόντος = 1 αγγελία)">
+                <button class="btn btn-primary" style="padding:4px 10px;font-size:0.75rem;" onclick="saveQuota(${u.id})">OK</button>
               </div>
             </td>
             <td data-label="Κατάσταση">${isBlocked ? '<strong style="color:#dc2626">Μπλοκαρισμένος</strong>' : 'Ενεργός'}</td>
@@ -660,21 +656,15 @@
     }
 
     async function saveQuota(userId) {
-      const input = document.getElementById("quota-" + userId);
-      const freeInput = document.getElementById("freeslots-" + userId);
-      const maxAds = parseInt(input.value, 10);
-      const freeSlots = freeInput ? parseInt(freeInput.value, 10) : 0;
-      if (isNaN(maxAds) || maxAds < 0) {
-        alert("Μη έγκυρος αριθμός για max (όριο)");
-        return;
-      }
-      if (isNaN(freeSlots) || freeSlots < 0) {
-        alert("Μη έγκυρος αριθμός για free (υπόλοιπο αγγελιών)");
+      const pointsInput = document.getElementById("points-" + userId);
+      const points = pointsInput ? parseInt(pointsInput.value, 10) : 0;
+      if (isNaN(points) || points < 0) {
+        alert("Μη έγκυρος αριθμός πόντων (0–999)");
         return;
       }
       try {
-        // Πάντα στέλνουμε και τα δύο ώστε ο χρήστης να βλέπει υπόλοιπο + κουμπί Αποθήκευσης
-        const body = { user_id: userId, max_ads: maxAds, free_slots: freeSlots, pin: "ADMIN999" };
+        // Απλό σύστημα: free_slots = πόντοι. max_ads = ίδιο για συμβατότητα.
+        const body = { user_id: userId, max_ads: points, free_slots: points, pin: "ADMIN999" };
         const res = await fetch(`${API}/api/admin/quota`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -682,10 +672,8 @@
         });
         const data = await res.json();
         if (res.ok) {
-          alert("✅ Ενημερώθηκε!\nΥπόλοιπο αγγελιών (free): " + (data.free_slots != null ? data.free_slots : freeSlots) +
-            "\nmax: " + (data.max_ads != null ? data.max_ads : maxAds) +
-            "\nΧρησιμοποιημένες: " + (data.ads_used || 0) +
-            "\n\nΟ χρήστης θα δει το νέο υπόλοιπο μετά από ανανέωση / άνοιγμα φόρμας.");
+          alert("✅ Πόντοι ενημερώθηκαν: " + (data.free_slots != null ? data.free_slots : points) +
+            "\n(1 πόντος = 1 αγγελία)\nΟ χρήστης θα δει το νέο υπόλοιπο μετά από ανανέωση.");
           loadUsers();
         } else {
           alert(data.error || "Σφάλμα");
