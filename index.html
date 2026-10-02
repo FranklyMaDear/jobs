@@ -2277,35 +2277,37 @@
 
     function shareAd(name, spec, kind, adId, dateStr) {
       // kind: "worker" | "employer" | ""
-      // Κοινό URL με deep link → στα social εμφανίζεται logo.png / og-image
+      // URL μέσω /share στο worker → δυναμικό og:image (photo2.png για εργαζόμενο)
       var site = "Ψαχνς Δλεια - Βρες Δλεια";
       var category = (spec || "").trim();
-      var who = (name || "").trim();
-      var datePart = (dateStr || "").trim();
+      var datePart = (dateStr || "").trim() || new Date().toLocaleDateString("el-GR");
       var typeParam = kind === "employer" ? "employer" : (kind === "worker" ? "worker" : "");
-      var url = window.location.origin + "/";
-      if (adId && typeParam) {
-        url += "?ad=" + encodeURIComponent(adId) + "&type=" + encodeURIComponent(typeParam);
-      }
       var title;
       var text;
       if (kind === "employer") {
-        title = "Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + (datePart ? " · " + datePart : "");
-        text = title + (who ? "\n" + who : "") + "\n" + site + "\n" + url;
+        // Εργοδότης: τίτλος + κατηγορία + ημερομηνία (μπορεί να φαίνεται όνομα επιχείρησης στο κείμενο)
+        title = "Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + " · " + datePart;
+        text = title + "\n" + site;
       } else if (kind === "worker") {
-        title = "Ψάχνω για εργασία" + (category ? " – " + category : "");
-        text = title + (who ? "\n" + who : "") + "\n" + site + "\n" + url;
+        // Εργαζόμενος: ΧΩΡΙΣ όνομα – μόνο ιδιότητα + ημερομηνία
+        title = "Ψάχνω για εργασία" + (category ? " – " + category : "") + " · " + datePart;
+        text = title + "\n" + site;
       } else {
         title = site;
-        text = site + " – Αγγελίες εργασίας στη Θεσσαλία!\n" + url;
+        text = site + " – Αγγελίες εργασίας στη Θεσσαλία!";
       }
+      // Share preview URL (Open Graph) → μετά redirect στην αγγελία
+      var url = API_BASE + "/share?type=" + encodeURIComponent(typeParam || "worker");
+      if (category) url += "&spec=" + encodeURIComponent(category);
+      if (datePart) url += "&date=" + encodeURIComponent(datePart);
+      if (adId) url += "&ad=" + encodeURIComponent(adId);
       if (navigator.share) {
         navigator.share({ title: title, text: text, url: url }).catch(function() {});
       } else {
-        var shareText = title + "\n" + text;
+        var shareText = title + "\n" + text + "\n" + url;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(shareText).then(function() {
-            alert("Αντιγράφηκε για κοινοποίηση:\n\n" + title + "\n\nΌταν κοινοποιήσετε τον σύνδεσμο θα εμφανίζεται το λογότυπο της σελίδας.");
+            alert("Αντιγράφηκε για κοινοποίηση:\n\n" + title + "\n\nΣτα social θα εμφανίζεται η σχετική φωτογραφία κοινοποίησης.");
           }).catch(function() {
             prompt("Αντιγράψτε για κοινοποίηση:", shareText);
           });
