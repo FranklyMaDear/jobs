@@ -1,7 +1,7 @@
  {
-  "name": "Θες Δλεια",
-  "short_name": "Θες Δλεια",
-  "description": "Αγγελίες εργασίας στη Θεσσαλία – δωρεάν",
+  "name": "Ψαχνς Δλεια",
+  "short_name": "Ψαχνς Δλεια",
+  "description": "Αγγελίες εργασίας στη Θεσσαλία",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
