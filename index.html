@@ -505,6 +505,27 @@
     .welcome-promo .promo-countdown {
       margin-top: 4px; font-size: 1rem;
     }
+    .employer-promo-link {
+      display: block;
+      margin: 14px auto 6px;
+      max-width: 420px;
+      text-align: center;
+      text-decoration: none;
+    }
+    .employer-promo-link img {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      border-radius: 14px;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .employer-promo-link:hover img {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+    }
     .kofi-goal-card {
       margin: 16px auto 8px;
       max-width: 420px;
@@ -834,6 +855,10 @@
         <img src="/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
         <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
       </div>
+      <!-- Προβολή εργοδοτών / επιχειρήσεων -->
+      <a href="https://jobs.franklymadear.com/employer/index.html" class="employer-promo-link" target="_blank" rel="noopener">
+        <img src="/logo3.png" alt="Επιχειρήσεις – Πατήστε εδώ" onerror="this.style.display='none'">
+      </a>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
         <div class="kofi-goal-card-inner">
@@ -2327,12 +2352,13 @@
       var datePart = (dateStr || "").trim() || new Date().toLocaleDateString("el-GR");
       var typeParam = kind === "employer" ? "employer" : (kind === "worker" ? "worker" : "");
       var title, text;
+      // Σειρά: Τίτλος σελίδας → Ψάχνω για… → Κατηγορία → Ημερομηνία (+ link & φωτογραφία)
       if (kind === "employer") {
-        title = "Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + " · " + datePart;
-        text = title + "\n" + site;
+        title = site + " | Ψάχνω για εργαζόμενο" + (category ? " – " + category : "") + " · " + datePart;
+        text = site + "\nΨάχνω για εργαζόμενο" + (category ? "\n" + category : "") + "\n" + datePart;
       } else if (kind === "worker") {
-        title = "Ψάχνω για εργασία" + (category ? " – " + category : "") + " · " + datePart;
-        text = title + "\n" + site;
+        title = site + " | Ψάχνω για εργασία" + (category ? " – " + category : "") + " · " + datePart;
+        text = site + "\nΨάχνω για εργασία" + (category ? "\n" + category : "") + "\n" + datePart;
       } else {
         title = site;
         text = site + " – Αγγελίες εργασίας στη Θεσσαλία!";
