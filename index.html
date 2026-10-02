@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="el">
 <head>
   <meta charset="UTF-8">
@@ -950,14 +950,11 @@
             </div>
           </fieldset>
           <fieldset>
-            <legend>Ειδικότητα & Περιοχές</legend>
+            <legend>Κατηγορία & Περιοχές</legend>
             <div class="form-group">
-              <label class="main-label">Ειδικότητα</label>
-              <select class="specialty-select" id="w_specialty"></select>
-            </div>
-            <div class="form-group">
-              <label class="main-label">Είδος Εργασίας</label>
-              <select class="task-select" id="w_task"></select>
+              <label class="main-label">Κατηγορία / Ειδικότητα *</label>
+              <select class="job-category-select" id="w_specialty" required></select>
+              <input type="hidden" id="w_task" value="">
             </div>
             <div class="form-group">
               <label class="main-label">Περιοχές εργασίας *</label>
@@ -1062,14 +1059,11 @@
             </div>
           </fieldset>
           <fieldset>
-            <legend>Αναζήτηση & Περιοχές</legend>
+            <legend>Κατηγορία & Περιοχές</legend>
             <div class="form-group">
-              <label class="main-label">Ειδικότητα που ζητάτε</label>
-              <select class="specialty-select" id="e_specialty"></select>
-            </div>
-            <div class="form-group">
-              <label class="main-label">Είδος Εργασίας</label>
-              <select class="task-select" id="e_task"></select>
+              <label class="main-label">Κατηγορία / Ειδικότητα *</label>
+              <select class="job-category-select" id="e_specialty" required></select>
+              <input type="hidden" id="e_task" value="">
             </div>
             <div class="form-group">
               <label class="main-label">Τοποθεσία επιχείρησης *</label>
@@ -1845,19 +1839,32 @@
       alert("Αυτός ο νομός θα ενεργοποιηθεί σύντομα! Προς το παρόν διαθέσιμοι: Τρίκαλα & Καρδίτσα.");
     }
 
-    const specialtiesData = {
-      "Εστίαση": ["Καφετέρια Barista", "Καφετέρια Service", "Εστιατόριο Κουζίνα", "Εστιατόριο Service", "Καφενείο", "Τσιπουράδικο", "Delivery"],
-      "Τεχνίτες / Κατασκευές": ["Χτίσιμο - Σοβάτισμα", "Υδραυλικός", "Ηλεκτρολόγος", "Ψυκτικός", "Πλακάκια", "Σκεπές", "Ανακαίνιση", "Βάψιμο", "Σιδηρουργός"],
-      "Αγροτικά": ["Χωράφια / Αγροτικά", "Κηπουρικά", "Κλάδεμα", "Ελαιοσυλλογή"],
-      "Υπηρεσίες": ["Καθαριότητα", "Φροντίδα Ηλικιωμένων", "Φύλαξη παιδιών", "Οδηγός"],
-      "Άλλα": ["Γενικών καθηκόντων", "Αποθήκη", "Πωλήσεις"]
+    // Ενιαία λίστα κατηγοριών (ειδικότητα + είδος εργασίας) με σειρά
+    const jobCategoriesData = {
+      "Εστίαση": [
+        "Καφετέρια Barista", "Καφετέρια Service", "Εστιατόριο Κουζίνα", "Εστιατόριο Service",
+        "Καφενείο", "Τσιπουράδικο", "Barista", "Service", "Κουζίνα", "Delivery"
+      ],
+      "Τεχνίτες / Κατασκευές": [
+        "Χτίσιμο - Σοβάτισμα", "Υδραυλικός", "Ηλεκτρολόγος", "Ψυκτικός", "Πλακάκια",
+        "Σκεπές", "Ανακαίνιση", "Βάψιμο", "Σιδηρουργός", "Μερεμέτια", "Συναρμολόγηση"
+      ],
+      "Αγροτικά & Εξωτερικά": [
+        "Χωράφια / Αγροτικά", "Κηπουρικά", "Κλάδεμα", "Ελαιοσυλλογή"
+      ],
+      "Οικιακά & Φροντίδα": [
+        "Καθαριότητα", "Φροντίδα Ηλικιωμένων", "Φύλαξη παιδιών"
+      ],
+      "Υπηρεσίες & Μεταφορές": [
+        "Οδηγός", "Μεταφορές", "Αποθήκη", "Πωλήσεις"
+      ],
+      "Άλλα": [
+        "Γενικών καθηκόντων"
+      ]
     };
-    const tasksData = {
-      "Αγροτικά & Εξωτερικά": ["Χωράφια / Αγροτικά", "Κηπουρικά", "Κλάδεμα", "Ελαιοσυλλογή"],
-      "Οικιακά & Φροντίδα": ["Καθαριότητα", "Φροντίδα Ηλικιωμένων", "Φύλαξη παιδιών"],
-      "Μικροεργασίες": ["Συναρμολόγηση", "Μερεμέτια", "Μεταφορές"],
-      "Εστίαση": ["Service", "Κουζίνα", "Barista", "Delivery"]
-    };
+    // συμβατότητα με παλιό κώδικα φίλτρων
+    const specialtiesData = jobCategoriesData;
+    const tasksData = {};
     const locationsData = {
       // —— Νομός Τρικάλων ——
       "Δήμος Τρικκαίων": ["Τρίκαλα (Κέντρο)", "Αγία Κυριακή", "Μεγάλα Καλύβια", "Μεγαλοχώρι", "Ρίζωμα"],
@@ -1874,26 +1881,16 @@
     };
 
     function initForms() {
-      document.querySelectorAll(".specialty-select").forEach(sel => {
-        sel.innerHTML = '<option value="">-- Επιλέξτε ειδικότητα --</option>';
-        for (const [group, items] of Object.entries(specialtiesData)) {
+      document.querySelectorAll(".job-category-select, .specialty-select").forEach(sel => {
+        sel.innerHTML = '<option value="">-- Επιλέξτε κατηγορία / ειδικότητα --</option>';
+        for (const [group, items] of Object.entries(jobCategoriesData)) {
           const optgroup = document.createElement("optgroup");
-          optgroup.label = group;
+          optgroup.label = "▸ " + group;
           items.forEach(i => {
             const opt = document.createElement("option");
-            opt.value = i; opt.textContent = i; optgroup.appendChild(opt);
-          });
-          sel.appendChild(optgroup);
-        }
-      });
-      document.querySelectorAll(".task-select").forEach(sel => {
-        sel.innerHTML = '<option value="">-- Είδος εργασίας --</option>';
-        for (const [group, items] of Object.entries(tasksData)) {
-          const optgroup = document.createElement("optgroup");
-          optgroup.label = group;
-          items.forEach(i => {
-            const opt = document.createElement("option");
-            opt.value = i; opt.textContent = i; optgroup.appendChild(opt);
+            opt.value = i;
+            opt.textContent = i;
+            optgroup.appendChild(opt);
           });
           sel.appendChild(optgroup);
         }
@@ -2184,7 +2181,7 @@
             <button class="icon-btn ${isFav ? "fav-active" : ""}" onclick="toggleFav('${currentViewType}_${ad.id}', this)">
               ${isFav ? "❤️ Αγαπημένο" : "🤍 Αποθήκευση"}
             </button>
-            <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}')">📤 Κοινοποίηση</button>
+            <button class="icon-btn" onclick="shareAd('${escapeHtml(ad.name)}', '${escapeHtml(ad.specialty || ad.task || "")}', '${currentViewType === "employers" ? "employer" : "worker"}')">📤 Κοινοποίηση</button>
             ${(() => {
               if (currentViewType !== "workers") return "";
               const isOwner = currentUser && ad.user_id && Number(ad.user_id) === Number(currentUser.id);
@@ -2239,20 +2236,49 @@
       localStorage.setItem("savedAds", JSON.stringify(favs));
     }
 
-    function shareAd(name, spec) {
-      const title = "Ψαχνς Δλεια - Βρες Δλεια";
-      const text = name
-        ? `Δες αυτή την αγγελία: ${name} – ${spec || ""} στο Ψαχνς Δλεια - Βρες Δλεια!`
-        : "Ψαχνς Δλεια - Βρες Δλεια – Αγγελίες εργασίας στη Θεσσαλία!";
-      if (navigator.share) {
-        navigator.share({ title, text, url: window.location.origin + "/" }).catch(() => {});
+    function shareAd(name, spec, kind) {
+      // kind: "worker" | "employer" | ""
+      var site = "Ψαχνς Δλεια - Βρες Δλεια";
+      var url = window.location.origin + "/";
+      var category = (spec || "").trim();
+      var who = (name || "").trim();
+      var title;
+      var text;
+      if (kind === "employer" || (!kind && who && category)) {
+        // Εργοδότης: τίτλος = ειδικότητα / επιχείρηση
+        title = category
+          ? (category + (who ? " – " + who : "") + " | " + site)
+          : ((who || site) + " | " + site);
+        text = "Θέση: " + (category || "Εργασία") +
+          (who ? " · " + who : "") +
+          "\nΒρες λεπτομέρειες στο " + site + "\n" + url;
+      } else if (who || category) {
+        title = (category || who) + " | " + site;
+        text = "Αγγελία: " + (who || "") +
+          (category ? " – " + category : "") +
+          "\nΣτο " + site + "\n" + url;
       } else {
-        navigator.clipboard.writeText(window.location.origin + "/").then(() => alert("Ο σύνδεσμος αντιγράφηκε!\nΌταν κοινοποιηθεί θα εμφανίζεται το λογότυπο και ο τίτλος."));
+        title = site;
+        text = site + " – Αγγελίες εργασίας στη Θεσσαλία!\n" + url;
+      }
+      if (navigator.share) {
+        navigator.share({ title: title, text: text, url: url }).catch(function() {});
+      } else {
+        var shareText = title + "\n" + text;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareText).then(function() {
+            alert("Αντιγράφηκε για κοινοποίηση:\n\n" + title + "\n\nΌταν κοινοποιήσετε τον σύνδεσμο θα εμφανίζεται το λογότυπο της σελίδας.");
+          }).catch(function() {
+            prompt("Αντιγράψτε για κοινοποίηση:", shareText);
+          });
+        } else {
+          prompt("Αντιγράψτε για κοινοποίηση:", shareText);
+        }
       }
     }
 
     function shareSite() {
-      shareAd("", "");
+      shareAd("", "", "");
     }
 
     function openFoundModalWorker(id) {
@@ -2703,6 +2729,8 @@
       const formKey = isWorker ? "worker" : "employer";
       const locs = selectedLocations[formKey] || [];
       if (locs.length === 0) { alert("Επιλέξτε τουλάχιστον μία περιοχή (χάρτης ή αναζήτηση)."); return; }
+      const catVal = (document.getElementById(prefix + "specialty").value || "").trim();
+      if (!catVal) { alert("Επιλέξτε κατηγορία / ειδικότητα."); return; }
 
       const btn = e.target.querySelector('button[type="submit"]');
       const originalText = btn.textContent;
@@ -2723,8 +2751,8 @@
         }
         const payload = {
           name: document.getElementById(prefix + "name").value.trim(),
-          specialty: document.getElementById(prefix + "specialty").value,
-          task: document.getElementById(prefix + "task").value,
+          specialty: catVal,
+          task: catVal,
           locations: locs.map(function(l) { return l.name; }),
           phone: document.getElementById(prefix + "phone").value.trim(),
           email: document.getElementById(prefix + "email").value.trim(),
@@ -2777,6 +2805,9 @@
           if (photoInput && photoInput.files[0] && !photoUrl) {
             msg += "\n\n(Η φωτογραφία δεν ανέβηκε – η αποθήκευση εικόνων δεν είναι διαθέσιμη ακόμα.)";
           }
+          const shareName = payload.name;
+          const shareSpec = payload.specialty;
+          const shareKind = type;
           alert(msg);
           e.target.reset();
           const prev = document.getElementById(prefix + "photo_preview");
@@ -2784,6 +2815,14 @@
           selectedLocations[formKey] = [];
           renderLocChips(formKey);
           showScreen("screen-home"); loadHomeJobs();
+          // Πρόταση κοινοποίησης μετά τη δημοσίευση (όχι μετά από απλή επεξεργασία)
+          if (!isEdit) {
+            setTimeout(function() {
+              if (confirm("Θέλετε να κοινοποιήσετε την αγγελία σας;\n\nΘα εμφανιστεί το λογότυπο της σελίδας και τίτλος με την ειδικότητα / επιχείρηση.")) {
+                shareAd(shareName, shareSpec, shareKind);
+              }
+            }, 300);
+          }
         } else {
           const err = await res.json().catch(() => ({}));
           alert(err.error || "Σφάλμα κατά τη δημοσίευση");
