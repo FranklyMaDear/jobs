@@ -102,7 +102,7 @@
     .top-bar {
       background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
       color: white; padding: 10px 16px;
-      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
       min-height: 52px;
     }
     .top-bar .btn-auth {
@@ -114,6 +114,49 @@
     .top-bar .btn-auth:hover { background: rgba(255,255,255,0.12); }
     .top-bar .btn-auth.primary:hover { background: #0d9488; }
     .top-bar .auth-user { color: white; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .top-bar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn-back-main {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+      background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.4);
+      color: white; text-decoration: none; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-back-main:hover { background: rgba(255,255,255,0.22); }
+    .kofi-goal-card {
+      background: var(--card); border: 1.5px solid #93c5fd; border-radius: 16px;
+      margin: 0 0 22px; box-shadow: var(--shadow); overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .kofi-goal-card:hover { box-shadow: var(--shadow-lg); }
+    .kofi-goal-card-inner { padding: 14px 14px 12px; }
+    .kofi-goal-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+    .kofi-goal-emoji { font-size: 1.6rem; line-height: 1; }
+    .kofi-goal-title { font-weight: 800; color: var(--primary); font-size: 1.02rem; margin-bottom: 2px; }
+    .kofi-goal-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+    .kofi-live-bar {
+      width: 100%; border-radius: 10px; overflow: hidden;
+      background: #f1f5f9; border: 1px solid var(--border);
+    }
+    .kofi-live-iframe {
+      width: 100%; height: 70px; border: 0; display: block;
+    }
+    .kofi-goal-meta { display: flex; justify-content: center; margin-top: 10px; }
+    .kofi-goal-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #2563eb; color: white; padding: 10px 18px; border-radius: 10px;
+      font-weight: 700; font-size: 0.9rem;
+    }
+    .kofi-goal-cta:hover { background: #1d4ed8; }
+    .link-home-jobs {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin: 8px auto 18px; padding: 12px 16px; max-width: 420px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1.5px solid #93c5fd; border-radius: 12px;
+      text-decoration: none; color: #1e40af; font-weight: 700; font-size: 0.92rem;
+      transition: all 0.2s;
+    }
+    .link-home-jobs:hover { background: #dbeafe; transform: translateY(-1px); box-shadow: var(--shadow); }
+    .link-home-jobs img { height: 28px; width: auto; border-radius: 6px; }
 
     .container { max-width: 860px; margin: 0 auto; padding: 20px 16px 80px; }
     .header { text-align: center; margin-bottom: 24px; }
@@ -400,6 +443,11 @@
 
   <!-- Top bar -->
   <div class="top-bar" id="topBar">
+    <div class="top-bar-left">
+      <a href="https://jobs.franklymadear.com/" class="btn-back-main" title="Επιστροφή στην κεντρική σελίδα">
+        ← Ψαχνς Δλεια · Βρες Δλεια
+      </a>
+    </div>
     <div id="authBar">
       <button type="button" class="btn-auth" onclick="openAuthModal('login')">Σύνδεση</button>
       <button type="button" class="btn-auth primary" onclick="openAuthModal('register')">Εγγραφή Μάστορα</button>
@@ -414,6 +462,36 @@
              onerror="this.onerror=null;this.src='https://jobs.franklymadear.com/logo.png'">
         <h1>Βρες Μάστορα κοντά σου</h1>
         <p>Οικιακές υπηρεσίες · Αγροτικές εργασίες · Θεσσαλία</p>
+      </div>
+
+      <a href="https://jobs.franklymadear.com/" class="link-home-jobs">
+        <img src="https://jobs.franklymadear.com/logo2.png" alt="" onerror="this.style.display='none'">
+        Επιστροφή στο Ψαχνς Δλεια · Βρες Δλεια (αγγελίες εργασίας)
+      </a>
+
+      <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal (ίδιο με την κεντρική) -->
+      <div class="kofi-goal-card">
+        <div class="kofi-goal-card-inner">
+          <div class="kofi-goal-top">
+            <span class="kofi-goal-emoji">💙</span>
+            <div>
+              <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
+              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
+            </div>
+          </div>
+          <div class="kofi-live-bar">
+            <iframe
+              src="https://ko-fi.com/streamalerts/goaloverlay/sa_d99fac7d-3908-4c1d-97c2-98e751a7195c"
+              title="Στόχος στήριξης"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              class="kofi-live-iframe">
+            </iframe>
+          </div>
+          <div class="kofi-goal-meta">
+            <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-cta">Στήριξε τώρα →</a>
+          </div>
+        </div>
       </div>
 
       <div class="promo-banner">
@@ -459,7 +537,8 @@
 
     <!-- BROWSE -->
     <div id="screen-browse" class="screen">
-      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
+      <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στα μαστόρια</button>
+      <p style="margin:-8px 0 12px;"><a href="https://jobs.franklymadear.com/" style="color:var(--accent);font-weight:600;font-size:0.88rem;text-decoration:none;">← Ψαχνς Δλεια · Βρες Δλεια (αγγελίες εργασίας)</a></p>
       <h2 id="browseTitle" style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:12px;">Όλα τα μαστόρια</h2>
 
       <div class="browse-cat-tabs" id="browseCatTabs">
@@ -489,6 +568,7 @@
     <!-- POST / EDIT PROFILE -->
     <div id="screen-post" class="screen">
       <button class="back-btn" onclick="showScreen('screen-home'); clearEditing();">← Πίσω</button>
+      <p style="margin:-8px 0 12px;"><a href="https://jobs.franklymadear.com/" style="color:var(--accent);font-weight:600;font-size:0.88rem;text-decoration:none;">← Ψαχνς Δλεια · Βρες Δλεια</a></p>
       <h2 style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:6px;" id="postTitle">Δημοσίευση προφίλ μάστορα</h2>
       <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:14px;">Συμπληρώστε τα στοιχεία σας. Οι επισκέπτες θα σας βρίσκουν ανά κατηγορία και περιοχή.</p>
 
@@ -566,9 +646,13 @@
   </div>
 
   <div class="footer-legal">
-    <a href="https://jobs.franklymadear.com/">Ψαχνς Δλεια</a> ·
+    <p style="margin-bottom:10px;">
+      <a href="https://jobs.franklymadear.com/" style="font-weight:700;font-size:0.95rem;">← Ψαχνς Δλεια · Βρες Δλεια</a>
+      <span style="display:block;margin-top:4px;color:var(--text-muted);">Αγγελίες εργασίας στη Θεσσαλία · κεντρική σελίδα</span>
+    </p>
     <a href="#" onclick="openLegal('terms');return false;">Όροι</a> ·
-    <a href="#" onclick="openLegal('privacy');return false;">Απόρρητο</a><br>
+    <a href="#" onclick="openLegal('privacy');return false;">Απόρρητο</a> ·
+    <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener">Στήριξε την προσπάθεια</a><br>
     © Μαστόρια Θεσσαλίας · franklymadear.com
   </div>
 
