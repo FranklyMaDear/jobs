@@ -203,7 +203,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Πίνακας Ελέγχου </h1>
+      <h1>Πίνακας Ελέγχου · Ergasia Thessalia</h1>
       <div class="stats">
         <span class="stat-pill" id="statWorkers">Εργάτες: —</span>
         <span class="stat-pill" id="statEmployers">Εργοδότες: —</span>
@@ -214,6 +214,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('workers')">👷 Εργαζόμενοι</button>
       <button class="tab-btn" onclick="switchTab('employers')">🏢 Εργοδότες</button>
+      <button class="tab-btn" onclick="switchTab('masters')">🛠️ Μαστόρια</button>
       <button class="tab-btn" onclick="switchTab('users')">👤 Χρήστες</button>
       <button class="tab-btn" onclick="switchTab('matches')">🤝 Επιλογές</button>
       <button class="tab-btn" onclick="switchTab('ratings')">⭐ Αξιολογήσεις</button>
@@ -267,18 +268,57 @@
       </div>
     </div>
 
+    <div id="masters" class="panel">
+      <div class="toolbar">
+        <input type="text" id="searchMasters" placeholder="Αναζήτηση μάστορα..." oninput="filterMastersTable()">
+        <select id="masterTypeFilter" onchange="renderMastersAdmin()" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;">
+          <option value="">Όλες οι κατηγορίες</option>
+          <option value="home">🏠 Οικιακές</option>
+          <option value="field">🌾 Αγροτικές</option>
+        </select>
+        <button class="btn btn-primary" onclick="load()">↻ Ανανέωση</button>
+      </div>
+      <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
+        Προφίλ μαστόρων (από αγγελίες εργοδοτών με ειδικότητα τεχνίτη). Διαγραφή / καρφίτσωμα όπως στις άλλες καρτέλες.
+      </p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Όνομα</th>
+              <th>Ειδικότητα</th>
+              <th>Κατηγορία</th>
+              <th>Περιοχές</th>
+              <th>Επικοινωνία</th>
+              <th>Ημ/νία</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="m-masters-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div id="users" class="panel">
       <div class="toolbar" style="flex-wrap:wrap;gap:8px;">
         <input type="text" id="searchUsers" placeholder="Αναζήτηση ονόματος, email, τηλεφώνου..." oninput="filterUsers()">
+        <select id="userRoleFilter" onchange="filterUsers()" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;">
+          <option value="">Όλοι οι ρόλοι</option>
+          <option value="worker">👷 Ψάχνουν δουλειά</option>
+          <option value="employer">🏢 Ψάχνουν προσωπικό</option>
+          <option value="master">🛠️ Μαστόρια</option>
+        </select>
         <button class="btn btn-primary" onclick="loadUsers()">↻ Ανανέωση</button>
         <button class="btn btn-primary" style="background:#059669;" onclick="exportUsersExcel('worker')" title="Για διαγωνισμούς Tally">📥 Excel Εργαζόμενοι</button>
         <button class="btn btn-primary" style="background:#2563eb;" onclick="exportUsersExcel('employer')" title="Για διαγωνισμούς Tally">📥 Excel Εργοδότες</button>
+        <button class="btn btn-primary" style="background:#0f766e;" onclick="exportUsersExcel('master')">📥 Excel Μαστόρια</button>
         <button class="btn btn-primary" style="background:#64748b;" onclick="exportUsersExcel('all')">📥 Excel Όλοι</button>
         <a class="btn btn-secondary" href="https://tally.so/forms/44jy95" target="_blank" rel="noopener" style="text-decoration:none;">Tally Διαγωνισμοί ↗</a>
       </div>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px;">
-        Πόντοι (1 πόντος = 1 αγγελία), μπλοκάρισμα, διαγραφή προφίλ και επαναφορά κωδικού.
-        Νέοι χρήστες ξεκινούν με 2 πόντους. Μετά από αγορά πακέτου συμπληρώνετε εδώ τους νέους πόντους.
+        Πόντοι (1 πόντος = 1 αγγελία). Εργαζόμενοι/εργοδότες: 2 πόντοι στην εγγραφή · Μάστορες: 1 δωρεάν αγγελία.
+        Φίλτρο ρόλου: όσοι ψάχνουν δουλειά, όσοι ψάχνουν προσωπικό, μαστόρια.
       </p>
       <div id="passwordResetsBox" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;">
         <strong>Αιτήματα επαναφοράς κωδικού</strong>
@@ -352,7 +392,22 @@
     const API = "https://jobs.kafevolta.workers.dev";
     let workersData = [];
     let employersData = [];
+    let mastersData = [];
     let usersData = [];
+
+    const MASTER_HOME = ["Υδραυλικός","Ηλεκτρολόγος","Ψυκτικός / Κλιματισμός","Πλακάκια / Επενδύσεις","Βάψιμο / Ζωγραφική","Χτίσιμο / Σοβάτισμα","Ανακαίνιση","Σιδηρουργός / Κάγκελα","Ξυλουργός / Έπιπλα","Σκεπές / Μονώσεις","Μερεμέτια σπιτιού","Συναρμολόγηση επίπλων","Καθαρισμοί / Απολύμανση"];
+    const MASTER_FIELD = ["Αγροτικά μηχανήματα / Service","Κλάδεμα / Δεντροκομία","Άρδευση / Πηγάδια","Περίφραξη χωραφιών","Ελαιοσυλλογή / Συγκομιδή","Κηπουρική / Τοπίο","Γεωργικές κατασκευές","Μεταφορές αγροτικές","Χωματουργικά","Άλλες αγροτικές εργασίες"];
+
+    function isMasterAd(ad) {
+      const s = (ad.specialty || ad.task || "").trim();
+      if (MASTER_HOME.includes(s) || MASTER_FIELD.includes(s)) return true;
+      return /υδραυλ|ηλεκτρολ|ψυκτ|πλακ|βάψ|χτίσ|ανακαίν|σιδηρ|ξυλουργ|σκεπ|μερεμ|αγροτ|κλάδ|άρδευ|περίφρα|ελαιο|κηπουρ|χωμάτ/i.test(s);
+    }
+    function masterCat(ad) {
+      const s = (ad.specialty || ad.task || "").trim();
+      if (MASTER_FIELD.includes(s) || /αγροτ|κλάδ|άρδευ|περίφρα|ελαιο|κηπουρ|χωμάτ|γεωργ/i.test(s)) return "field";
+      return "home";
+    }
 
     function switchTab(t) {
       document.querySelectorAll(".tab-btn, .panel").forEach(e => e.classList.remove("active"));
@@ -361,6 +416,7 @@
       if (t === "users") loadUsers();
       if (t === "matches") loadMatches();
       if (t === "ratings") loadRatings();
+      if (t === "masters") renderMastersAdmin();
     }
 
     async function load() {
@@ -373,6 +429,7 @@
         employersData = await er.json();
         if (!Array.isArray(workersData)) workersData = [];
         if (!Array.isArray(employersData)) employersData = [];
+        mastersData = employersData.filter(isMasterAd);
 
         const foundCount = [...workersData, ...employersData].filter(r => r.found == 1).length;
 
@@ -382,9 +439,52 @@
 
         render("w-tbody", workersData, "worker");
         render("e-tbody", employersData, "employer");
+        renderMastersAdmin();
       } catch (e) {
         alert("Σφάλμα φόρτωσης δεδομένων");
       }
+    }
+
+    function renderMastersAdmin() {
+      const tbody = document.getElementById("m-masters-tbody");
+      if (!tbody) return;
+      const typeF = (document.getElementById("masterTypeFilter") || {}).value || "";
+      let list = mastersData || [];
+      if (typeF) list = list.filter(a => masterCat(a) === typeF);
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">Δεν υπάρχουν προφίλ μαστόρων</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(r => {
+        let locs = [];
+        try { locs = JSON.parse(r.locations || "[]"); } catch { locs = []; }
+        const photo = r.photo_url || r.logo_url || "";
+        const date = r.created_at ? new Date(r.created_at).toLocaleDateString("el-GR") : "—";
+        const cat = masterCat(r);
+        const catLabel = cat === "field" ? "🌾 Αγροτική" : "🏠 Οικιακή";
+        return `
+          <tr data-search="${(r.name + " " + (r.specialty||"") + " " + locs.join(" ")).toLowerCase()}">
+            <td data-label="">${photo ? `<img src="${photo}" class="photo-thumb" onerror="this.style.display='none'">` : "—"}</td>
+            <td data-label="Όνομα"><strong>${escapeHtml(r.name)}</strong></td>
+            <td data-label="Ειδικότητα">${escapeHtml(r.specialty || r.task || "—")}</td>
+            <td data-label="Κατηγορία">${catLabel}</td>
+            <td data-label="Περιοχές">${locs.slice(0,3).map(l => `<span class="badge">${escapeHtml(l)}</span>`).join("")}</td>
+            <td data-label="Επικοινωνία">${r.phone ? `<a href="tel:${r.phone}">${escapeHtml(r.phone)}</a>` : "—"}${r.email ? `<br><small>${escapeHtml(r.email)}</small>` : ""}</td>
+            <td data-label="Ημ/νία">${date}</td>
+            <td data-label="">
+              <button class="btn btn-primary" style="padding:6px 10px;font-size:0.8rem;background:${r.is_pinned==1?'#f59e0b':'#64748b'};margin-right:4px;" onclick="togglePin(${r.id}, 'employer', ${r.is_pinned==1?0:1})">${r.is_pinned==1?'Ξεκαρφίτσωμα':'📌'}</button>
+              <button class="btn btn-danger" onclick="del(${r.id}, 'employer')">Διαγραφή</button>
+            </td>
+          </tr>`;
+      }).join("");
+    }
+
+    function filterMastersTable() {
+      const q = (document.getElementById("searchMasters").value || "").toLowerCase();
+      document.querySelectorAll("#m-masters-tbody tr").forEach(tr => {
+        const s = tr.getAttribute("data-search") || "";
+        tr.style.display = !q || s.includes(q) ? "" : "none";
+      });
     }
 
     async function loadUsers() {
@@ -405,7 +505,7 @@
         return;
       }
       tbody.innerHTML = usersData.map(u => {
-        const roleLabel = u.role === "worker" ? "Εργαζόμενος" : u.role === "employer" ? "Εργοδότης" : "Και τα δύο";
+        const roleLabel = u.role === "worker" ? "👷 Εργαζόμενος" : u.role === "employer" ? "🏢 Εργοδότης" : u.role === "master" ? "🛠️ Μάστορας" : "Και τα δύο";
         const isBlocked = u.blocked == 1;
         return `
           <tr class="${isBlocked ? 'found-row' : ''}" style="${isBlocked ? 'background:#fef2f2' : ''}" data-search="${(u.nickname + " " + u.email + " " + (u.phone||"") + " " + (u.role||"") + " " + (u.id||"")).toLowerCase()}">
@@ -596,6 +696,7 @@
         if (filter === "all") return true;
         if (filter === "worker") return u.role === "worker" || u.role === "both";
         if (filter === "employer") return u.role === "employer" || u.role === "both";
+        if (filter === "master") return u.role === "master";
         return true;
       });
       if (!rows.length) {
@@ -606,7 +707,7 @@
       var header = ["id", "nickname", "email", "email_dothike", "phone", "phone_dothike", "role", "created_at", "max_ads", "free_slots", "ads_used", "blocked"];
       var lines = [header.join(",")];
       rows.forEach(function(u) {
-        var roleLabel = u.role === "worker" ? "εργαζομενος" : u.role === "employer" ? "εργοδοτης" : "και_τα_δυο";
+        var roleLabel = u.role === "worker" ? "εργαζομενος" : u.role === "employer" ? "εργοδοτης" : u.role === "master" ? "mastoras" : "και_τα_δυο";
         var email = (u.email || "").trim();
         var phone = (u.phone || "").trim();
         var cells = [
@@ -630,7 +731,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       var stamp = new Date().toISOString().slice(0, 10);
-      var name = filter === "worker" ? "ergazomenoi" : filter === "employer" ? "ergodotes" : "oloi_xristes";
+      var name = filter === "worker" ? "ergazomenoi" : filter === "employer" ? "ergodotes" : filter === "master" ? "mastoria" : "oloi_xristes";
       a.href = url;
       a.download = name + "_" + stamp + ".csv";
       document.body.appendChild(a);
@@ -647,11 +748,13 @@
 
     function filterUsers() {
       const q = (document.getElementById("searchUsers").value || "").toLowerCase().trim();
+      const roleF = (document.getElementById("userRoleFilter") || {}).value || "";
       const parts = q.split(/\s+/).filter(Boolean);
       document.querySelectorAll("#u-tbody tr").forEach(tr => {
         const s = tr.getAttribute("data-search") || "";
-        const ok = !q || parts.every(p => s.includes(p));
-        tr.style.display = ok ? "" : "none";
+        const okQ = !q || parts.every(p => s.includes(p));
+        const okR = !roleF || s.includes(roleF);
+        tr.style.display = (okQ && okR) ? "" : "none";
       });
     }
 
