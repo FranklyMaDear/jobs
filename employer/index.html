@@ -101,25 +101,34 @@
 
     .top-bar {
       background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
-      color: white; padding: 10px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
-      min-height: 52px;
+      color: white; padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: auto;
+    }
+    .top-bar-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-wrap: nowrap;
     }
     .top-bar .btn-auth {
-      padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+      padding: 7px 12px; border-radius: 9px; font-size: 0.8rem; font-weight: 600;
       border: 1.5px solid rgba(255,255,255,0.35); background: transparent; color: white;
-      cursor: pointer; font-family: inherit;
+      cursor: pointer; font-family: inherit; white-space: nowrap;
     }
     .top-bar .btn-auth.primary { background: #0f766e; border-color: #0f766e; }
     .top-bar .btn-auth:hover { background: rgba(255,255,255,0.12); }
     .top-bar .btn-auth.primary:hover { background: #0d9488; }
-    .top-bar .auth-user { color: white; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .top-bar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .top-bar .auth-user {
+      color: white; font-size: 0.82rem; font-weight: 600;
+      display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .top-bar .auth-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .btn-back-main {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
-      background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.4);
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: 9px; font-size: 0.78rem; font-weight: 700;
+      background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.35);
       color: white; text-decoration: none; font-family: inherit; transition: all 0.2s;
+      white-space: nowrap;
     }
     .btn-back-main:hover { background: rgba(255,255,255,0.22); }
     .kofi-goal-card {
@@ -443,14 +452,14 @@
 
   <!-- Top bar -->
   <div class="top-bar" id="topBar">
-    <div class="top-bar-left">
-      <a href="https://jobs.franklymadear.com/" class="btn-back-main" title="Επιστροφή στην κεντρική σελίδα">
-        ← Ψαχνς Δλεια · Βρες Δλεια
+    <div class="top-bar-row">
+      <a href="https://jobs.franklymadear.com/" class="btn-back-main" title="Ψαχνς Δλεια · Βρες Δλεια">
+        ← Ψαχνς Δλεια
       </a>
-    </div>
-    <div id="authBar">
-      <button type="button" class="btn-auth" onclick="openAuthModal('login')">Σύνδεση</button>
-      <button type="button" class="btn-auth primary" onclick="openAuthModal('register')">Εγγραφή Μάστορα</button>
+      <div id="authBar" class="auth-actions">
+        <button type="button" class="btn-auth" onclick="openAuthModal('login')">Σύνδεση</button>
+        <button type="button" class="btn-auth primary" onclick="openAuthModal('register')">Εγγραφή</button>
+      </div>
     </div>
   </div>
 
@@ -466,7 +475,7 @@
 
       <a href="https://jobs.franklymadear.com/" class="link-home-jobs">
         <img src="https://jobs.franklymadear.com/logo2.png" alt="" onerror="this.style.display='none'">
-        Επιστροφή στο Ψαχνς Δλεια · Βρες Δλεια (αγγελίες εργασίας)
+        Ψαχνς Δλεια · Βρες Δλεια — αγγελίες εργασίας
       </a>
 
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal (ίδιο με την κεντρική) -->
@@ -538,7 +547,7 @@
     <!-- BROWSE -->
     <div id="screen-browse" class="screen">
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στα μαστόρια</button>
-      <p style="margin:-8px 0 12px;"><a href="https://jobs.franklymadear.com/" style="color:var(--accent);font-weight:600;font-size:0.88rem;text-decoration:none;">← Ψαχνς Δλεια · Βρες Δλεια (αγγελίες εργασίας)</a></p>
+      <p style="margin:-8px 0 12px;"><a href="https://jobs.franklymadear.com/" style="color:var(--accent);font-weight:600;font-size:0.88rem;text-decoration:none;">Ψαχνς Δλεια · Βρες Δλεια</a></p>
       <h2 id="browseTitle" style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:12px;">Όλα τα μαστόρια</h2>
 
       <div class="browse-cat-tabs" id="browseCatTabs">
@@ -891,18 +900,29 @@
 
     function renderAuthBar() {
       const bar = document.getElementById("authBar");
+      const topBar = document.getElementById("topBar");
+      // Καθαρίζουμε επιπλέον σειρές χρήστη
+      const oldUserRow = topBar.querySelector(".top-bar-user-row");
+      if (oldUserRow) oldUserRow.remove();
+
       if (!currentUser) {
         bar.innerHTML =
           '<button type="button" class="btn-auth" onclick="openAuthModal(\'login\')">Σύνδεση</button>' +
-          '<button type="button" class="btn-auth primary" onclick="openAuthModal(\'register\')">Εγγραφή Μάστορα</button>';
+          '<button type="button" class="btn-auth primary" onclick="openAuthModal(\'register\')">Εγγραφή</button>';
         return;
       }
       const slots = currentUser.free_slots != null ? currentUser.free_slots : "?";
+      const nick = escapeHtml(currentUser.nickname || currentUser.email || "");
+      // Σειρά 1: σύνδεσμος + κουμπιά · Σειρά 2: όνομα + slots
       bar.innerHTML =
-        '<span class="auth-user">👤 ' + escapeHtml(currentUser.nickname || currentUser.email) +
-        ' · <span style="color:#5eead4">' + slots + ' δωρεάν</span></span>' +
         '<button type="button" class="btn-auth" onclick="showScreen(\'screen-post\')">+ Προφίλ</button>' +
         '<button type="button" class="btn-auth" onclick="logout()">Έξοδος</button>';
+      const userRow = document.createElement("div");
+      userRow.className = "top-bar-row top-bar-user-row";
+      userRow.innerHTML =
+        '<span class="auth-user">👤 ' + nick +
+        ' · <span style="color:#5eead4">' + slots + ' δωρεάν</span></span>';
+      topBar.appendChild(userRow);
     }
 
     async function logout() {
