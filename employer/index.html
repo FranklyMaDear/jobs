@@ -179,7 +179,7 @@
       display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
     }
     .spec-chip {
-      padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+      padding: 7px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
       border: 1.5px solid var(--border); background: white; cursor: pointer;
       transition: all 0.2s; font-family: inherit; color: var(--text);
     }
@@ -187,6 +187,45 @@
     .spec-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
     .spec-chip.home-tone.active { background: var(--home); border-color: var(--home); }
     .spec-chip.field-tone.active { background: var(--field); border-color: var(--field); }
+    .spec-group {
+      margin-bottom: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .spec-group.home-g { background: #f0f7ff; border-color: #bfdbfe; }
+    .spec-group.field-g { background: #fffbeb; border-color: #fde68a; }
+    .spec-group-title {
+      font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; color: var(--primary);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .promo-banner {
+      background: linear-gradient(135deg, #ecfdf5, #ccfbf1);
+      border: 1.5px solid #5eead4; border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 20px; text-align: center;
+    }
+    .promo-banner strong { color: #0f766e; font-size: 1.02rem; }
+    .promo-banner p { font-size: 0.88rem; color: #134e4a; margin-top: 4px; line-height: 1.4; }
+    .role-pick {
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;
+    }
+    .role-pick label {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 600; background: #f8fafc;
+    }
+    .role-pick label:has(input:checked) {
+      border-color: var(--accent); background: var(--accent-soft); color: #0f766e;
+    }
+    .role-pick input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .browse-cat-tabs {
+      display: flex; gap: 6px; margin-bottom: 12px; background: #e2e8f0;
+      padding: 4px; border-radius: 10px;
+    }
+    .browse-cat-tabs button {
+      flex: 1; padding: 10px 8px; border: none; border-radius: 8px; font-weight: 600;
+      font-size: 0.82rem; cursor: pointer; background: transparent; color: var(--text-muted);
+      font-family: inherit; transition: all 0.2s;
+    }
+    .browse-cat-tabs button.active { background: white; color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
     @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
@@ -377,6 +416,11 @@
         <p>Οικιακές υπηρεσίες · Αγροτικές εργασίες · Θεσσαλία</p>
       </div>
 
+      <div class="promo-banner">
+        <strong>🛠️ Είσαι μάστορας; Εγγράψου δωρεάν</strong>
+        <p>Δημοσίευσε το προφίλ σου με 1 δωρεάν αγγελία — περιοχή, τηλέφωνο και φωτογραφίες δουλειών. Σε βρίσκουν όσοι ψάχνουν τεχνίτη κοντά τους.</p>
+      </div>
+
       <div class="cat-split">
         <div class="cat-card home" onclick="browseCategory('home')">
           <div class="icon">🏠</div>
@@ -397,10 +441,10 @@
           <h3>Δες όλα τα μαστόρια</h3>
           <p>Περιήγηση σε όλους τους εγγεγραμμένους τεχνίτες της περιοχής.</p>
         </div>
-        <div class="action-card" onclick="requireAuthThen('screen-post')">
+        <div class="action-card" onclick="openAuthModal('register')">
           <div class="icon">🛠️</div>
           <h3>Είμαι μάστορας</h3>
-          <p>Εγγραφή & δημοσίευση προφίλ – περιοχή, τηλέφωνο, φωτογραφίες δουλειών.</p>
+          <p>Εγγραφή δωρεάν & 1 αγγελία — περιοχή, τηλέφωνο, φωτογραφίες δουλειών.</p>
         </div>
       </div>
 
@@ -418,17 +462,23 @@
       <button class="back-btn" onclick="showScreen('screen-home')">← Πίσω στην αρχική</button>
       <h2 id="browseTitle" style="font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:12px;">Όλα τα μαστόρια</h2>
 
+      <div class="browse-cat-tabs" id="browseCatTabs">
+        <button type="button" class="active" data-cat="all" onclick="browseCategory('all')">Όλα</button>
+        <button type="button" data-cat="home" onclick="browseCategory('home')">🏠 Οικιακές</button>
+        <button type="button" data-cat="field" onclick="browseCategory('field')">🌾 Αγροτικές</button>
+      </div>
+
       <div class="filter-bar">
         <div class="filter-row">
-          <input type="text" id="filterSearch" placeholder="Αναζήτηση ονόματος, ειδικότητας…" oninput="filterMasters()">
-          <select id="filterSpec" onchange="filterMasters()">
-            <option value="">Όλες οι ειδικότητες</option>
-          </select>
+          <input type="text" id="filterSearch" placeholder="Αναζήτηση ονόματος…" oninput="filterMasters()">
           <select id="filterLoc" onchange="filterMasters()">
             <option value="">Όλες οι περιοχές</option>
           </select>
         </div>
-        <div class="spec-grid" id="specChips"></div>
+        <select id="filterSpec" onchange="filterMasters()" style="display:none;">
+          <option value="">Όλες οι ειδικότητες</option>
+        </select>
+        <div id="specChips"></div>
       </div>
 
       <div id="browse-list">
@@ -536,6 +586,14 @@
           <label class="main-label">Ψευδώνυμο / Όνομα</label>
           <input type="text" id="authNickname" maxlength="40" placeholder="π.χ. Γιώργος Υδραυλικός">
         </div>
+        <div class="form-group" id="authRoleWrap" style="display:none;">
+          <label class="main-label">Είσαι…</label>
+          <div class="role-pick">
+            <label><input type="radio" name="authRole" value="master" checked> 🛠️ Μάστορας / Τεχνίτης</label>
+            <label><input type="radio" name="authRole" value="employer"> 🏢 Ψάχνω προσωπικό (εργοδότης)</label>
+            <label><input type="radio" name="authRole" value="worker"> 👷 Ψάχνω δουλειά (εργαζόμενος)</label>
+          </div>
+        </div>
         <div class="form-group">
           <label class="main-label">Email</label>
           <input type="email" id="authEmail" required placeholder="email@example.com">
@@ -547,7 +605,7 @@
         <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">Σύνδεση</button>
       </form>
       <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px;text-align:center;">
-        Η εγγραφή είναι δωρεάν. Νέοι μάστορες ξεκινούν με 2 δωρεάν προφίλ.
+        Η εγγραφή είναι δωρεάν. Οι μάστορες παίρνουν <strong>1 δωρεάν αγγελία</strong> προφίλ.
       </p>
     </div>
   </div>
@@ -672,9 +730,15 @@
       authMode = mode;
       document.getElementById("tabLogin").classList.toggle("active", mode === "login");
       document.getElementById("tabRegister").classList.toggle("active", mode === "register");
-      document.getElementById("authTitle").textContent = mode === "login" ? "Σύνδεση" : "Εγγραφή Μάστορα";
+      document.getElementById("authTitle").textContent = mode === "login" ? "Σύνδεση" : "Εγγραφή";
       document.getElementById("authSubmitBtn").textContent = mode === "login" ? "Σύνδεση" : "Εγγραφή";
       document.getElementById("authNickWrap").style.display = mode === "register" ? "block" : "none";
+      document.getElementById("authRoleWrap").style.display = mode === "register" ? "block" : "none";
+    }
+
+    function getSelectedAuthRole() {
+      const el = document.querySelector('input[name="authRole"]:checked');
+      return el ? el.value : "master";
     }
 
     async function handleAuth(e) {
@@ -686,16 +750,26 @@
       btn.disabled = true;
       try {
         if (authMode === "register") {
-          if (!nickname || nickname.length < 2) { alert("Συμπληρώστε ψευδώνυμο / όνομα"); return; }
+          if (!nickname || nickname.length < 2) { alert("Συμπληρώστε ψευδώνυμο / όνομα"); btn.disabled = false; return; }
+          const role = getSelectedAuthRole();
           const res = await fetch(API_BASE + "/api/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, nickname, role: "employer" })
+            body: JSON.stringify({ email, password, nickname, role: role })
           });
           const data = await res.json();
-          if (!res.ok) { alert(data.error || "Σφάλμα εγγραφής"); return; }
+          if (!res.ok) { alert(data.error || "Σφάλμα εγγραφής"); btn.disabled = false; return; }
           setToken(data.token);
           currentUser = data.user;
+          closeAuthModal();
+          renderAuthBar();
+          updateQuotaInfo();
+          loadHomeMasters();
+          if (role === "master") {
+            showScreen("screen-post");
+          } else {
+            alert("Η εγγραφή ολοκληρώθηκε. Για αγγελίες εργασίας πηγαίνετε στο jobs.franklymadear.com");
+          }
         } else {
           const res = await fetch(API_BASE + "/api/login", {
             method: "POST",
@@ -703,14 +777,14 @@
             body: JSON.stringify({ email, password })
           });
           const data = await res.json();
-          if (!res.ok) { alert(data.error || "Λάθος στοιχεία"); return; }
+          if (!res.ok) { alert(data.error || "Λάθος στοιχεία"); btn.disabled = false; return; }
           setToken(data.token);
           currentUser = data.user;
+          closeAuthModal();
+          renderAuthBar();
+          updateQuotaInfo();
+          loadHomeMasters();
         }
-        closeAuthModal();
-        renderAuthBar();
-        updateQuotaInfo();
-        loadHomeMasters();
       } catch (err) {
         alert("Αδυναμία σύνδεσης με τον διακομιστή");
       } finally {
@@ -1131,8 +1205,33 @@
         field: "🌾 Αγροτικές / Υπαίθριες"
       };
       document.getElementById("browseTitle").textContent = titles[cat] || titles.all;
+      document.querySelectorAll("#browseCatTabs button").forEach(function(b) {
+        b.classList.toggle("active", b.getAttribute("data-cat") === browseFilter);
+      });
+      // reset specialty when switching category group
+      var specSel = document.getElementById("filterSpec");
+      if (specSel) specSel.value = "";
       showScreen("screen-browse");
       renderBrowse();
+    }
+
+    function buildChipGroup(title, items, tone, activeSpec) {
+      if (!items || !items.length) return "";
+      return '<div class="spec-group ' + (tone === "field-tone" ? "field-g" : "home-g") + '">' +
+        '<div class="spec-group-title">' + title + '</div>' +
+        '<div class="spec-grid">' +
+        items.map(function(s) {
+          return '<button type="button" class="spec-chip ' + tone + (activeSpec === s ? " active" : "") +
+            '" onclick="pickSpec(\'' + s.replace(/'/g, "\\'") + '\')">' + escapeHtml(s) + '</button>';
+        }).join("") +
+        '</div></div>';
+    }
+
+    function pickSpec(s) {
+      var sel = document.getElementById("filterSpec");
+      if (sel.value === s) sel.value = "";
+      else sel.value = s;
+      filterMasters();
     }
 
     async function renderBrowse() {
@@ -1144,40 +1243,33 @@
       if (browseFilter === "home") list = list.filter(a => adType(a) === "home");
       if (browseFilter === "field") list = list.filter(a => adType(a) === "field");
 
-      // Fill filters
-      const specs = new Set();
       const locs = new Set();
       list.forEach(ad => {
-        if (ad.specialty) specs.add(ad.specialty);
         try {
           const L = typeof ad.locations === "string" ? JSON.parse(ad.locations || "[]") : (ad.locations || []);
           L.forEach(x => locs.add(x));
         } catch(e) {}
       });
-      const specSel = document.getElementById("filterSpec");
       const locSel = document.getElementById("filterLoc");
-      const curSpec = specSel.value;
       const curLoc = locSel.value;
-      specSel.innerHTML = '<option value="">Όλες οι ειδικότητες</option>' +
-        [...specs].sort().map(s => '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>').join("");
       locSel.innerHTML = '<option value="">Όλες οι περιοχές</option>' +
         [...locs].sort().map(l => '<option value="' + escapeHtml(l) + '">' + escapeHtml(l) + '</option>').join("");
-      if (curSpec) specSel.value = curSpec;
       if (curLoc) locSel.value = curLoc;
 
-      // Chips for current group
+      const homeItems = MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"];
+      const fieldItems = MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"];
+      const activeSpec = document.getElementById("filterSpec").value;
       const chipsBox = document.getElementById("specChips");
-      const chipSource = browseFilter === "field"
-        ? MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"]
-        : browseFilter === "home"
-          ? MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"]
-          : [...MASTER_CATEGORIES["🏠 Οικιακές Υπηρεσίες (Σπίτι)"], ...MASTER_CATEGORIES["🌾 Αγροτικές / Υπαίθριες"]];
-      const tone = browseFilter === "field" ? "field-tone" : "home-tone";
-      chipsBox.innerHTML = chipSource.map(s =>
-        '<button type="button" class="spec-chip ' + tone + (specSel.value === s ? ' active' : '') +
-        '" onclick="document.getElementById(\'filterSpec\').value=\'' + s.replace(/'/g,"\\'") + '\';filterMasters();">' +
-        escapeHtml(s) + '</button>'
-      ).join("");
+
+      if (browseFilter === "home") {
+        chipsBox.innerHTML = buildChipGroup("🏠 Ειδικότητες σπιτιού", homeItems, "home-tone", activeSpec);
+      } else if (browseFilter === "field") {
+        chipsBox.innerHTML = buildChipGroup("🌾 Αγροτικές ειδικότητες", fieldItems, "field-tone", activeSpec);
+      } else {
+        chipsBox.innerHTML =
+          buildChipGroup("🏠 Οικιακές Υπηρεσίες", homeItems, "home-tone", activeSpec) +
+          buildChipGroup("🌾 Αγροτικές / Υπαίθριες", fieldItems, "field-tone", activeSpec);
+      }
 
       filterMasters();
     }
