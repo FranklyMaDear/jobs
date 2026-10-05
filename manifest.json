@@ -1,27 +1,28 @@
- {
+{
   "name": "Ψαχνς Δλεια - Βρες Δλεια",
   "short_name": "Ψαχνς Δλεια",
   "description": "Αγγελίες εργασίας στη Θεσσαλία – δωρεάν",
-  "start_url": "/",
+  "start_url": "/jobs/",
+  "scope": "/jobs/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/jobs/logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/jobs/logo2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/jobs/logo2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
