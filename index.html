@@ -18,11 +18,11 @@
   <meta name="twitter:title" content="Ψαχνς Δλεια - Βρες Δλεια">
   <meta name="twitter:description" content="Αγγελίες εργασίας στη Θεσσαλία.">
   <meta name="twitter:image" content="https://franklymadear.github.io/jobs/logo2.png">
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="logo.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="logo.png">
+  <link rel="icon" type="image/png" href="https://franklymadear.github.io/jobs/logo.png">
+  <link rel="apple-touch-icon" href="https://franklymadear.github.io/jobs/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://franklymadear.github.io/jobs/logo.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="https://franklymadear.github.io/jobs/logo.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://franklymadear.github.io/jobs/logo2.png">
   <meta name="apple-mobile-web-app-title" content="Ψαχνς Δλεια">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -856,8 +856,9 @@
         <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
       </div>
       <!-- Προβολή εργοδοτών / επιχειρήσεων -->
-      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" target="_blank" rel="noopener">
-        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Επιχειρήσεις – Πατήστε εδώ" onerror="this.style.display='none'">
+      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" target="_blank" rel="noopener" title="Βρες τον Μάστορά σου">
+        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Βρες τον Μάστορά σου" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo2.png'">
+        <div style="text-align:center;font-weight:800;color:#0f766e;margin-top:8px;font-size:0.95rem;">🛠️ Βρες τον Μάστορά σου</div>
       </a>
       <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
       <div class="kofi-goal-card">
@@ -1393,16 +1394,6 @@
   <script>
     const API_BASE = "https://jobs.kafevolta.workers.dev";
     const API_URL = API_BASE + "/api";
-    // Base URL της σελίδας (GitHub Pages: /jobs/)
-    const SITE_BASE = (function() {
-      try {
-        var path = window.location.pathname || "/";
-        // https://franklymadear.github.io/jobs/ → /jobs/
-        if (path.indexOf("/jobs") === 0) return window.location.origin + "/jobs";
-        return window.location.origin + (path.replace(/\/[^/]*$/, "") || "");
-      } catch (e) { return "https://franklymadear.github.io/jobs"; }
-    })();
-    const SITE_URL = SITE_BASE + "/";
     let currentData = [];
     let currentViewType = "workers";
     let foundTarget = null;
@@ -2397,7 +2388,7 @@
     function doSharePlatform(platform) {
       var title = lastSharePayload.title || "Ψαχνς Δλεια - Βρες Δλεια";
       var text = lastSharePayload.text || title;
-      var url = lastSharePayload.url || SITE_URL;
+      var url = lastSharePayload.url || (window.location.origin + "/");
       var fullText = text + "\n" + url;
       var enc = encodeURIComponent;
       if (platform === "facebook") {
