@@ -790,10 +790,30 @@
     }
 
     function closeWelcome() {
-      document.getElementById("welcomeOverlay").classList.add("hidden");
-      document.body.classList.remove("welcome-open");
-      try { localStorage.setItem("masters_welcome_seen", "1"); } catch(e) {}
+      try {
+        var ov = document.getElementById("welcomeOverlay");
+        if (ov) {
+          ov.classList.add("hidden");
+          ov.style.display = "none";
+        }
+        document.body.classList.remove("welcome-open");
+        document.body.style.overflow = "";
+        document.body.style.position = "";
+        document.body.style.width = "";
+        document.body.style.height = "";
+        try { localStorage.setItem("masters_welcome_seen", "1"); } catch(e) {}
+        window.scrollTo(0, 0);
+      } catch (err) {
+        console.error(err);
+        var ov2 = document.getElementById("welcomeOverlay");
+        if (ov2) ov2.style.display = "none";
+      }
     }
+    // Fallback if onclick fails
+    document.addEventListener("DOMContentLoaded", function() {
+      var btn = document.querySelector(".welcome-btn");
+      if (btn) btn.addEventListener("click", function(e) { e.preventDefault(); closeWelcome(); });
+    });
     if (localStorage.getItem("masters_welcome_seen") === "1") {
       document.getElementById("welcomeOverlay").classList.add("hidden");
       document.body.classList.remove("welcome-open");
@@ -1311,7 +1331,7 @@
           (desc ? '<div class="mc-desc">' + escapeHtml(desc.slice(0, 120)) + (desc.length > 120 ? "…" : "") + '</div>' : "") +
           gallery +
           '<div class="mc-contact">' +
-            (ad.phone ? '<a href="tel:' + escapeHtml(String(ad.phone).replace(/\\s/g,"")) + '" onclick="event.stopPropagation()">📞 ' + escapeHtml(ad.phone) + '</a>' : "") +
+            (ad.phone ? '<a href="tel:' + escapeHtml(String(ad.phone).replace(/\s/g,"")) + '" onclick="event.stopPropagation()">📞 ' + escapeHtml(ad.phone) + '</a>' : "") +
             (ad.email ? '<a href="mailto:' + escapeHtml(ad.email) + '" onclick="event.stopPropagation()">✉️ Email</a>' : "") +
             '<button type="button" class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="event.stopPropagation();openDetailModal(' + Number(adId) + ')">Δες όλη την αγγελία →</button>' +
           '</div>' +
@@ -1337,11 +1357,15 @@
 
       let gallery = "";
       if (photos.length) {
-        gallery = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:12px 0;">' +
-          photos.map(function(u) {
-            return '<img src="' + escapeHtml(u) + '" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid var(--border);" onclick="openLightbox(\\'' + escapeHtml(u).replace(/'/g, "\\\\'") + '\\')">'
-          }).join("") + '</div>';
+        gallery = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:12px 0;">';
+        photos.forEach(function(u) {
+          const safe = escapeHtml(u);
+          gallery += '<img src="' + safe + '" alt="" data-full="' + safe + '" style="width:100%;height:120px;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid var(--border);">';
+        });
+        gallery += '</div>';
       }
+
+      const phoneClean = ad.phone ? String(ad.phone).replace(/\s/g, "") : "";
 
       box.innerHTML =
         '<div style="text-align:center;margin-bottom:14px;">' +
@@ -1358,9 +1382,14 @@
         (desc ? '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0;white-space:pre-wrap;line-height:1.5;font-size:0.92rem;">' + escapeHtml(desc) + '</div>' : "") +
         (photos.length ? '<div style="font-weight:700;margin-top:8px;margin-bottom:6px;">📷 Φωτογραφίες εργασίας</div>' + gallery : "") +
         '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center;">' +
-          (ad.phone ? '<a class="btn btn-primary" href="tel:' + escapeHtml(String(ad.phone).replace(/\\s/g,"")) + '">📞 Κλήση ' + escapeHtml(ad.phone) + '</a>' : "") +
+          (ad.phone ? '<a class="btn btn-primary" href="tel:' + escapeHtml(phoneClean) + '">📞 Κλήση ' + escapeHtml(ad.phone) + '</a>' : "") +
           (ad.email ? '<a class="btn btn-secondary" href="mailto:' + escapeHtml(ad.email) + '">✉️ Email</a>' : "") +
         '</div>';
+
+      // lightbox on gallery images
+      box.querySelectorAll("img[data-full]").forEach(function(img) {
+        img.addEventListener("click", function() { openLightbox(img.getAttribute("data-full")); });
+      });
 
       modal.classList.add("active");
     }
