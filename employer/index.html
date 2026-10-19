@@ -559,10 +559,10 @@
           <h3>Δες όλα τα μαστόρια</h3>
           <p>Περιήγηση σε όλους τους εγγεγραμμένους τεχνίτες της περιοχής.</p>
         </div>
-        <div class="action-card" onclick="openAuthModal('register')">
+        <div class="action-card" onclick="goMasterPost()">
           <div class="icon">🛠️</div>
           <h3>Είμαι μάστορας</h3>
-          <p>Εγγραφή δωρεάν & 1 αγγελία — περιοχή, τηλέφωνο, φωτογραφίες δουλειών.</p>
+          <p>Σύνδεση / εγγραφή & δημοσίευση προφίλ — 1 δωρεάν αγγελία, μετά πακέτο +3 με φιλοδώρημα.</p>
         </div>
       </div>
 
@@ -837,10 +837,25 @@
     const THESSALY_CENTER = [39.55, 22.05];
 
     // ========== AUTH HELPERS ==========
-    function getToken() { return localStorage.getItem("masters_token") || ""; }
+    // Ίδιο token με την κεντρική σελίδα (Ψαχνς Δλεια) ώστε να μένει συνδεδεμένος
+    function getToken() {
+      try {
+        return localStorage.getItem("authToken")
+          || localStorage.getItem("masters_token")
+          || "";
+      } catch (e) { return ""; }
+    }
     function setToken(t) {
-      if (t) localStorage.setItem("masters_token", t);
-      else localStorage.removeItem("masters_token");
+      try {
+        if (t) {
+          localStorage.setItem("authToken", t);
+          // συμβατότητα παλιού κλειδιού
+          localStorage.setItem("masters_token", t);
+        } else {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("masters_token");
+        }
+      } catch (e) {}
     }
     function authHeaders() {
       const h = { "Content-Type": "application/json" };
@@ -888,6 +903,17 @@
         setTimeout(() => initMap("master"), 200);
         updateQuotaInfo();
       }
+    }
+
+
+    function goMasterPost() {
+      if (currentUser) {
+        showScreen("screen-post");
+        updateQuotaInfo();
+        return;
+      }
+      // Όχι συνδεδεμένος → εγγραφή / σύνδεση, μετά φόρμα
+      openAuthModal("register");
     }
 
     function requireAuthThen(screenId) {
@@ -963,6 +989,8 @@
           renderAuthBar();
           updateQuotaInfo();
           loadHomeMasters();
+          // Μετά τη σύνδεση → φόρμα αγγελίας μάστορα
+          showScreen("screen-post");
         }
       } catch (err) {
         alert("Αδυναμία σύνδεσης με τον διακομιστή");
@@ -972,15 +1000,28 @@
     }
 
     async function loadCurrentUser() {
-      if (!getToken()) { currentUser = null; renderAuthBar(); return; }
+      // Συγχρονισμός token από κεντρική σελίδα
+      try {
+        var at = localStorage.getItem("authToken");
+        var mt = localStorage.getItem("masters_token");
+        if (at && !mt) localStorage.setItem("masters_token", at);
+        if (mt && !at) localStorage.setItem("authToken", mt);
+      } catch (e) {}
+
+      if (!getToken()) { currentUser = null; renderAuthBar(); updateQuotaInfo(); return; }
       try {
         const res = await fetch(API_URL + "/me", { headers: authHeaders() });
-        if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); return; }
+        if (!res.ok) { setToken(""); currentUser = null; renderAuthBar(); updateQuotaInfo(); return; }
         currentUser = await res.json();
+        // Κράτα ίδιο token και στα δύο κλειδιά
+        var tok = getToken();
+        if (tok) setToken(tok);
         renderAuthBar();
+        updateQuotaInfo();
       } catch (e) {
         currentUser = null;
         renderAuthBar();
+        updateQuotaInfo();
       }
     }
 
