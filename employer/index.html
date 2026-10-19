@@ -415,6 +415,37 @@
     }
     .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 
+    
+    .packages-box {
+      background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+      border: 1.5px solid #5eead4; border-radius: 14px; padding: 18px; margin: 14px 0 16px;
+    }
+    .packages-box h3 { font-size: 1.05rem; color: var(--primary); margin-bottom: 8px; }
+    .packages-box > p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+    .package-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .package-card strong {
+      color: var(--accent); font-size: 0.95rem; font-weight: 700;
+      display: block; margin-bottom: 4px;
+    }
+    .package-card .pkg-price {
+      font-size: 1.15rem; font-weight: 800; color: var(--accent); margin: 4px 0;
+    }
+    .package-card .pkg-desc {
+      font-size: 0.82rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 8px;
+    }
+    .package-card a.btn {
+      margin-top: 6px; text-decoration: none; display: inline-flex;
+      font-size: 0.88rem; padding: 10px 16px;
+    }
+    .packages-warn {
+      background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 14px; color: #991b1b;
+      font-size: 0.88rem; font-weight: 600; line-height: 1.45;
+    }
+
     .quota-info {
       background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
       padding: 10px 14px; font-size: 0.88rem; color: #065f46; margin-bottom: 14px;
@@ -582,6 +613,34 @@
       <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:14px;">Συμπληρώστε τα στοιχεία σας. Οι επισκέπτες θα σας βρίσκουν ανά κατηγορία και περιοχή.</p>
 
       <div class="quota-info" id="quotaInfo">Φορτώνει υπόλοιπο αγγελιών…</div>
+
+      <div class="packages-box" id="masterPackages" style="display:none;">
+        <h3>📦 Περισσότερες αγγελίες προφίλ</h3>
+        <p>
+          Η πρώτη αγγελία είναι δωρεάν. Αν χρειάζεστε κι άλλες, επιλέξτε πακέτο
+          (πληρωμή μέσω Ko-fi – ο διαχειριστής ενεργοποιεί τους πόντους χειροκίνητα).
+        </p>
+        <div class="packages-warn">
+          ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την πληρωμή χρησιμοποιήστε το <u>ίδιο ακριβώς e-mail</u>
+          με το οποίο κάνατε εγγραφή. Αλλιώς δεν θα μπορέσουμε να αντιστοιχίσουμε το φιλοδώρημα στον λογαριασμό σας.
+        </div>
+        <div class="package-card">
+          <strong>Πλάνο Μάστορα – (+3 Αγγελίες προφίλ)</strong>
+          <div class="pkg-price">1,50€</div>
+          <div class="pkg-desc">
+            Φιλοδώρημα μέσω Ko-fi · Παίρνετε <strong>3 επιπλέον αγγελίες</strong> προφίλ.
+            Μετά την πληρωμή, ο διαχειριστής προσθέτει τους πόντους στον λογαριασμό σας
+            (συνήθως μέσα σε λίγες ώρες).
+          </div>
+          <a class="btn btn-primary" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener">
+            ☕ Φιλοδώρημα · 1,50€ → +3 αγγελίες
+          </a>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">
+          Εναλλακτικά μπορείτε να στηρίξετε γενικά την προσπάθεια:
+          <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Ko-fi στόχος</a>
+        </p>
+      </div>
 
       <form id="masterForm" class="form-card" onsubmit="handleMasterSubmit(event)">
         <fieldset>
@@ -771,6 +830,7 @@
     let currentMasters = [];
     let browseFilter = "all"; // all | home | field
     let editingId = null;
+      window._editingMaster = false;
     let selectedLocations = { master: [] };
     let mapInstance = null;
     let mapMarkers = [];
@@ -961,27 +1021,36 @@
 
     function updateQuotaInfo() {
       const el = document.getElementById("quotaInfo");
+      const pkgs = document.getElementById("masterPackages");
+      const submitBtn = document.getElementById("masterSubmitBtn");
       if (!el) return;
       if (!currentUser) {
         el.innerHTML = "Συνδεθείτε για να δείτε το υπόλοιπο αγγελιών σας.";
+        if (pkgs) pkgs.style.display = "none";
         return;
       }
-      const free = currentUser.free_slots != null ? currentUser.free_slots : 0;
+      const free = currentUser.free_slots != null ? Number(currentUser.free_slots) : 0;
       if (free > 0) {
-        el.innerHTML = "✅ Σας απομένουν <strong>" + free + "</strong> δωρεάν αγγελί" + (free === 1 ? "α" : "ες") + " προφίλ.";
-        el.style.background = "";
-        el.style.borderColor = "";
+        el.innerHTML = "✅ Σας απομένουν <strong>" + free + "</strong> αγγελί" + (free === 1 ? "α" : "ες") + " προφίλ. <span style=\"font-size:0.85rem;color:var(--text-muted);\">(1 πόντος = 1 αγγελία)</span>";
+        el.style.background = "#ecfdf5";
+        el.style.borderColor = "#6ee7b7";
+        if (pkgs) pkgs.style.display = "none";
+        if (submitBtn && !window._editingMaster) {
+          submitBtn.disabled = false;
+          submitBtn.style.display = "";
+        }
       } else {
         el.innerHTML =
           "⚠️ Δεν σας απομένουν δωρεάν αγγελίες.<br>" +
-          "Στείλτε ένα <strong>φιλοδώρημα</strong> για να ξεκλειδώσετε νέα δημοσίευση:<br>" +
-          '<a href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" ' +
-          'style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 16px;' +
-          'background:#ff5e5b;color:#fff;border-radius:10px;font-weight:700;text-decoration:none;">' +
-          '☕ Φιλοδώρημα στο Ko-fi</a>' +
-          '<div style="font-size:0.8rem;margin-top:8px;color:var(--text-muted);">Μετά το φιλοδώρημα θα ενημερώσουμε χειροκίνητα τους πόντους σας.</div>';
+          "Επιλέξτε πακέτο παρακάτω (φιλοδώρημα Ko-fi) για <strong>+3 αγγελίες</strong>. " +
+          "Ο διαχειριστής θα προσθέσει τους πόντους στον λογαριασμό σας μετά την πληρωμή.";
         el.style.background = "#fff7ed";
         el.style.borderColor = "#fdba74";
+        if (pkgs) pkgs.style.display = "block";
+        // Hide submit for new posts when no slots (edit still allowed)
+        if (submitBtn && !window._editingMaster) {
+          submitBtn.style.display = "none";
+        }
       }
     }
 
@@ -1140,11 +1209,15 @@
         openAuthModal("register");
         return;
       }
-      const free = currentUser.free_slots != null ? currentUser.free_slots : 0;
+      const free = currentUser.free_slots != null ? Number(currentUser.free_slots) : 0;
       if (!editingId && free <= 0) {
-        if (confirm("Δεν σας απομένουν δωρεάν αγγελίες.\n\nΘέλετε να στείλετε φιλοδώρημα στο Ko-fi για να ξεκλειδώσετε νέα δημοσίευση;")) {
-          window.open("https://ko-fi.com/s/3c6fb374f8", "_blank", "noopener");
+        updateQuotaInfo();
+        const pkgs = document.getElementById("masterPackages");
+        if (pkgs) {
+          pkgs.style.display = "block";
+          pkgs.scrollIntoView({ behavior: "smooth", block: "center" });
         }
+        alert("Δεν σας απομένουν αγγελίες.\n\nΕπιλέξτε το πακέτο «+3 αγγελίες» (1,50€) μέσω Ko-fi.\nΟ διαχειριστής θα ενεργοποιήσει τους πόντους με το email εγγραφής σας.");
         return;
       }
       const locs = selectedLocations.master || [];
@@ -1244,6 +1317,7 @@
 
     function clearEditing() {
       editingId = null;
+      window._editingMaster = false;
       document.getElementById("postTitle").textContent = "Δημοσίευση προφίλ μάστορα";
       document.getElementById("masterSubmitBtn").textContent = "Δημοσίευση προφίλ";
     }
