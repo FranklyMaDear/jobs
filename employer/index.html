@@ -683,9 +683,8 @@
           <label class="main-label">Είσαι…</label>
           <div class="role-pick">
             <label><input type="radio" name="authRole" value="master" checked> 🛠️ Μάστορας / Τεχνίτης</label>
-            <label><input type="radio" name="authRole" value="employer"> 🏢 Ψάχνω προσωπικό (εργοδότης)</label>
-            <label><input type="radio" name="authRole" value="worker"> 👷 Ψάχνω δουλειά (εργαζόμενος)</label>
           </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:6px;">Η σελίδα αυτή είναι μόνο για μαστόρους / τεχνίτες. Για αγγελίες εργασίας πηγαίνετε στο <a href="https://franklymadear.github.io/jobs/" style="color:var(--accent);font-weight:600;">Ψαχνς Δλεια</a>.</p>
         </div>
         <div class="form-group">
           <label class="main-label">Email</label>
@@ -709,6 +708,14 @@
       <button type="button" class="modal-close" onclick="closeLegal()">×</button>
       <h2 id="legalTitle"></h2>
       <div id="legalBody" style="font-size:0.9rem;line-height:1.55;"></div>
+    </div>
+  </div>
+
+  <!-- Full ad detail modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box" style="max-width:560px;max-height:90vh;overflow-y:auto;">
+      <button type="button" class="modal-close" onclick="closeDetailModal()">×</button>
+      <div id="detailBody"></div>
     </div>
   </div>
 
@@ -830,8 +837,7 @@
     }
 
     function getSelectedAuthRole() {
-      const el = document.querySelector('input[name="authRole"]:checked');
-      return el ? el.value : "master";
+      return "master";
     }
 
     async function handleAuth(e) {
@@ -937,14 +943,26 @@
       const el = document.getElementById("quotaInfo");
       if (!el) return;
       if (!currentUser) {
-        el.textContent = "Απαιτείται σύνδεση για δημοσίευση.";
+        el.innerHTML = "Συνδεθείτε για να δείτε το υπόλοιπο αγγελιών σας.";
         return;
       }
       const free = currentUser.free_slots != null ? currentUser.free_slots : 0;
-      const used = currentUser.ads_used != null ? currentUser.ads_used : 0;
-      el.innerHTML = free > 0
-        ? "✅ Υπόλοιπο: <strong>" + free + "</strong> δωρεάν προφίλ (έχετε χρησιμοποιήσει " + used + ")."
-        : "⚠️ Έχετε εξαντλήσει τις δωρεάν αγγελίες. Επικοινωνήστε για αναβάθμιση (Ko-fi / email).";
+      if (free > 0) {
+        el.innerHTML = "✅ Σας απομένουν <strong>" + free + "</strong> δωρεάν αγγελί" + (free === 1 ? "α" : "ες") + " προφίλ.";
+        el.style.background = "";
+        el.style.borderColor = "";
+      } else {
+        el.innerHTML =
+          "⚠️ Δεν σας απομένουν δωρεάν αγγελίες.<br>" +
+          "Στείλτε ένα <strong>φιλοδώρημα</strong> για να ξεκλειδώσετε νέα δημοσίευση:<br>" +
+          '<a href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" ' +
+          'style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 16px;' +
+          'background:#ff5e5b;color:#fff;border-radius:10px;font-weight:700;text-decoration:none;">' +
+          '☕ Φιλοδώρημα στο Ko-fi</a>' +
+          '<div style="font-size:0.8rem;margin-top:8px;color:var(--text-muted);">Μετά το φιλοδώρημα θα ενημερώσουμε χειροκίνητα τους πόντους σας.</div>';
+        el.style.background = "#fff7ed";
+        el.style.borderColor = "#fdba74";
+      }
     }
 
     // ========== CATEGORIES INIT ==========
@@ -1100,6 +1118,13 @@
       if (!currentUser) {
         alert("Απαιτείται εγγραφή / σύνδεση.");
         openAuthModal("register");
+        return;
+      }
+      const free = currentUser.free_slots != null ? currentUser.free_slots : 0;
+      if (!editingId && free <= 0) {
+        if (confirm("Δεν σας απομένουν δωρεάν αγγελίες.\n\nΘέλετε να στείλετε φιλοδώρημα στο Ko-fi για να ξεκλειδώσετε νέα δημοσίευση;")) {
+          window.open("https://ko-fi.com/s/3c6fb374f8", "_blank", "noopener");
+        }
         return;
       }
       const locs = selectedLocations.master || [];
@@ -1263,15 +1288,18 @@
       const typeBadge = type === "field"
         ? '<span class="badge field-b">🌾 Αγροτική</span>'
         : '<span class="badge home-b">🏠 Οικιακή</span>';
+      const adId = ad.id != null ? ad.id : "";
 
       let gallery = "";
       if (photos.length) {
-        gallery = '<div class="mc-gallery">' + photos.map(u =>
-          '<img src="' + escapeHtml(u) + '" alt="" onclick="openLightbox(\'' + escapeHtml(u) + '\')" onerror="this.style.display=\'none\'">'
-        ).join("") + '</div>';
+        gallery = '<div class="mc-gallery">' + photos.slice(0, 3).map(u =>
+          '<img src="' + escapeHtml(u) + '" alt="" onerror="this.style.display=\'none\'">'
+        ).join("") +
+          (photos.length > 3 ? '<span class="badge">+' + (photos.length - 3) + ' φωτο</span>' : '') +
+        '</div>';
       }
 
-      return '<div class="master-card ' + type + '-type">' +
+      return '<div class="master-card ' + type + '-type" style="cursor:pointer;" onclick="openDetailModal(' + Number(adId) + ')">' +
         (photo
           ? '<img class="mc-photo" src="' + escapeHtml(photo) + '" alt="" onerror="this.style.display=\'none\'">'
           : '<div class="mc-photo" style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🛠️</div>') +
@@ -1280,14 +1308,68 @@
           '<div class="mc-spec">' + escapeHtml(ad.specialty || ad.task || "") + ' ' + typeBadge + '</div>' +
           '<div>' + (locs.slice(0, 4).map(l => '<span class="badge">' + escapeHtml(l) + '</span>').join("")) + '</div>' +
           (address ? '<div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;">📍 ' + escapeHtml(address) + '</div>' : "") +
-          (desc ? '<div class="mc-desc">' + escapeHtml(desc.slice(0, 200)) + (desc.length > 200 ? "…" : "") + '</div>' : "") +
+          (desc ? '<div class="mc-desc">' + escapeHtml(desc.slice(0, 120)) + (desc.length > 120 ? "…" : "") + '</div>' : "") +
           gallery +
           '<div class="mc-contact">' +
-            (ad.phone ? '<a href="tel:' + escapeHtml(String(ad.phone).replace(/\s/g,"")) + '">📞 ' + escapeHtml(ad.phone) + '</a>' : "") +
-            (ad.email ? '<a href="mailto:' + escapeHtml(ad.email) + '">✉️ Email</a>' : "") +
+            (ad.phone ? '<a href="tel:' + escapeHtml(String(ad.phone).replace(/\\s/g,"")) + '" onclick="event.stopPropagation()">📞 ' + escapeHtml(ad.phone) + '</a>' : "") +
+            (ad.email ? '<a href="mailto:' + escapeHtml(ad.email) + '" onclick="event.stopPropagation()">✉️ Email</a>' : "") +
+            '<button type="button" class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="event.stopPropagation();openDetailModal(' + Number(adId) + ')">Δες όλη την αγγελία →</button>' +
           '</div>' +
         '</div></div>';
     }
+
+    function openDetailModal(adId) {
+      const ad = (currentMasters || []).find(function(a) { return Number(a.id) === Number(adId); });
+      const box = document.getElementById("detailBody");
+      const modal = document.getElementById("detailModal");
+      if (!ad || !box || !modal) return;
+
+      let locs = [];
+      try { locs = typeof ad.locations === "string" ? JSON.parse(ad.locations || "[]") : (ad.locations || []); } catch(e) {}
+      const photo = ad.logo_url || ad.photo_url || "";
+      const photos = parsePhotos(ad.comments);
+      const desc = cleanComments(ad.comments);
+      const address = extractAddress(ad.comments);
+      const type = adType(ad);
+      const typeBadge = type === "field"
+        ? '<span class="badge field-b">🌾 Αγροτική</span>'
+        : '<span class="badge home-b">🏠 Οικιακή</span>';
+
+      let gallery = "";
+      if (photos.length) {
+        gallery = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:12px 0;">' +
+          photos.map(function(u) {
+            return '<img src="' + escapeHtml(u) + '" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid var(--border);" onclick="openLightbox(\\'' + escapeHtml(u).replace(/'/g, "\\\\'") + '\\')">'
+          }).join("") + '</div>';
+      }
+
+      box.innerHTML =
+        '<div style="text-align:center;margin-bottom:14px;">' +
+          (photo
+            ? '<img src="' + escapeHtml(photo) + '" alt="" style="width:100px;height:100px;border-radius:14px;object-fit:cover;border:1px solid var(--border);">'
+            : '<div style="font-size:3rem;">🛠️</div>') +
+        '</div>' +
+        '<h2 style="font-size:1.25rem;font-weight:800;color:var(--primary);text-align:center;margin-bottom:4px;">' + escapeHtml(ad.name) + '</h2>' +
+        '<div style="text-align:center;margin-bottom:12px;color:var(--accent);font-weight:700;">' +
+          escapeHtml(ad.specialty || ad.task || "") + ' ' + typeBadge +
+        '</div>' +
+        (locs.length ? '<div style="margin-bottom:10px;">' + locs.map(function(l){ return '<span class="badge">' + escapeHtml(l) + '</span>'; }).join(" ") + '</div>' : "") +
+        (address ? '<p style="font-size:0.9rem;margin-bottom:8px;">📍 <strong>Διεύθυνση:</strong> ' + escapeHtml(address) + '</p>' : "") +
+        (desc ? '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0;white-space:pre-wrap;line-height:1.5;font-size:0.92rem;">' + escapeHtml(desc) + '</div>' : "") +
+        (photos.length ? '<div style="font-weight:700;margin-top:8px;margin-bottom:6px;">📷 Φωτογραφίες εργασίας</div>' + gallery : "") +
+        '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center;">' +
+          (ad.phone ? '<a class="btn btn-primary" href="tel:' + escapeHtml(String(ad.phone).replace(/\\s/g,"")) + '">📞 Κλήση ' + escapeHtml(ad.phone) + '</a>' : "") +
+          (ad.email ? '<a class="btn btn-secondary" href="mailto:' + escapeHtml(ad.email) + '">✉️ Email</a>' : "") +
+        '</div>';
+
+      modal.classList.add("active");
+    }
+
+    function closeDetailModal() {
+      const modal = document.getElementById("detailModal");
+      if (modal) modal.classList.remove("active");
+    }
+
 
     async function loadHomeMasters() {
       const box = document.getElementById("home-masters-list");
