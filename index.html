@@ -2190,6 +2190,10 @@
         if (!res.ok) throw new Error("Network error");
         currentData = await res.json();
         if (!Array.isArray(currentData)) currentData = [];
+        // Απόκρυψη μαστόρων από «Εργοδότες» – φαίνονται μόνο στο /employer/
+        if (type === "employers") {
+          currentData = currentData.filter(function(ad) { return !isMasterSpecialtyAd(ad); });
+        }
         populateFilters();
         // κρατάμε για μετά το render
         window._scrollToAdId = scrollToAdId || null;
@@ -3031,6 +3035,16 @@
     let homeJobsData = [];
     const HOME_JOBS_LIMIT = 10;
 
+
+    // Ειδικότητες μαστόρων – δεν εμφανίζονται στην κεντρική σελίδα αγγελιών
+    const MASTER_SPECS_HOME = ["Υδραυλικός","Ηλεκτρολόγος","Ψυκτικός / Κλιματισμός","Πλακάκια / Επενδύσεις","Βάψιμο / Ζωγραφική","Χτίσιμο / Σοβάτισμα","Ανακαίνιση","Σιδηρουργός / Κάγκελα","Ξυλουργός / Έπιπλα","Σκεπές / Μονώσεις","Μερεμέτια σπιτιού","Συναρμολόγηση επίπλων","Καθαρισμοί / Απολύμανση"];
+    const MASTER_SPECS_FIELD = ["Αγροτικά μηχανήματα / Service","Κλάδεμα / Δεντροκομία","Άρδευση / Πηγάδια","Περίφραξη χωραφιών","Ελαιοσυλλογή / Συγκομιδή","Κηπουρική / Τοπίο","Γεωργικές κατασκευές","Μεταφορές αγροτικές","Χωματουργικά","Άλλες αγροτικές εργασίες"];
+    function isMasterSpecialtyAd(ad) {
+      const s = (ad.specialty || ad.task || "").trim();
+      if (MASTER_SPECS_HOME.indexOf(s) >= 0 || MASTER_SPECS_FIELD.indexOf(s) >= 0) return true;
+      return /υδραυλ|ηλεκτρολ|ψυκτ|πλακ|βάψ|χτίσ|ανακαίν|σιδηρ|ξυλουργ|σκεπ|μερεμ|αγροτ|κλάδ|άρδευ|περίφρα|ελαιο|κηπουρ|χωμάτ|γεωργ/i.test(s);
+    }
+
     async function loadHomeJobs() {
       const box = document.getElementById("home-jobs-list");
       const more = document.getElementById("home-jobs-more");
@@ -3040,6 +3054,8 @@
         if (!res.ok) throw new Error("net");
         homeJobsData = await res.json();
         if (!Array.isArray(homeJobsData)) homeJobsData = [];
+        // Απόκρυψη προφίλ μαστόρων από την κεντρική (εμφανίζονται μόνο στο /employer/)
+        homeJobsData = homeJobsData.filter(function(ad) { return !isMasterSpecialtyAd(ad); });
         renderHomeJobs();
       } catch (e) {
         box.innerHTML = '<div class="state-box"><div class="emoji">📋</div>Δεν υπάρχουν θέσεις ακόμα.</div>';
