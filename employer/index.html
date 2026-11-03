@@ -10,7 +10,7 @@
   <meta property="og:description" content="Βρες αξιόπιστο μάστορα κοντά σου – οικιακές & αγροτικές υπηρεσίες στη Θεσσαλία.">
   <meta property="og:image" content="https://franklymadear.github.io/jobs/logo3.png">
   <meta property="og:url" content="https://franklymadear.github.io/jobs/employer/">
-  <meta name="theme-color" content="#0f766e">
+  <meta name="theme-color" content="#2563eb">
   <link rel="icon" type="image/png" href="https://franklymadear.github.io/jobs/logo3.png">
   <link rel="apple-touch-icon" href="https://franklymadear.github.io/jobs/logo3.png">
   <link rel="manifest" href="https://franklymadear.github.io/jobs/manifest.json">
@@ -23,9 +23,9 @@
     :root {
       --primary: #0f172a;
       --primary-light: #1e293b;
-      --accent: #0f766e;
-      --accent-hover: #0d9488;
-      --accent-soft: #ccfbf1;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-soft: #dbeafe;
       --home: #2563eb;
       --home-soft: #dbeafe;
       --field: #b45309;
@@ -51,7 +51,7 @@
     }
     .welcome-overlay {
       position: fixed; inset: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #0f766e 100%);
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
       display: flex; align-items: center; justify-content: center;
       z-index: 99999; padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
       overflow-y: auto;
@@ -92,15 +92,15 @@
     .welcome-card p { color: var(--text-muted); font-size: 0.88rem; margin: 0 0 14px; }
     .welcome-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      background: linear-gradient(135deg, #0f766e, #0d9488); color: white; border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none;
       padding: 14px 28px; border-radius: 12px; font-size: 1rem; font-weight: 700;
-      cursor: pointer; box-shadow: 0 6px 20px rgba(15, 118, 110, 0.35); transition: all 0.25s;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); transition: all 0.25s;
       width: 100%; max-width: 280px; font-family: inherit;
     }
-    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15, 118, 110, 0.45); }
+    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37, 99, 235, 0.45); }
 
     .top-bar {
-      background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
       color: white; padding: 8px 12px;
       display: flex; flex-direction: column; gap: 8px;
       min-height: auto;
@@ -114,9 +114,9 @@
       border: 1.5px solid rgba(255,255,255,0.35); background: transparent; color: white;
       cursor: pointer; font-family: inherit; white-space: nowrap;
     }
-    .top-bar .btn-auth.primary { background: #0f766e; border-color: #0f766e; }
+    .top-bar .btn-auth.primary { background: #2563eb; border-color: #2563eb; }
     .top-bar .btn-auth:hover { background: rgba(255,255,255,0.12); }
-    .top-bar .btn-auth.primary:hover { background: #0d9488; }
+    .top-bar .btn-auth.primary:hover { background: #1d4ed8; }
     .top-bar .auth-user {
       color: white; font-size: 0.82rem; font-weight: 600;
       display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;
@@ -186,7 +186,7 @@
       padding: 14px 22px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
       cursor: pointer; transition: all 0.2s; font-family: inherit;
     }
-    .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35); }
+    .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--border); }
@@ -250,12 +250,12 @@
       display: flex; align-items: center; gap: 6px;
     }
     .promo-banner {
-      background: linear-gradient(135deg, #ecfdf5, #ccfbf1);
-      border: 1.5px solid #5eead4; border-radius: 14px;
+      background: linear-gradient(135deg, #ecfdf5, #dbeafe);
+      border: 1.5px solid #93c5fd; border-radius: 14px;
       padding: 14px 16px; margin-bottom: 20px; text-align: center;
     }
-    .promo-banner strong { color: #0f766e; font-size: 1.02rem; }
-    .promo-banner p { font-size: 0.88rem; color: #134e4a; margin-top: 4px; line-height: 1.4; }
+    .promo-banner strong { color: #2563eb; font-size: 1.02rem; }
+    .promo-banner p { font-size: 0.88rem; color: #1e3a8a; margin-top: 4px; line-height: 1.4; }
     .role-pick {
       display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;
     }
@@ -265,7 +265,7 @@
       font-size: 0.9rem; font-weight: 600; background: #f8fafc;
     }
     .role-pick label:has(input:checked) {
-      border-color: var(--accent); background: var(--accent-soft); color: #0f766e;
+      border-color: var(--accent); background: var(--accent-soft); color: #2563eb;
     }
     .role-pick input { width: 18px; height: 18px; accent-color: var(--accent); }
     .browse-cat-tabs {
@@ -286,11 +286,11 @@
     .action-card.shiny-master-btn {
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 35%, #5eead4 55%, #0d9488 100%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 40%, #38bdf8 70%, #2563eb 100%);
       background-size: 200% 200%;
       border: none;
       color: #fff;
-      box-shadow: 0 8px 28px rgba(15, 118, 110, 0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+      box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255,255,255,0.35);
       animation: shinyMasterShift 4s ease-in-out infinite;
     }
     .action-card.shiny-master-btn h3,
@@ -346,7 +346,7 @@
     }
     .action-card.shiny-master-btn:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 36px rgba(15, 118, 110, 0.55), inset 0 1px 0 rgba(255,255,255,0.45);
+      box-shadow: 0 12px 36px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255,255,255,0.45);
     }
     .home-top-actions {
       display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;
@@ -437,7 +437,7 @@
       font-size: 16px; font-family: inherit; transition: border-color 0.2s; background: white;
     }
     input:focus, select:focus, textarea:focus {
-      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
     textarea { min-height: 90px; resize: vertical; }
     .photo-upload {
@@ -456,11 +456,11 @@
     .loc-map { height: 220px; border-radius: 12px; border: 1.5px solid var(--border); z-index: 1; }
     .loc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .loc-chip {
-      background: var(--accent-soft); color: #0f766e; padding: 5px 10px; border-radius: 999px;
+      background: var(--accent-soft); color: #2563eb; padding: 5px 10px; border-radius: 999px;
       font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
     }
     .loc-chip button {
-      border: none; background: transparent; color: #0f766e; cursor: pointer;
+      border: none; background: transparent; color: #2563eb; cursor: pointer;
       font-size: 1rem; line-height: 1; padding: 0 2px;
     }
 
@@ -493,9 +493,23 @@
     .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 
     
+
+    .ad-unlock-progress { margin: 14px 0 12px; }
+    .ad-unlock-bar-wrap {
+      height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ad-unlock-bar {
+      height: 100%; background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 999px; transition: width 0.35s ease;
+    }
+    .ad-unlock-label {
+      text-align: center; font-size: 0.88rem; font-weight: 700;
+      color: var(--primary); margin-top: 8px;
+    }
     .packages-box {
-      background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
-      border: 1.5px solid #5eead4; border-radius: 14px; padding: 18px; margin: 14px 0 16px;
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      border: 1.5px solid #93c5fd; border-radius: 14px; padding: 18px; margin: 14px 0 16px;
     }
     .packages-box h3 { font-size: 1.05rem; color: var(--primary); margin-bottom: 8px; }
     .packages-box > p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
@@ -542,6 +556,13 @@
       width: 40px; height: 40px; border-radius: 50%; font-size: 1.3rem; cursor: pointer;
     }
   </style>
+
+  <!-- Monetag Rewarded Interstitial – βάλε το Zone ID σου από το dashboard (Activate → copy tag) -->
+  <script>
+    window.MONETAG_ZONE_ID = "11108267";
+    window.MONETAG_ADS_NEEDED = 5;
+  </script>
+  <script src="//libtl.com/sdk.js" data-zone="11108267" data-sdk="show_11108267"></script>
 </head>
 <body class="welcome-open">
 
@@ -620,7 +641,7 @@
             <span class="kofi-goal-emoji">💙</span>
             <div>
               <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
-              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
+              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν για όλους.</div>
             </div>
           </div>
           <div class="kofi-live-bar">
@@ -679,30 +700,23 @@
       <div class="quota-info" id="quotaInfo">Φορτώνει υπόλοιπο αγγελιών…</div>
 
       <div class="packages-box" id="masterPackages" style="display:none;">
-        <h3>📦 Περισσότερες αγγελίες προφίλ</h3>
+        <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
         <p>
-          Η πρώτη αγγελία είναι δωρεάν. Αν χρειάζεστε κι άλλες, επιλέξτε πακέτο
-          (πληρωμή μέσω Ko-fi – ο διαχειριστής ενεργοποιεί τους πόντους χειροκίνητα).
+          Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+          και ξεκλειδώνεται αυτόματα 1 νέα αγγελία — χωρίς να περιμένετε τον διαχειριστή.
         </p>
-        <div class="packages-warn">
-          ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την πληρωμή χρησιμοποιήστε το <u>ίδιο ακριβώς e-mail</u>
-          με το οποίο κάνατε εγγραφή. Αλλιώς δεν θα μπορέσουμε να αντιστοιχίσουμε το φιλοδώρημα στον λογαριασμό σας.
-        </div>
-        <div class="package-card">
-          <strong>Πλάνο Μάστορα – (+3 Αγγελίες προφίλ)</strong>
-          <div class="pkg-price">1,50€</div>
-          <div class="pkg-desc">
-            Φιλοδώρημα μέσω Ko-fi · Παίρνετε <strong>3 επιπλέον αγγελίες</strong> προφίλ.
-            Μετά την πληρωμή, ο διαχειριστής προσθέτει τους πόντους στον λογαριασμό σας
-            (συνήθως μέσα σε λίγες ώρες).
+        <div class="ad-unlock-progress" id="adUnlockProgress">
+          <div class="ad-unlock-bar-wrap">
+            <div class="ad-unlock-bar" id="adUnlockBar" style="width:0%"></div>
           </div>
-          <a class="btn btn-primary" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener">
-            ☕ Φιλοδώρημα · 1,50€ → +3 αγγελίες
-          </a>
+          <div class="ad-unlock-label" id="adUnlockLabel">Πρόοδος: 0 / 5 διαφημίσεις</div>
         </div>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">
-          Εναλλακτικά μπορείτε να στηρίξετε γενικά την προσπάθεια:
-          <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Ko-fi στόχος</a>
+        <button type="button" class="btn btn-primary btn-full" id="btnWatchAd" onclick="watchUnlockAd()">
+          ▶️ Δες διαφήμιση για ξεκλείδωμα
+        </button>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;text-align:center;">
+          Εναλλακτικά: <a href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">φιλοδώρημα Ko-fi (+3 αγγελίες)</a>
+          — ενεργοποίηση από διαχειριστή.
         </p>
       </div>
 
@@ -1112,7 +1126,7 @@
       userRow.className = "top-bar-row top-bar-user-row";
       userRow.innerHTML =
         '<span class="auth-user">👤 ' + nick +
-        ' · <span style="color:#5eead4">' + slots + ' δωρεάν</span></span>';
+        ' · <span style="color:#93c5fd">' + slots + ' δωρεάν</span></span>';
       topBar.appendChild(userRow);
     }
 
@@ -1122,6 +1136,119 @@
       currentUser = null;
       renderAuthBar();
       showScreen("screen-home");
+    }
+
+    
+    // ===== Monetag: ράμπα 10 διαφημίσεων → +1 αγγελία =====
+    function getAdProgressKey() {
+      var id = (currentUser && (currentUser.id || currentUser.email)) || "guest";
+      return "ad_unlock_progress_" + String(id);
+    }
+    function getAdProgress() {
+      try { return Math.max(0, parseInt(localStorage.getItem(getAdProgressKey()) || "0", 10) || 0); }
+      catch (e) { return 0; }
+    }
+    function setAdProgress(n) {
+      try { localStorage.setItem(getAdProgressKey(), String(Math.max(0, n))); } catch (e) {}
+    }
+    function renderAdProgress() {
+      var need = window.MONETAG_ADS_NEEDED || 5;
+      var cur = getAdProgress();
+      var bar = document.getElementById("adUnlockBar");
+      var lab = document.getElementById("adUnlockLabel");
+      var btn = document.getElementById("btnWatchAd");
+      if (bar) bar.style.width = Math.min(100, (cur / need) * 100) + "%";
+      if (lab) lab.textContent = "Πρόοδος: " + cur + " / " + need + " διαφημίσεις";
+      if (btn) {
+        if (cur >= need) {
+          btn.textContent = "✅ Ολοκληρώθηκε — ενεργοποίηση αγγελίας…";
+          btn.disabled = true;
+        } else {
+          btn.disabled = false;
+          btn.textContent = "▶️ Δες διαφήμιση (" + cur + "/" + need + ")";
+        }
+      }
+    }
+    function loadMonetagSdk() {
+      return new Promise(function(resolve, reject) {
+        var zone = String(window.MONETAG_ZONE_ID || "").trim();
+        if (!zone) { reject(new Error("no_zone")); return; }
+        var fnName = "show_" + zone;
+        if (typeof window[fnName] === "function") { resolve(window[fnName]); return; }
+        var s = document.createElement("script");
+        s.src = "https://libtl.com/sdk.js";
+        s.dataset.zone = zone;
+        s.dataset.sdk = fnName;
+        s.onload = function() {
+          setTimeout(function() {
+            if (typeof window[fnName] === "function") resolve(window[fnName]);
+            else reject(new Error("sdk_fn_missing"));
+          }, 400);
+        };
+        s.onerror = function() { reject(new Error("sdk_load")); };
+        document.head.appendChild(s);
+      });
+    }
+    async function watchUnlockAd() {
+      var need = window.MONETAG_ADS_NEEDED || 5;
+      var btn = document.getElementById("btnWatchAd");
+      if (!currentUser) { openAuthModal("login"); return; }
+      if (getAdProgress() >= need) {
+        await claimAdUnlock();
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.textContent = "Φόρτωση διαφήμισης…"; }
+      try {
+        var showFn = await loadMonetagSdk();
+        var ymid = String((currentUser && currentUser.id) || currentUser.email || "user");
+        var result = await showFn({ type: "end", ymid: ymid, requestVar: "master_unlock" });
+        // Μετράμε ολοκλήρωση (valued ή απλό close — για web χωρίς postback συχνά λείπει το valued)
+        var ok = true;
+        if (result && result.reward_event_type && result.reward_event_type !== "valued" && result.reward_event_type !== "non_valued") {
+          ok = false;
+        }
+        if (!ok) {
+          alert("Η διαφήμιση δεν ολοκληρώθηκε. Δοκιμάστε ξανά.");
+        } else {
+          var cur = getAdProgress() + 1;
+          setAdProgress(cur);
+          renderAdProgress();
+          if (cur >= need) {
+            await claimAdUnlock();
+          }
+        }
+      } catch (err) {
+        console.warn("Monetag error", err);
+        if (String(err && err.message) === "no_zone") {
+          alert("Οι διαφημίσεις δεν έχουν ρυθμιστεί ακόμα.\\n\\nΟ διαχειριστής πρέπει να βάλει το Zone ID της Monetag στο MONETAG_ZONE_ID.\\n\\nΜπορείτε προσωρινά να στηρίξετε μέσω Ko-fi.");
+        } else {
+          alert("Δεν ήταν δυνατή η εμφάνιση διαφήμισης. Δοκιμάστε σε λίγο ή χρησιμοποιήστε Ko-fi.");
+        }
+      } finally {
+        renderAdProgress();
+        if (btn && getAdProgress() < need) btn.disabled = false;
+      }
+    }
+    async function claimAdUnlock() {
+      try {
+        var res = await fetch(API_BASE + "/api/claim-ad-unlock", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({ ads_watched: getAdProgress(), source: "master" })
+        });
+        var data = await res.json().catch(function(){ return {}; });
+        if (!res.ok) {
+          alert(data.error || "Αδυναμία ενεργοποίησης αγγελίας. Επικοινωνήστε με τον διαχειριστή.");
+          return;
+        }
+        if (data.free_slots != null && currentUser) currentUser.free_slots = data.free_slots;
+        setAdProgress(0);
+        renderAdProgress();
+        updateQuotaInfo();
+        alert("✅ Ξεκλειδώθηκε 1 νέα αγγελία! Μπορείτε να δημοσιεύσετε.");
+      } catch (e) {
+        alert("Σφάλμα δικτύου κατά την ενεργοποίηση.");
+      }
     }
 
     function updateQuotaInfo() {
@@ -1147,12 +1274,11 @@
       } else {
         el.innerHTML =
           "⚠️ Δεν σας απομένουν δωρεάν αγγελίες.<br>" +
-          "Επιλέξτε πακέτο παρακάτω (φιλοδώρημα Ko-fi) για <strong>+3 αγγελίες</strong>. " +
-          "Ο διαχειριστής θα προσθέσει τους πόντους στον λογαριασμό σας μετά την πληρωμή.";
+          "Δείτε <strong>5 διαφημίσεις</strong> παρακάτω για να ξεκλειδώσετε <strong>1 νέα αγγελία</strong> αυτόματα.";
         el.style.background = "#fff7ed";
         el.style.borderColor = "#fdba74";
         if (pkgs) pkgs.style.display = "block";
-        // Hide submit for new posts when no slots (edit still allowed)
+        renderAdProgress();
         if (submitBtn && !window._editingMaster) {
           submitBtn.style.display = "none";
         }
@@ -1197,7 +1323,7 @@
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 16, attribution: "&copy; OpenStreetMap"
       }).addTo(mapInstance);
-      L.rectangle(bounds, { color: "#0f766e", weight: 1, fillOpacity: 0.03, interactive: false }).addTo(mapInstance);
+      L.rectangle(bounds, { color: "#2563eb", weight: 1, fillOpacity: 0.03, interactive: false }).addTo(mapInstance);
       mapInstance.on("click", async function(e) {
         try {
           const url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + e.latlng.lat +
