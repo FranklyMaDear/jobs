@@ -965,11 +965,11 @@
       <div class="section-title">Δημοσίευση Αγγελίας</div>
 
       <div class="role-promo-banner unified-promo">
-        <strong>✨ Εγγράψου δωρεάν — 1 αγγελία για όλους</strong>
+        <strong>Δωρεάν εγγραφή · 1 αγγελία για κάθε νέο μέλος</strong>
         <p>
-          Είτε <strong>ψάχνεις δουλειά</strong> είτε <strong>προσωπικό</strong>, δημιούργησε λογαριασμό και δημοσίευσε
-          με <strong>1 δωρεάν αγγελία</strong>: ειδικότητα ή θέση, περιοχή και τηλέφωνο.
-          Σε βρίσκουν όσοι ψάχνουν στην <strong>Θεσσαλία</strong>.
+          Η πλατφόρμα είναι ανοιχτή σε <strong>εργαζόμενους</strong>, <strong>εργοδότες</strong> και <strong>μαστόρους / τεχνίτες</strong>.
+          Με την εγγραφή σας λαμβάνετε <strong>1 δωρεάν αγγελία</strong> για να δημοσιεύσετε προφίλ ή θέση εργασίας —
+          με ειδικότητα, περιοχή και στοιχεία επικοινωνίας. Οι ενδιαφερόμενοι στη <strong>Θεσσαλία</strong> σας βρίσκουν εύκολα.
         </p>
       </div>
 
@@ -1739,7 +1739,8 @@
       try {
         var showFn = await loadMonetagSdk();
         var ymid = String((currentUser && currentUser.id) || currentUser.email || "user");
-        await showFn({ type: "end", ymid: ymid, requestVar: (source || "jobs") + "_unlock" });
+        // Rewarded Popup (Monetag)
+        await showFn("pop").catch(function(e) { throw e; });
         var cur = getAdProgress() + 1;
         setAdProgress(cur);
         renderAdProgress();
