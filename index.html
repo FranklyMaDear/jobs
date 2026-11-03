@@ -387,6 +387,13 @@
       line-height: 1.4;
       margin: 0;
     }
+    .role-promo-banner.unified-promo {
+      background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 50%, #fdf4ff 100%);
+      border: 1.5px solid #c7d2fe;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.08);
+    }
+    .role-promo-banner.unified-promo strong { color: #1e3a8a; font-size: 1.05rem; }
+    .role-promo-banner.unified-promo p { color: #334155; font-size: 0.9rem; line-height: 1.45; }
     .role-promo-banner.worker-promo {
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
       border: 1.5px solid #93c5fd;
@@ -855,6 +862,20 @@
       display: inline-flex; align-items: center; gap: 4px; background: #f59e0b; color: white;
       padding: 3px 9px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; margin-bottom: 8px;
     }
+
+    .ad-unlock-progress { margin: 14px 0 12px; }
+    .ad-unlock-bar-wrap {
+      height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ad-unlock-bar {
+      height: 100%; background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 999px; transition: width 0.35s ease;
+    }
+    .ad-unlock-label {
+      text-align: center; font-size: 0.88rem; font-weight: 700;
+      color: var(--primary); margin-top: 8px;
+    }
     .packages-box {
       background: linear-gradient(135deg, #eff6ff, #f8fafc);
       border: 1.5px solid #93c5fd; border-radius: 14px; padding: 18px; margin: 18px 0 8px;
@@ -910,6 +931,11 @@
     .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
   </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    window.MONETAG_ZONE_ID = "11108267";
+    window.MONETAG_ADS_NEEDED = 5;
+  </script>
+  <script src="//libtl.com/sdk.js" data-zone="11108267" data-sdk="show_11108267"></script>
 </head>
 <body>
   <div class="welcome-overlay" id="welcomeOverlay">
@@ -938,13 +964,13 @@
 
       <div class="section-title">Δημοσίευση Αγγελίας</div>
 
-      <div class="role-promo-banner worker-promo">
-        <strong>👷 Ψάχνεις δουλειά; Εγγράψου δωρεάν</strong>
-        <p>Δημοσίευσε το προφίλ σου με 1 δωρεάν αγγελία — ειδικότητα, περιοχές και στοιχεία επικοινωνίας. Σε βρίσκουν όσοι ψάχνουν προσωπικό κοντά τους.</p>
-      </div>
-      <div class="role-promo-banner employer-promo">
-        <strong>🏢 Ψάχνεις προσωπικό; Εγγράψου δωρεάν</strong>
-        <p>Καταχώρησε την αγγελία της επιχείρησής σου με 1 δωρεάν δημοσίευση — θέση, περιοχή και τηλέφωνο. Σε βρίσκουν όσοι ψάχνουν εργασία στη Θεσσαλία.</p>
+      <div class="role-promo-banner unified-promo">
+        <strong>✨ Εγγράψου δωρεάν — 1 αγγελία για όλους</strong>
+        <p>
+          Είτε <strong>ψάχνεις δουλειά</strong> είτε <strong>προσωπικό</strong>, δημιούργησε λογαριασμό και δημοσίευσε
+          με <strong>1 δωρεάν αγγελία</strong>: ειδικότητα ή θέση, περιοχή και τηλέφωνο.
+          Σε βρίσκουν όσοι ψάχνουν στην <strong>Θεσσαλία</strong>.
+        </p>
       </div>
 
       <div class="action-grid" id="publishActionsGrid">
@@ -1002,7 +1028,7 @@
             <span class="kofi-goal-emoji">💙</span>
             <div>
               <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
-              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
+              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν για όλους.</div>
             </div>
           </div>
           <div class="kofi-live-bar">
@@ -1053,22 +1079,24 @@
       <div class="form-card">
         <h2 style="margin-bottom:20px;font-size:1.3rem;">Δήλωση Εργασίας</h2>
         <div class="quota-info" style="display:none"></div>
+          
           <div class="packages-box" id="workerPackages" style="display:none">
-            <h3>📦 Ενίσχυση Προφίλ (Εργαζόμενοι)</h3>
+            <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Χρειάζεστε περισσότερες αγγελίες / ειδικότητες; Αγοράστε επιπλέον slots (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα).
+              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+              και ξεκλειδώνεται αυτόματα 1 νέα αγγελία.
             </p>
-            <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
-              ⚠️ Χρησιμοποιήστε το <u>ίδιο e-mail</u> εγγραφής κατά την πληρωμή.
+            <div class="ad-unlock-progress">
+              <div class="ad-unlock-bar-wrap">
+                <div class="ad-unlock-bar" id="adUnlockBarWorker" style="width:0%"></div>
+              </div>
+              <div class="ad-unlock-label" id="adUnlockLabelWorker">Πρόοδος: 0 / 5 διαφημίσεις</div>
             </div>
-            <div class="package-card">
-              <strong>Ενίσχυση Προφίλ – (+5 Αγγελίες)</strong>
-              <div class="pkg-price">1,00€</div>
-              <div class="pkg-desc">+5 επιπλέον αγγελίες. Ιδανικό για πολλαπλές ειδικότητες.</div>
-              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/adc9b7273f" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Ενίσχυση · 1,00€</a>
-            </div>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή, το υπόλοιπο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
+            <button type="button" class="btn btn-primary btn-full" id="btnWatchAdWorker" onclick="watchUnlockAd('worker')">
+              ▶️ Δες διαφήμιση για ξεκλείδωμα
+            </button>
           </div>
+
         <form id="workerForm">
           <fieldset>
             <legend>Προσωπικά Στοιχεία</legend>
@@ -1155,29 +1183,24 @@
       <div class="form-card">
         <h2 style="margin-bottom:20px;font-size:1.3rem;">Αναζήτηση Προσωπικού</h2>
         <div class="quota-info" style="display:none"></div>
+          
           <div class="packages-box" id="employerPackages" style="display:none">
-            <h3>📦 Πακέτα Αναβάθμισης (Εργοδότες)</h3>
+            <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Χρειάζεστε περισσότερες αγγελίες; Επιλέξτε πακέτο (πληρωμή μέσω Ko-fi – ενεργοποίηση χειροκίνητα από τον διαχειριστή).
+              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+              και ξεκλειδώνεται αυτόματα 1 νέα αγγελία.
             </p>
-            <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:#991b1b;font-size:0.88rem;font-weight:600;line-height:1.45;">
-              ⚠️ ΣΗΜΑΝΤΙΚΟ: Κατά την πληρωμή χρησιμοποιήστε το <u>ίδιο ακριβώς e-mail</u> με το οποίο κάνατε εγγραφή. Αλλιώς δεν θα μπορέσουμε να ταυτοποιήσουμε τον λογαριασμό σας.
+            <div class="ad-unlock-progress">
+              <div class="ad-unlock-bar-wrap">
+                <div class="ad-unlock-bar" id="adUnlockBarEmployer" style="width:0%"></div>
+              </div>
+              <div class="ad-unlock-label" id="adUnlockLabelEmployer">Πρόοδος: 0 / 5 διαφημίσεις</div>
             </div>
-            <div class="package-card">
-              <strong>Πλάνο 1 – (+3 Αγγελίες)</strong>
-              <div class="pkg-price">1,50€</div>
-              <div class="pkg-desc">+3 αγγελίες. Απλή προβολή.</div>
-              <a class="btn btn-secondary btn-sm" href="https://ko-fi.com/s/3c6fb374f8" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Πλάνο 1 · 1,50€</a>
-            </div>
-            <div class="package-card" style="border-color:#f59e0b;">
-              <span class="pkg-badge">Προτεινόμενο</span>
-              <strong>Φιλοδώρημα (+6 Αγγελίες &amp; Προώθηση στην Σελίδα &amp; Social Promo)</strong>
-              <div class="pkg-price">3,00€</div>
-              <div class="pkg-desc">+6 αγγελίες, προώθηση στην σελίδα και social promo.</div>
-              <a class="btn btn-primary btn-sm" href="https://ko-fi.com/s/0ad81ac0f2" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;">Φιλοδώρημα · 3,00€</a>
-            </div>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Μετά την πληρωμή, το υπόλοιπο ενεργοποιείται χειροκίνητα από τον διαχειριστή.</p>
+            <button type="button" class="btn btn-primary btn-full" id="btnWatchAdEmployer" onclick="watchUnlockAd('employer')">
+              ▶️ Δες διαφήμιση για ξεκλείδωμα
+            </button>
           </div>
+
         <form id="employerForm">
           <fieldset>
             <legend>Στοιχεία Επιχείρησης</legend>
@@ -1632,10 +1655,123 @@
           el.innerHTML = "⭐ Οι πόντοι σας: <strong>" + points + "</strong> &nbsp;·&nbsp; 1 πόντος = 1 αγγελία";
           el.style.color = "";
         } else {
-          el.innerHTML = "⭐ Πόντοι: <strong>0</strong> · Δεν έχετε υπόλοιπο αγγελιών. Επιλέξτε πακέτο παρακάτω.";
+          el.innerHTML = "⭐ Πόντοι: <strong>0</strong> · Δείτε 5 διαφημίσεις παρακάτω για 1 νέα αγγελία.";
           el.style.color = "#dc2626";
         }
       });
+    }
+
+
+    // ===== Monetag: 5 διαφημίσεις → +1 αγγελία (εργαζόμενος / εργοδότης) =====
+    function getAdProgressKey() {
+      var id = (currentUser && (currentUser.id || currentUser.email)) || "guest";
+      return "ad_unlock_progress_" + String(id);
+    }
+    function getAdProgress() {
+      try { return Math.max(0, parseInt(localStorage.getItem(getAdProgressKey()) || "0", 10) || 0); }
+      catch (e) { return 0; }
+    }
+    function setAdProgress(n) {
+      try { localStorage.setItem(getAdProgressKey(), String(Math.max(0, n))); } catch (e) {}
+    }
+    function renderAdProgress() {
+      var need = window.MONETAG_ADS_NEEDED || 5;
+      var cur = getAdProgress();
+      var pct = Math.min(100, (cur / need) * 100) + "%";
+      ["adUnlockBarWorker", "adUnlockBarEmployer"].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.width = pct;
+      });
+      ["adUnlockLabelWorker", "adUnlockLabelEmployer"].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = "Πρόοδος: " + cur + " / " + need + " διαφημίσεις";
+      });
+      ["btnWatchAdWorker", "btnWatchAdEmployer"].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        if (cur >= need) {
+          btn.textContent = "✅ Ολοκληρώθηκε — ενεργοποίηση…";
+          btn.disabled = true;
+        } else {
+          btn.disabled = false;
+          btn.textContent = "▶️ Δες διαφήμιση (" + cur + "/" + need + ")";
+        }
+      });
+    }
+    function loadMonetagSdk() {
+      return new Promise(function(resolve, reject) {
+        var zone = String(window.MONETAG_ZONE_ID || "11108267").trim();
+        var fnName = "show_" + zone;
+        if (typeof window[fnName] === "function") { resolve(window[fnName]); return; }
+        // ήδη φορτωμένο από head;
+        setTimeout(function() {
+          if (typeof window[fnName] === "function") resolve(window[fnName]);
+          else {
+            var s = document.createElement("script");
+            s.src = "https://libtl.com/sdk.js";
+            s.setAttribute("data-zone", zone);
+            s.setAttribute("data-sdk", fnName);
+            s.async = true;
+            s.onload = function() {
+              setTimeout(function() {
+                if (typeof window[fnName] === "function") resolve(window[fnName]);
+                else reject(new Error("sdk_fn_missing"));
+              }, 500);
+            };
+            s.onerror = function() { reject(new Error("sdk_load")); };
+            document.head.appendChild(s);
+          }
+        }, 300);
+      });
+    }
+    async function watchUnlockAd(source) {
+      var need = window.MONETAG_ADS_NEEDED || 5;
+      if (!currentUser) { openAuthModal("login"); return; }
+      if (getAdProgress() >= need) {
+        await claimAdUnlock(source);
+        return;
+      }
+      var btnIds = source === "employer" ? ["btnWatchAdEmployer"] : ["btnWatchAdWorker"];
+      btnIds.forEach(function(id) {
+        var b = document.getElementById(id);
+        if (b) { b.disabled = true; b.textContent = "Φόρτωση διαφήμισης…"; }
+      });
+      try {
+        var showFn = await loadMonetagSdk();
+        var ymid = String((currentUser && currentUser.id) || currentUser.email || "user");
+        await showFn({ type: "end", ymid: ymid, requestVar: (source || "jobs") + "_unlock" });
+        var cur = getAdProgress() + 1;
+        setAdProgress(cur);
+        renderAdProgress();
+        if (cur >= need) await claimAdUnlock(source);
+      } catch (err) {
+        console.warn("Monetag", err);
+        alert("Δεν εμφανίστηκε διαφήμιση. Απενεργοποιήστε προσωρινά το AdBlock για αυτή τη σελίδα και δοκιμάστε ξανά.");
+      } finally {
+        renderAdProgress();
+      }
+    }
+    async function claimAdUnlock(source) {
+      try {
+        var res = await fetch(API_BASE + "/api/claim-ad-unlock", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({ ads_watched: getAdProgress(), source: source || "jobs" })
+        });
+        var data = await res.json().catch(function(){ return {}; });
+        if (!res.ok) {
+          alert(data.error || "Αδυναμία ενεργοποίησης αγγελίας.");
+          return;
+        }
+        if (data.free_slots != null && currentUser) currentUser.free_slots = data.free_slots;
+        setAdProgress(0);
+        renderAdProgress();
+        updateQuotaInfos();
+        updatePackagesVisibility();
+        alert("✅ Ξεκλειδώθηκε 1 νέα αγγελία!");
+      } catch (e) {
+        alert("Σφάλμα δικτύου κατά την ενεργοποίηση.");
+      }
     }
 
     function updatePackagesVisibility() {
@@ -1654,6 +1790,7 @@
         const isWork = currentUser && (currentUser.role === "worker" || currentUser.role === "both");
         workPkg.style.display = (isWork && remaining <= 0) ? "block" : "none";
       }
+      if (remaining <= 0 && currentUser) renderAdProgress();
       // Κουμπί: κρύβεται όταν 0 slots, ΕΚΤΟΣ αν γίνεται τροποποίηση υπάρχουσας αγγελίας
       const editing = !!(typeof editingAdId !== 'undefined' && editingAdId);
       if (empSubmit) {
@@ -2805,7 +2942,7 @@
           <p><strong>Ακρίβεια Πληροφοριών:</strong> Δεν φέρουμε καμία νομική ή άλλη ευθύνη για την ορθότητα, την ακρίβεια ή τη νομιμότητα των αγγελιών που αναρτώνται από τρίτους, ούτε για το περιεχόμενο των βιογραφικών. Οι χρήστες οφείλουν να ελέγχουν οι ίδιοι την αξιοπιστία των αγγελιών.</p>
           <p><strong>Παροχή «Ως Έχει»:</strong> Η υπηρεσία παρέχεται δωρεάν και «ως έχει», χωρίς καμία εγγύηση για αδιάλειπτη λειτουργία ή τεχνική υποστήριξη.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Δωρεές και Υποστήριξη (Ko-fi)</h4>
-          <p>Η βασική χρήση της πλατφόρμας είναι εντελώς δωρεάν. Οποιαδήποτε οικονομική συνεισφορά μέσω πλατφορμών δωρεάς ή αγορά πακέτων εργοδοτών (π.χ. μέσω Ko-fi) αποτελεί προαιρετική υποστήριξη του δημιουργού και των εξόδων φιλοξενίας ή αγορά επιπλέον slots αγγελιών. Δεν αποτελεί εμπορική συναλλαγή πέραν της ρητής περιγραφής κάθε πακέτου, δεν δημιουργεί σχέση πελάτη-προμηθευτή πέραν αυτής και δεν εξασφαλίζει εγγύηση εύρεσης εργασίας.</p>
+          <p>Η βασική χρήση της πλατφόρμας είναι εντελώς δωρεάν. Οποιαδήποτε οικονομική συνεισφορά μέσω πλατφορμών δωρεάς μέσω Ko-fi αποτελεί προαιρετική υποστήριξη του δημιουργού και των εξόδων φιλοξενίας ή αγορά επιπλέον slots αγγελιών. Δεν αποτελεί εμπορική συναλλαγή πέραν της ρητής περιγραφής κάθε πακέτου, δεν δημιουργεί σχέση πελάτη-προμηθευτή πέραν αυτής και δεν εξασφαλίζει εγγύηση εύρεσης εργασίας.</p>
           <h4 style="margin:14px 0 6px;color:var(--primary);">Επικοινωνία</h4>
           <p>Για οποιοδήποτε ζήτημα σχετικά με τους όρους, παρακαλούμε επικοινωνήστε μαζί μας στο: <a href="mailto:info.franklydear@gmail.com">info.franklydear@gmail.com</a></p>
         `
