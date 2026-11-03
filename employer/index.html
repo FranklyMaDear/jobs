@@ -1197,21 +1197,14 @@
       try {
         var showFn = await loadMonetagSdk();
         var ymid = String((currentUser && currentUser.id) || currentUser.email || "user");
-        var result = await showFn({ type: "end", ymid: ymid, requestVar: "master_unlock" });
-        // Μετράμε ολοκλήρωση (valued ή απλό close — για web χωρίς postback συχνά λείπει το valued)
-        var ok = true;
-        if (result && result.reward_event_type && result.reward_event_type !== "valued" && result.reward_event_type !== "non_valued") {
-          ok = false;
-        }
-        if (!ok) {
-          alert("Η διαφήμιση δεν ολοκληρώθηκε. Δοκιμάστε ξανά.");
-        } else {
-          var cur = getAdProgress() + 1;
-          setAdProgress(cur);
-          renderAdProgress();
-          if (cur >= need) {
-            await claimAdUnlock();
-          }
+        // Rewarded Popup (Monetag)
+        var result = await showFn("pop");
+        // Rewarded Popup: το Promise ολοκληρώνεται μετά την προβολή
+        var cur = getAdProgress() + 1;
+        setAdProgress(cur);
+        renderAdProgress();
+        if (cur >= need) {
+          await claimAdUnlock();
         }
       } catch (err) {
         console.warn("Monetag error", err);
