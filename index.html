@@ -387,13 +387,46 @@
       line-height: 1.4;
       margin: 0;
     }
-    .role-promo-banner.unified-promo {
+.role-promo-banner.unified-promo {
       background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 50%, #fdf4ff 100%);
       border: 1.5px solid #c7d2fe;
       box-shadow: 0 4px 18px rgba(37, 99, 235, 0.08);
+      text-align: left;
+      padding: 16px 18px;
     }
-    .role-promo-banner.unified-promo strong { color: #1e3a8a; font-size: 1.05rem; }
-    .role-promo-banner.unified-promo p { color: #334155; font-size: 0.9rem; line-height: 1.45; }
+    .role-promo-banner.unified-promo strong {
+      color: #1e3a8a;
+      font-size: 1.02rem;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 8px;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .role-promo-banner.unified-promo p {
+      color: #475569;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      font-weight: 400;
+      text-align: center;
+    }
+    .role-promo-banner.unified-promo p strong {
+      display: inline;
+      font-size: inherit;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 0;
+    }
+    .promo-inline-link {
+      color: #0f766e;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1.5px solid rgba(15, 118, 110, 0.35);
+    }
+    .promo-inline-link:hover {
+      color: #0d9488;
+      border-bottom-color: #0d9488;
+    }
     .role-promo-banner.worker-promo {
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
       border: 1.5px solid #93c5fd;
@@ -967,9 +1000,10 @@
       <div class="role-promo-banner unified-promo">
         <strong>Δωρεάν εγγραφή · 1 αγγελία για κάθε νέο μέλος</strong>
         <p>
-          Η πλατφόρμα είναι ανοιχτή σε <strong>εργαζόμενους</strong>, <strong>εργοδότες</strong> και <strong>μαστόρους / τεχνίτες</strong>.
-          Με την εγγραφή σας λαμβάνετε <strong>1 δωρεάν αγγελία</strong> για να δημοσιεύσετε προφίλ ή θέση εργασίας —
-          με ειδικότητα, περιοχή και στοιχεία επικοινωνίας. Οι ενδιαφερόμενοι στη <strong>Θεσσαλία</strong> σας βρίσκουν εύκολα.
+          Για εργαζόμενους, εργοδότες και τεχνίτες στη Θεσσαλία.
+          Με την εγγραφή λαμβάνετε 1 δωρεάν αγγελία (προφίλ ή θέση) με περιοχή και στοιχεία επικοινωνίας.
+          Αναζητάτε τεχνίτη; Δείτε το
+          <a href="https://franklymadear.github.io/jobs/employer/index.html" class="promo-inline-link">Βρες τον Μάστορά σου</a>.
         </p>
       </div>
 
