@@ -560,7 +560,7 @@
   <!-- Monetag Rewarded Interstitial – βάλε το Zone ID σου από το dashboard (Activate → copy tag) -->
   <script>
     window.MONETAG_ZONE_ID = "11108267";
-    window.MONETAG_ADS_NEEDED = 5;
+    window.MONETAG_ADS_NEEDED = 10;
   </script>
   <script src="//libtl.com/sdk.js" data-zone="11108267" data-sdk="show_11108267"></script>
 </head>
@@ -702,14 +702,14 @@
       <div class="packages-box" id="masterPackages" style="display:none;">
         <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
         <p>
-          Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+          Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>10 σύντομες διαφημίσεις</strong>
           και ξεκλειδώνεται αυτόματα 1 νέα αγγελία — χωρίς να περιμένετε τον διαχειριστή.
         </p>
         <div class="ad-unlock-progress" id="adUnlockProgress">
           <div class="ad-unlock-bar-wrap">
             <div class="ad-unlock-bar" id="adUnlockBar" style="width:0%"></div>
           </div>
-          <div class="ad-unlock-label" id="adUnlockLabel">Πρόοδος: 0 / 5 διαφημίσεις</div>
+          <div class="ad-unlock-label" id="adUnlockLabel">Πρόοδος: 0 / 10 διαφημίσεις</div>
         </div>
         <button type="button" class="btn btn-primary btn-full" id="btnWatchAd" onclick="watchUnlockAd()">
           ▶️ Δες διαφήμιση για ξεκλείδωμα
@@ -1148,7 +1148,7 @@
       try { localStorage.setItem(getAdProgressKey(), String(Math.max(0, n))); } catch (e) {}
     }
     function renderAdProgress() {
-      var need = window.MONETAG_ADS_NEEDED || 5;
+      var need = window.MONETAG_ADS_NEEDED || 10;
       var cur = getAdProgress();
       var bar = document.getElementById("adUnlockBar");
       var lab = document.getElementById("adUnlockLabel");
@@ -1186,7 +1186,7 @@
       });
     }
     async function watchUnlockAd() {
-      var need = window.MONETAG_ADS_NEEDED || 5;
+      var need = window.MONETAG_ADS_NEEDED || 10;
       var btn = document.getElementById("btnWatchAd");
       if (!currentUser) { openAuthModal("login"); return; }
       if (getAdProgress() >= need) {
@@ -1263,7 +1263,7 @@
       } else {
         el.innerHTML =
           "⚠️ Δεν σας απομένουν δωρεάν αγγελίες.<br>" +
-          "Δείτε <strong>5 διαφημίσεις</strong> παρακάτω για να ξεκλειδώσετε <strong>1 νέα αγγελία</strong> αυτόματα.";
+          "Δείτε <strong>10 διαφημίσεις</strong> παρακάτω για να ξεκλειδώσετε <strong>1 νέα αγγελία</strong> αυτόματα.";
         el.style.background = "#fff7ed";
         el.style.borderColor = "#fdba74";
         if (pkgs) pkgs.style.display = "block";
