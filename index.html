@@ -966,7 +966,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     window.MONETAG_ZONE_ID = "11108267";
-    window.MONETAG_ADS_NEEDED = 5;
+    window.MONETAG_ADS_NEEDED = 10;
   </script>
   <script src="//libtl.com/sdk.js" data-zone="11108267" data-sdk="show_11108267"></script>
 </head>
@@ -995,15 +995,25 @@
     <!-- Αρχική: χωρίς logo πάνω / χωρίς προσφορά Οκτωβρίου -->
     <div id="screen-home" class="screen active">
 
+      <div class="support-ad-bar" id="supportAdBar">
+        <h3>💙 Στηρίξτε την προσπάθειά μας βλέποντας μια διαφήμιση</h3>
+        <p>Κάθε προβολή βοηθά να μένει η σελίδα δωρεάν. Ανεξάρτητο από τις αγγελίες σας.</p>
+        <button type="button" class="support-ad-btn" id="btnSupportAd" onclick="watchSupportAd()">
+          ▶️ Δες διαφήμιση στήριξης
+        </button>
+        <div class="support-ad-count">Σύνολο προβολών στήριξης: <strong id="supportAdCount">0</strong></div>
+      </div>
+
       <div class="section-title">Δημοσίευση Αγγελίας</div>
 
       <div class="role-promo-banner unified-promo">
-        <strong>Δωρεάν εγγραφή · 1 αγγελία για κάθε νέο μέλος</strong>
-        <p>
+        <strong class="promo-title-oneline">Δωρεάν εγγραφή · 1 αγγελία για κάθε νέο μέλος</strong>
+        <p class="promo-body">
           Για εργαζόμενους, εργοδότες και τεχνίτες στη Θεσσαλία.
           Με την εγγραφή λαμβάνετε 1 δωρεάν αγγελία (προφίλ ή θέση) με περιοχή και στοιχεία επικοινωνίας.
-          Αναζητάτε τεχνίτη; Δείτε το
-          <a href="https://franklymadear.github.io/jobs/employer/index.html" class="promo-inline-link">Βρες τον Μάστορά σου</a>.
+        </p>
+        <p class="promo-master-line">
+          <a href="https://franklymadear.github.io/jobs/employer/index.html" class="promo-inline-link">Βρες τον Μάστορά σου</a>
         </p>
       </div>
 
@@ -1049,12 +1059,6 @@
         </button>
       </div>
 
-      <!-- Βρες τον Μάστορά σου -->
-      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" rel="noopener" title="Βρες τον Μάστορά σου">
-        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Βρες τον Μάστορά σου" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo2.png'">
-        <div style="text-align:center;font-weight:800;color:#0f766e;margin-top:8px;font-size:0.95rem;">🛠️ Βρες τον Μάστορά σου</div>
-      </a>
-
       <!-- Στηρίξτε την προσπάθειά μας -->
       <div class="kofi-goal-card">
         <div class="kofi-goal-card-inner">
@@ -1079,6 +1083,12 @@
           </div>
         </div>
       </div>
+
+      <!-- Βρες τον Μάστορά σου — κάτω μέρος -->
+      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" rel="noopener" title="Βρες τον Μάστορά σου" style="margin-top:20px;">
+        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Βρες τον Μάστορά σου" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo2.png'">
+        <div style="text-align:center;font-weight:800;color:#0f766e;margin-top:8px;font-size:0.95rem;">🛠️ Βρες τον Μάστορά σου</div>
+      </a>
     </div>
 
     <div id="screen-ads" class="screen">
@@ -1117,14 +1127,14 @@
           <div class="packages-box" id="workerPackages" style="display:none">
             <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>10 σύντομες διαφημίσεις</strong>
               και ξεκλειδώνεται αυτόματα 1 νέα αγγελία.
             </p>
             <div class="ad-unlock-progress">
               <div class="ad-unlock-bar-wrap">
                 <div class="ad-unlock-bar" id="adUnlockBarWorker" style="width:0%"></div>
               </div>
-              <div class="ad-unlock-label" id="adUnlockLabelWorker">Πρόοδος: 0 / 5 διαφημίσεις</div>
+              <div class="ad-unlock-label" id="adUnlockLabelWorker">Πρόοδος: 0 / 10 διαφημίσεις</div>
             </div>
             <button type="button" class="btn btn-primary btn-full" id="btnWatchAdWorker" onclick="watchUnlockAd('worker')">
               ▶️ Δες διαφήμιση για ξεκλείδωμα
@@ -1221,14 +1231,14 @@
           <div class="packages-box" id="employerPackages" style="display:none">
             <h3>🔓 Ξεκλείδωμα νέας αγγελίας</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
-              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>5 σύντομες διαφημίσεις</strong>
+              Η πρώτη αγγελία είναι δωρεάν. Για την επόμενη, δείτε <strong>10 σύντομες διαφημίσεις</strong>
               και ξεκλειδώνεται αυτόματα 1 νέα αγγελία.
             </p>
             <div class="ad-unlock-progress">
               <div class="ad-unlock-bar-wrap">
                 <div class="ad-unlock-bar" id="adUnlockBarEmployer" style="width:0%"></div>
               </div>
-              <div class="ad-unlock-label" id="adUnlockLabelEmployer">Πρόοδος: 0 / 5 διαφημίσεις</div>
+              <div class="ad-unlock-label" id="adUnlockLabelEmployer">Πρόοδος: 0 / 10 διαφημίσεις</div>
             </div>
             <button type="button" class="btn btn-primary btn-full" id="btnWatchAdEmployer" onclick="watchUnlockAd('employer')">
               ▶️ Δες διαφήμιση για ξεκλείδωμα
@@ -1689,7 +1699,7 @@
           el.innerHTML = "⭐ Οι πόντοι σας: <strong>" + points + "</strong> &nbsp;·&nbsp; 1 πόντος = 1 αγγελία";
           el.style.color = "";
         } else {
-          el.innerHTML = "⭐ Πόντοι: <strong>0</strong> · Δείτε 5 διαφημίσεις παρακάτω για 1 νέα αγγελία.";
+          el.innerHTML = "⭐ Πόντοι: <strong>0</strong> · Δείτε 10 διαφημίσεις παρακάτω για 1 νέα αγγελία.";
           el.style.color = "#dc2626";
         }
       });
@@ -1709,7 +1719,7 @@
       try { localStorage.setItem(getAdProgressKey(), String(Math.max(0, n))); } catch (e) {}
     }
     function renderAdProgress() {
-      var need = window.MONETAG_ADS_NEEDED || 5;
+      var need = window.MONETAG_ADS_NEEDED || 10;
       var cur = getAdProgress();
       var pct = Math.min(100, (cur / need) * 100) + "%";
       ["adUnlockBarWorker", "adUnlockBarEmployer"].forEach(function(id) {
@@ -1758,8 +1768,42 @@
         }, 300);
       });
     }
+    
+    // ===== Στήριξη με διαφήμιση (ΑΝΕΞΑΡΤΗΤΟ από ξεκλείδωμα αγγελιών) =====
+    var SUPPORT_AD_KEY = "support_ad_clicks_total";
+    function getSupportAdCount() {
+      try { return Math.max(0, parseInt(localStorage.getItem(SUPPORT_AD_KEY) || "0", 10) || 0); }
+      catch (e) { return 0; }
+    }
+    function setSupportAdCount(n) {
+      try { localStorage.setItem(SUPPORT_AD_KEY, String(Math.max(0, n))); } catch (e) {}
+    }
+    function renderSupportAdCount() {
+      var el = document.getElementById("supportAdCount");
+      if (el) el.textContent = String(getSupportAdCount());
+    }
+    async function watchSupportAd() {
+      var btn = document.getElementById("btnSupportAd");
+      if (btn) { btn.disabled = true; btn.textContent = "Φόρτωση…"; }
+      try {
+        var showFn = await loadMonetagSdk();
+        await showFn("pop");
+        setSupportAdCount(getSupportAdCount() + 1);
+        renderSupportAdCount();
+      } catch (err) {
+        console.warn("support ad", err);
+        alert("Δεν εμφανίστηκε διαφήμιση. Απενεργοποιήστε προσωρινά το AdBlock για αυτή τη σελίδα.");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "▶️ Δες διαφήμιση στήριξης";
+        }
+        renderSupportAdCount();
+      }
+    }
+
     async function watchUnlockAd(source) {
-      var need = window.MONETAG_ADS_NEEDED || 5;
+      var need = window.MONETAG_ADS_NEEDED || 10;
       if (!currentUser) { openAuthModal("login"); return; }
       if (getAdProgress() >= need) {
         await claimAdUnlock(source);
@@ -3408,6 +3452,7 @@
       startTitleRotation();
       startWelcomeTextRotation();
       startPromoCountdown();
+      try { renderSupportAdCount(); } catch(e) {}
       setTimeout(initGoogleButton, 800);
       document.getElementById("workerForm").addEventListener("submit", e => handleFormSubmit(e, "worker"));
       document.getElementById("employerForm").addEventListener("submit", e => handleFormSubmit(e, "employer"));
