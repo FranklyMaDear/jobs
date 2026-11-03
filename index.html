@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="el">
 <head>
   <meta charset="UTF-8">
@@ -962,6 +962,158 @@
     .ad-slot-wrap { overflow: hidden; min-height: 50px; }
     .footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
     .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+    /* ===== Μπάρα στήριξης (premium) ===== */
+    .support-ad-bar {
+      margin: 0 0 18px;
+      border-radius: 16px;
+      padding: 2px;
+      background: linear-gradient(135deg, #60a5fa, #2563eb, #7c3aed, #2563eb);
+      background-size: 200% 200%;
+      animation: supportBorderShift 6s ease infinite;
+      box-shadow: 0 8px 28px rgba(37, 99, 235, 0.28);
+    }
+    @keyframes supportBorderShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .support-ad-bar-inner {
+      background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 55%, #1e293b 100%);
+      border-radius: 14px;
+      padding: 16px 16px 18px;
+      text-align: center;
+    }
+    .support-ad-title {
+      font-size: clamp(0.95rem, 4vw, 1.08rem);
+      font-weight: 800;
+      color: #fff !important;
+      margin: 0 0 4px;
+      letter-spacing: -0.01em;
+    }
+    .support-ad-sub {
+      font-size: 0.78rem;
+      color: #93c5fd !important;
+      margin: 0 0 14px;
+      line-height: 1.4;
+    }
+    .support-visual-track {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+      margin: 0 0 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .support-visual-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #60a5fa, #a78bfa, #38bdf8);
+      background-size: 200% 100%;
+      animation: supportFillShine 2.5s linear infinite;
+      transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 12px rgba(96, 165, 250, 0.65);
+    }
+    @keyframes supportFillShine {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .support-visual-shine {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%);
+      animation: supportTrackSweep 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes supportTrackSweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .support-ad-btn.shiny-support-btn,
+    .shiny-support-btn {
+      position: relative !important;
+      overflow: hidden !important;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: min(100%, 280px);
+      width: auto !important;
+      padding: 13px 22px !important;
+      border: none !important;
+      border-radius: 999px !important;
+      cursor: pointer;
+      font-weight: 800 !important;
+      font-size: 0.92rem !important;
+      color: #1e3a8a !important;
+      background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 40%, #ffffff 70%, #dbeafe 100%) !important;
+      background-size: 200% 200% !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+      animation: supportBtnShift 4s ease-in-out infinite;
+      font-family: inherit;
+    }
+    .shiny-support-btn .support-btn-label { position: relative; z-index: 2; color: #1e3a8a !important; }
+    .shiny-support-btn .support-btn-glow {
+      position: absolute;
+      top: -50%; left: -40%;
+      width: 40%; height: 200%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,0.75), transparent);
+      transform: rotate(20deg);
+      animation: supportBtnSweep 2.4s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes supportBtnShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes supportBtnSweep {
+      0% { left: -50%; }
+      100% { left: 130%; }
+    }
+    .shiny-support-btn:active { transform: scale(0.98); }
+
+    /* Τίτλος: μία γραμμή + αναβοσβήνει */
+    .promo-title-wrap {
+      text-align: center;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .promo-title-static {
+      display: block;
+      font-size: clamp(0.85rem, 3.8vw, 1.02rem);
+      font-weight: 800;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+    }
+    .promo-title-blink {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      font-size: clamp(0.78rem, 3.6vw, 0.98rem);
+      font-weight: 800;
+      color: #2563eb;
+      animation: promoBlink 1.35s ease-in-out infinite;
+    }
+    @keyframes promoBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.28; }
+    }
+    .promo-body {
+      text-align: center;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: #475569;
+      margin: 0 0 8px;
+    }
+    .promo-master-line {
+      text-align: center;
+      margin: 0;
+    }
+
   </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
