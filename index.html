@@ -996,18 +996,27 @@
     <div id="screen-home" class="screen active">
 
       <div class="support-ad-bar" id="supportAdBar">
-        <h3>💙 Στηρίξτε την προσπάθειά μας βλέποντας μια διαφήμιση</h3>
-        <p>Κάθε προβολή βοηθά να μένει η σελίδα δωρεάν. Ανεξάρτητο από τις αγγελίες σας.</p>
-        <button type="button" class="support-ad-btn" id="btnSupportAd" onclick="watchSupportAd()">
-          ▶️ Δες διαφήμιση στήριξης
-        </button>
-        <div class="support-ad-count">Σύνολο προβολών στήριξης: <strong id="supportAdCount">0</strong></div>
+        <div class="support-ad-bar-inner">
+          <div class="support-ad-title">💙 Στηρίξτε την προσπάθειά μας</div>
+          <div class="support-ad-sub">Βλέποντας μια διαφήμιση · κάθε προβολή βοηθά να μένει η σελίδα δωρεάν</div>
+          <div class="support-visual-track" aria-hidden="true">
+            <div class="support-visual-fill" id="supportAdFill"></div>
+            <div class="support-visual-shine"></div>
+          </div>
+          <button type="button" class="support-ad-btn shiny-support-btn" id="btnSupportAd" onclick="watchSupportAd()">
+            <span class="support-btn-glow"></span>
+            <span class="support-btn-label">▶️ Δες διαφήμιση στήριξης</span>
+          </button>
+        </div>
       </div>
 
       <div class="section-title">Δημοσίευση Αγγελίας</div>
 
       <div class="role-promo-banner unified-promo">
-        <strong class="promo-title-oneline">Δωρεάν εγγραφή · 1 αγγελία για κάθε νέο μέλος</strong>
+        <div class="promo-title-wrap">
+          <span class="promo-title-static">Δωρεάν εγγραφή ·</span>
+          <span class="promo-title-blink">1 αγγελία για κάθε νέο μέλος</span>
+        </div>
         <p class="promo-body">
           Για εργαζόμενους, εργοδότες και τεχνίτες στη Θεσσαλία.
           Με την εγγραφή λαμβάνετε 1 δωρεάν αγγελία (προφίλ ή θέση) με περιοχή και στοιχεία επικοινωνίας.
@@ -1779,12 +1788,22 @@
       try { localStorage.setItem(SUPPORT_AD_KEY, String(Math.max(0, n))); } catch (e) {}
     }
     function renderSupportAdCount() {
-      var el = document.getElementById("supportAdCount");
-      if (el) el.textContent = String(getSupportAdCount());
+      // Οπτική μπάρα χωρίς αριθμό (γεμίζει προς στόχο 20, μετά ξαναρχίζει)
+      var n = getSupportAdCount();
+      var goal = 20;
+      var pct = ((n % goal) / goal) * 100;
+      if (n > 0 && pct === 0) pct = 100; // μόλις συμπληρώθηκε κύκλος
+      var fill = document.getElementById("supportAdFill");
+      if (fill) fill.style.width = pct + "%";
     }
     async function watchSupportAd() {
       var btn = document.getElementById("btnSupportAd");
-      if (btn) { btn.disabled = true; btn.textContent = "Φόρτωση…"; }
+      if (btn) {
+        btn.disabled = true;
+        var lab = btn.querySelector(".support-btn-label");
+        if (lab) lab.textContent = "Φόρτωση…";
+        else btn.textContent = "Φόρτωση…";
+      }
       try {
         var showFn = await loadMonetagSdk();
         await showFn("pop");
@@ -1796,7 +1815,9 @@
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = "▶️ Δες διαφήμιση στήριξης";
+          var lab = btn.querySelector(".support-btn-label");
+          if (lab) lab.textContent = "▶️ Δες διαφήμιση στήριξης";
+          else btn.textContent = "▶️ Δες διαφήμιση στήριξης";
         }
         renderSupportAdCount();
       }
