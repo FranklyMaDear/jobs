@@ -281,6 +281,83 @@
 
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
     @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
+
+    /* Γυαλιστερό κουμπί Είμαι μάστορας – λάμψη / «κεραυνός» χωρίς emoji */
+    .action-card.shiny-master-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 35%, #5eead4 55%, #0d9488 100%);
+      background-size: 200% 200%;
+      border: none;
+      color: #fff;
+      box-shadow: 0 8px 28px rgba(15, 118, 110, 0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+      animation: shinyMasterShift 4s ease-in-out infinite;
+    }
+    .action-card.shiny-master-btn h3,
+    .action-card.shiny-master-btn p { color: #fff !important; }
+    .action-card.shiny-master-btn .icon {
+      background: rgba(255,255,255,0.22) !important;
+      box-shadow: 0 0 12px rgba(255,255,255,0.35);
+    }
+    .action-card.shiny-master-btn::before {
+      content: "";
+      position: absolute;
+      top: -60%; left: -70%;
+      width: 45%; height: 220%;
+      background: linear-gradient(105deg,
+        transparent 0%,
+        rgba(255,255,255,0.05) 35%,
+        rgba(255,255,255,0.65) 50%,
+        rgba(255,255,255,0.05) 65%,
+        transparent 100%);
+      transform: rotate(25deg);
+      animation: shinyMasterSweep 2.6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .action-card.shiny-master-btn::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -30%;
+      width: 8px; height: 100%;
+      background: linear-gradient(180deg, transparent, #fde047, #fff, #fde047, transparent);
+      box-shadow: 0 0 16px 4px rgba(253, 224, 71, 0.85), 0 0 28px 8px rgba(255,255,255,0.4);
+      transform: skewX(-20deg);
+      animation: shinyMasterBolt 2.6s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.9;
+    }
+    .action-card.shiny-master-btn > * { position: relative; z-index: 3; }
+    @keyframes shinyMasterSweep {
+      0% { left: -70%; }
+      100% { left: 140%; }
+    }
+    @keyframes shinyMasterBolt {
+      0% { left: -20%; opacity: 0; }
+      8% { opacity: 1; }
+      50% { left: 55%; opacity: 1; }
+      92% { opacity: 0.8; }
+      100% { left: 115%; opacity: 0; }
+    }
+    @keyframes shinyMasterShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .action-card.shiny-master-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(15, 118, 110, 0.55), inset 0 1px 0 rgba(255,255,255,0.45);
+    }
+    .home-top-actions {
+      display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;
+    }
+    .home-top-actions .action-card { width: 100%; }
+    @media (min-width: 560px) {
+      .home-top-actions {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      }
+    }
+
     .action-card {
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 20px 16px; cursor: pointer; transition: all 0.22s; text-align: left;
@@ -484,8 +561,8 @@
   <!-- Top bar -->
   <div class="top-bar" id="topBar">
     <div class="top-bar-row">
-      <a href="https://franklymadear.github.io/jobs/" class="btn-back-main" title="Ψαχνς Δλεια · Βρες Δλεια">
-        ← Ψαχνς Δλεια
+      <a href="https://franklymadear.github.io/jobs/" class="btn-back-main" title="Ψαχνς Δλεια · Βρες Δλεια — αγγελίες εργασίας">
+        🏠 Ψαχνς Δλεια · Βρες Δλεια
       </a>
       <div id="authBar" class="auth-actions">
         <button type="button" class="btn-auth" onclick="openAuthModal('login')">Σύνδεση</button>
@@ -497,20 +574,47 @@
   <div class="container">
     <!-- HOME -->
     <div id="screen-home" class="screen active">
-      <div class="header">
-        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Μαστόρια Θεσσαλίας" class="site-logo-wide"
-             onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo.png'">
-        <h1>Βρες Μάστορα κοντά σου</h1>
-        <p>Οικιακές υπηρεσίες · Αγροτικές εργασίες · Θεσσαλία</p>
+
+      <div class="promo-banner">
+        <strong>🛠️ Είσαι μάστορας; Εγγράψου δωρεάν</strong>
+        <p>Δημοσίευσε το προφίλ σου με 1 δωρεάν αγγελία — περιοχή, τηλέφωνο και φωτογραφίες δουλειών. Σε βρίσκουν όσοι ψάχνουν τεχνίτη κοντά τους.</p>
       </div>
 
-      <a href="https://franklymadear.github.io/jobs/" class="link-home-jobs">
-        <img src="https://franklymadear.github.io/jobs/logo2.png" alt="" onerror="this.style.display='none'">
-        Ψαχνς Δλεια · Βρες Δλεια — αγγελίες εργασίας
-      </a>
+      <div class="home-top-actions">
+        <div class="action-card shiny-master-btn" onclick="goMasterPost()">
+          <div class="icon">🛠️</div>
+          <h3>Είμαι μάστορας</h3>
+          <p>Σύνδεση / εγγραφή & δημοσίευση προφίλ — 1 δωρεάν αγγελία, μετά πακέτο +3 με φιλοδώρημα.</p>
+        </div>
+        <div class="action-card" onclick="browseCategory('all')">
+          <div class="icon">🔍</div>
+          <h3>Δες όλα τα μαστόρια</h3>
+          <p>Περιήγηση σε όλους τους εγγεγραμμένους τεχνίτες της περιοχής.</p>
+        </div>
+      </div>
 
-      <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal (ίδιο με την κεντρική) -->
-      <div class="kofi-goal-card">
+      <div class="section-title">Πρόσφατα προφίλ</div>
+      <div id="home-masters-list">
+        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση…</div>
+      </div>
+      <div style="text-align:center;margin-top:12px;margin-bottom:8px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="browseCategory('all')">Δες όλα →</button>
+      </div>
+
+      <div class="cat-split">
+        <div class="cat-card home" onclick="browseCategory('home')">
+          <div class="icon">🏠</div>
+          <h3>Οικιακές Υπηρεσίες</h3>
+          <p>Υδραυλικοί, ηλεκτρολόγοι, ψυκτικοί, βάψιμο, ανακαινίσεις και άλλα για το σπίτι.</p>
+        </div>
+        <div class="cat-card field" onclick="browseCategory('field')">
+          <div class="icon">🌾</div>
+          <h3>Αγροτικές / Υπαίθριες</h3>
+          <p>Μηχανήματα, κλάδεμα, άρδευση, περίφραξη, συγκομιδή και εργασίες χωραφιού.</p>
+        </div>
+      </div>
+
+      <div class="kofi-goal-card" style="margin-top:22px;">
         <div class="kofi-goal-card-inner">
           <div class="kofi-goal-top">
             <span class="kofi-goal-emoji">💙</span>
@@ -532,46 +636,6 @@
             <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-cta">Στήριξε τώρα →</a>
           </div>
         </div>
-      </div>
-
-      <div class="promo-banner">
-        <strong>🛠️ Είσαι μάστορας; Εγγράψου δωρεάν</strong>
-        <p>Δημοσίευσε το προφίλ σου με 1 δωρεάν αγγελία — περιοχή, τηλέφωνο και φωτογραφίες δουλειών. Σε βρίσκουν όσοι ψάχνουν τεχνίτη κοντά τους.</p>
-      </div>
-
-      <div class="cat-split">
-        <div class="cat-card home" onclick="browseCategory('home')">
-          <div class="icon">🏠</div>
-          <h3>Οικιακές Υπηρεσίες</h3>
-          <p>Υδραυλικός, ηλεκτρολόγος, ψυκτικός, πλακάκια, βάψιμο, ανακαίνιση – για το σπίτι.</p>
-        </div>
-        <div class="cat-card field" onclick="browseCategory('field')">
-          <div class="icon">🌾</div>
-          <h3>Αγροτικές / Υπαίθριες</h3>
-          <p>Χωράφια, κλάδεμα, άρδευση, μηχανήματα, περίφραξη, γεωργικές εργασίες.</p>
-        </div>
-      </div>
-
-      <div class="section-title">Τι θέλετε να κάνετε;</div>
-      <div class="action-grid">
-        <div class="action-card" onclick="browseCategory('all')">
-          <div class="icon">🔍</div>
-          <h3>Δες όλα τα μαστόρια</h3>
-          <p>Περιήγηση σε όλους τους εγγεγραμμένους τεχνίτες της περιοχής.</p>
-        </div>
-        <div class="action-card" onclick="goMasterPost()">
-          <div class="icon">🛠️</div>
-          <h3>Είμαι μάστορας</h3>
-          <p>Σύνδεση / εγγραφή & δημοσίευση προφίλ — 1 δωρεάν αγγελία, μετά πακέτο +3 με φιλοδώρημα.</p>
-        </div>
-      </div>
-
-      <div class="section-title">Πρόσφατα προφίλ</div>
-      <div id="home-masters-list">
-        <div class="state-box"><div class="emoji">⏳</div>Φόρτωση…</div>
-      </div>
-      <div style="text-align:center;margin-top:12px;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="browseCategory('all')">Δες όλα →</button>
       </div>
     </div>
 
@@ -756,7 +820,7 @@
         <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">Σύνδεση</button>
       </form>
       <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px;text-align:center;">
-        Η εγγραφή είναι δωρεάν. Οι μάστορες παίρνουν <strong>1 δωρεάν αγγελία</strong> προφίλ.
+        Η εγγραφή είναι δωρεάν. Κάθε νέος χρήστης παίρνει <strong>1 δωρεάν αγγελία</strong>.
       </p>
     </div>
   </div>
