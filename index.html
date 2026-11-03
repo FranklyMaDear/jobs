@@ -370,6 +370,36 @@
       box-shadow: 0 12px 36px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255,255,255,0.45);
     }
 
+
+    .role-promo-banner {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .role-promo-banner strong {
+      display: block;
+      font-size: 1.02rem;
+      margin-bottom: 4px;
+    }
+    .role-promo-banner p {
+      font-size: 0.88rem;
+      line-height: 1.4;
+      margin: 0;
+    }
+    .role-promo-banner.worker-promo {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1.5px solid #93c5fd;
+    }
+    .role-promo-banner.worker-promo strong { color: #1e40af; }
+    .role-promo-banner.worker-promo p { color: #1e3a8a; }
+    .role-promo-banner.employer-promo {
+      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
+      border: 1.5px solid #e9d5ff;
+    }
+    .role-promo-banner.employer-promo strong { color: #86198f; }
+    .role-promo-banner.employer-promo p { color: #701a75; }
+
     .action-card {
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 22px 18px; cursor: pointer; transition: all 0.22s; text-align: left;
@@ -907,6 +937,16 @@
     <div id="screen-home" class="screen active">
 
       <div class="section-title">Δημοσίευση Αγγελίας</div>
+
+      <div class="role-promo-banner worker-promo">
+        <strong>👷 Ψάχνεις δουλειά; Εγγράψου δωρεάν</strong>
+        <p>Δημοσίευσε το προφίλ σου με 1 δωρεάν αγγελία — ειδικότητα, περιοχές και στοιχεία επικοινωνίας. Σε βρίσκουν όσοι ψάχνουν προσωπικό κοντά τους.</p>
+      </div>
+      <div class="role-promo-banner employer-promo">
+        <strong>🏢 Ψάχνεις προσωπικό; Εγγράψου δωρεάν</strong>
+        <p>Καταχώρησε την αγγελία της επιχείρησής σου με 1 δωρεάν δημοσίευση — θέση, περιοχή και τηλέφωνο. Σε βρίσκουν όσοι ψάχνουν εργασία στη Θεσσαλία.</p>
+      </div>
+
       <div class="action-grid" id="publishActionsGrid">
         <div class="action-card post-worker shiny-job-btn" id="cardPostWorker" onclick="requireAuthThen('screen-worker')">
           <div class="icon">📝</div>
@@ -1273,6 +1313,7 @@
             <option value="" disabled selected>Επιλέξτε ρόλο</option>
             <option value="worker">Εργαζόμενος – Ψάχνω δουλειά</option>
             <option value="employer">Εργοδότης – Ψάχνω προσωπικό</option>
+            <option value="master">🛠️ Μάστορας / Τεχνίτης</option>
           </select>
         </div>
       </div>
@@ -1625,7 +1666,7 @@
       }
     }
 
-    let preferredAuthRole = null; // "worker" | "employer" | null (και τα δύο)
+    let preferredAuthRole = null; // "worker" | "employer" | "master" | null
     let pendingAfterAuthScreen = null;
 
     function openAuthModal(mode, preferredRole) {
@@ -1672,21 +1713,17 @@
             opt.disabled = !!preferredAuthRole;
             return;
           }
-          if (preferredAuthRole === "worker") {
-            opt.hidden = opt.value !== "worker";
-            opt.disabled = opt.value !== "worker";
-          } else if (preferredAuthRole === "employer") {
-            opt.hidden = opt.value !== "employer";
-            opt.disabled = opt.value !== "employer";
+          if (preferredAuthRole === "worker" || preferredAuthRole === "employer" || preferredAuthRole === "master") {
+            opt.hidden = opt.value !== preferredAuthRole;
+            opt.disabled = opt.value !== preferredAuthRole;
           } else {
             opt.hidden = false;
             opt.disabled = false;
           }
         });
-        if (preferredAuthRole === "worker" || preferredAuthRole === "employer") {
+        if (preferredAuthRole === "worker" || preferredAuthRole === "employer" || preferredAuthRole === "master") {
           roleSel.value = preferredAuthRole;
-        } else if (!roleSel.value || roleSel.value === "worker" || roleSel.value === "employer") {
-          // επαναφορά placeholder όταν φαίνονται και οι δύο
+        } else {
           var placeholder = roleSel.querySelector('option[value=""]');
           if (placeholder) {
             placeholder.hidden = false;
@@ -1704,8 +1741,8 @@
       const role = document.getElementById("authRole").value;
       if (!email || !password) return alert("Συμπληρώστε email και κωδικό");
       if (authMode === "register" && !nickname) return alert("Βάλτε ψευδώνυμο");
-      if (authMode === "register" && role !== "worker" && role !== "employer") {
-        return alert("Επιλέξτε αν είστε εργαζόμενος ή εργοδότης");
+      if (authMode === "register" && role !== "worker" && role !== "employer" && role !== "master") {
+        return alert("Επιλέξτε αν είστε εργαζόμενος, εργοδότης ή μάστορας");
       }
 
       const btn = document.getElementById("authSubmitBtn");
@@ -2488,6 +2525,12 @@
     }
 
     function afterAuthNavigate() {
+      // Μάστορας → σελίδα μαστόρων για δημοσίευση προφίλ
+      if (currentUser && currentUser.role === "master") {
+        pendingAfterAuthScreen = null;
+        window.location.href = "https://franklymadear.github.io/jobs/employer/index.html";
+        return;
+      }
       var goTo = pendingAfterAuthScreen;
       pendingAfterAuthScreen = null;
       preferredAuthRole = null;
@@ -2821,8 +2864,8 @@
       if (!response || !response.credential) return;
       var roleEl = document.getElementById("authRole");
       var role = preferredAuthRole || ((authMode === "register" && roleEl) ? roleEl.value : "worker");
-      if (authMode === "register" && role !== "worker" && role !== "employer") {
-        alert("Επιλέξτε αν είστε εργαζόμενος ή εργοδότης πριν τη σύνδεση με Google");
+      if (authMode === "register" && role !== "worker" && role !== "employer" && role !== "master") {
+        alert("Επιλέξτε ρόλο (εργαζόμενος, εργοδότης ή μάστορας) πριν τη σύνδεση με Google");
         return;
       }
       try {
