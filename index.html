@@ -339,7 +339,7 @@
       animation: shineSweep 2.8s ease-in-out infinite;
       pointer-events: none;
     }
-    .action-card.shiny-job-btn .lightning-bolt {
+    .action-card.shiny-job-btn .lightning-bolt { display:none !important; /* emoji αφαιρέθηκε */
       position: absolute;
       top: 50%; left: -20%;
       font-size: 1.8rem;
@@ -909,7 +909,6 @@
       <div class="section-title">Δημοσίευση Αγγελίας</div>
       <div class="action-grid" id="publishActionsGrid">
         <div class="action-card post-worker shiny-job-btn" id="cardPostWorker" onclick="requireAuthThen('screen-worker')">
-          <span class="lightning-bolt" aria-hidden="true">⚡</span>
           <div class="icon">📝</div>
           <h3>Ψάχνω εργασία</h3>
           <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
