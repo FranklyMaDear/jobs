@@ -311,6 +311,65 @@
     .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 520px) { .action-grid { grid-template-columns: 1fr; } }
+
+    /* Γυαλιστερό κουμπί Ψάχνω εργασία + κεραυνός */
+    .action-card.shiny-job-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 40%, #38bdf8 70%, #2563eb 100%);
+      background-size: 200% 200%;
+      border: none;
+      color: #fff;
+      box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+      animation: shinyShift 4s ease-in-out infinite;
+    }
+    .action-card.shiny-job-btn h3,
+    .action-card.shiny-job-btn p { color: #fff !important; }
+    .action-card.shiny-job-btn .icon {
+      background: rgba(255,255,255,0.22) !important;
+      box-shadow: 0 0 12px rgba(255,255,255,0.35);
+    }
+    .action-card.shiny-job-btn::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -60%;
+      width: 40%; height: 200%;
+      background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.15) 60%, transparent 100%);
+      transform: rotate(20deg);
+      animation: shineSweep 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .action-card.shiny-job-btn .lightning-bolt {
+      position: absolute;
+      top: 50%; left: -20%;
+      font-size: 1.8rem;
+      transform: translateY(-50%);
+      filter: drop-shadow(0 0 8px #fde047) drop-shadow(0 0 14px #facc15);
+      animation: lightningPass 2.8s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.95;
+    }
+    @keyframes shineSweep {
+      0% { left: -60%; }
+      100% { left: 130%; }
+    }
+    @keyframes lightningPass {
+      0% { left: -25%; opacity: 0; }
+      10% { opacity: 1; }
+      50% { left: 50%; opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: 110%; opacity: 0; }
+    }
+    @keyframes shinyShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .action-card.shiny-job-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255,255,255,0.45);
+    }
+
     .action-card {
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 22px 18px; cursor: pointer; transition: all 0.22s; text-align: left;
@@ -834,10 +893,6 @@
       </button>
       <div class="add-home-hint" id="addHomeHint"></div>
       <p id="welcomeRotatingText" class="welcome-rotating">Βρείτε άμεσα προσωπικό ή τη νέα σας εργασία. Γρήγορα, απλά και εντελώς δωρεάν.</p>
-      <div class="welcome-promo">
-        <img src="https://franklymadear.github.io/jobs/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
-        <div id="welcomePromoCountdown" class="promo-countdown" aria-live="polite">…</div>
-      </div>
       <button class="welcome-btn" onclick="closeWelcome()">Ας ξεκινήσουμε! 🚀</button>
     </div>
   </div>
@@ -848,46 +903,24 @@
   </div>
 
   <div class="container">
-    <div class="header">
-      <!-- Τίτλοι (κανονικοί & χωριάτικα) αφαιρέθηκαν από την κεντρική -->
-      <img src="https://franklymadear.github.io/jobs/logo2.png" alt="Ψαχνς Δλεια - Βρες Δλεια" class="site-logo-wide" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo.png'">
-      <div id="freePromoBanner" class="free-promo">
-        <img src="https://franklymadear.github.io/jobs/prosfora.png" alt="Προσφορά Οκτωβρίου" class="free-promo-img">
-        <div id="promoCountdown" class="promo-countdown" aria-live="polite">Φόρτωση αντίστροφης μέτρησης…</div>
-      </div>
-      <!-- Προβολή εργοδοτών / επιχειρήσεων -->
-      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" rel="noopener" title="Βρες τον Μάστορά σου">
-        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Βρες τον Μάστορά σου" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo2.png'">
-        <div style="text-align:center;font-weight:800;color:#0f766e;margin-top:8px;font-size:0.95rem;">🛠️ Βρες τον Μάστορά σου</div>
-      </a>
-      <!-- Στηρίξτε την προσπάθειά μας – live Ko-fi goal bar -->
-      <div class="kofi-goal-card">
-        <div class="kofi-goal-card-inner">
-          <div class="kofi-goal-top">
-            <span class="kofi-goal-emoji">💙</span>
-            <div>
-              <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
-              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
-            </div>
-          </div>
-          <!-- Live μπάρα Ko-fi (streamalerts overlay – real-time) -->
-          <div class="kofi-live-bar">
-            <iframe
-              src="https://ko-fi.com/streamalerts/goaloverlay/sa_d99fac7d-3908-4c1d-97c2-98e751a7195c"
-              title="Στόχος στήριξης"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              class="kofi-live-iframe">
-            </iframe>
-          </div>
-          <div class="kofi-goal-meta" style="margin-top:10px;">
-            <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-cta" style="text-decoration:none;">Στήριξε τώρα →</a>
-          </div>
+    <!-- Αρχική: χωρίς logo πάνω / χωρίς προσφορά Οκτωβρίου -->
+    <div id="screen-home" class="screen active">
+
+      <div class="section-title">Δημοσίευση Αγγελίας</div>
+      <div class="action-grid" id="publishActionsGrid">
+        <div class="action-card post-worker shiny-job-btn" id="cardPostWorker" onclick="requireAuthThen('screen-worker')">
+          <span class="lightning-bolt" aria-hidden="true">⚡</span>
+          <div class="icon">📝</div>
+          <h3>Ψάχνω εργασία</h3>
+          <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
+        </div>
+        <div class="action-card post-employer" id="cardPostEmployer" onclick="requireAuthThen('screen-employer')">
+          <div class="icon">🔍</div>
+          <h3>Ψάχνω προσωπικό</h3>
+          <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
         </div>
       </div>
-    </div>
 
-    <div id="screen-home" class="screen active">
       <div class="section-title">Δημόσιες Αγγελίες</div>
       <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin:-8px 0 14px;">Θέσεις και προφίλ στη <strong>Θεσσαλία</strong></p>
       <div class="action-grid">
@@ -903,20 +936,6 @@
         </div>
       </div>
 
-      <div class="section-title">Δημοσίευση Αγγελίας</div>
-      <div class="action-grid" id="publishActionsGrid">
-        <div class="action-card post-worker" id="cardPostWorker" onclick="requireAuthThen('screen-worker')">
-          <div class="icon">📝</div>
-          <h3>Ψάχνω εργασία</h3>
-          <p>Δημιουργήστε το προφίλ σας δωρεάν</p>
-        </div>
-        <div class="action-card post-employer" id="cardPostEmployer" onclick="requireAuthThen('screen-employer')">
-          <div class="icon">🔍</div>
-          <h3>Ψάχνω προσωπικό</h3>
-          <p>Καταχωρήστε την αγγελία της επιχείρησής σας</p>
-        </div>
-      </div>
-
       <div class="section-title">Θέσεις εργασίας</div>
       <div id="home-jobs-list">
         <div class="state-box"><div class="emoji">⏳</div>Φόρτωση θέσεων...</div>
@@ -924,10 +943,42 @@
       <div id="home-jobs-more" style="display:none;text-align:center;margin:16px 0;">
         <button class="btn btn-primary" onclick="openPublicView('employers')">Δείτε όλες τις θέσεις →</button>
       </div>
-<div style="margin-top:20px;text-align:center;">
+
+      <div style="margin-top:20px;text-align:center;">
         <button class="btn btn-secondary" onclick="shareSite()" style="gap:10px;">
           📤 Κοινοποίησε τη σελίδα
         </button>
+      </div>
+
+      <!-- Βρες τον Μάστορά σου -->
+      <a href="https://franklymadear.github.io/jobs/employer/index.html" class="employer-promo-link" rel="noopener" title="Βρες τον Μάστορά σου">
+        <img src="https://franklymadear.github.io/jobs/logo3.png" alt="Βρες τον Μάστορά σου" onerror="this.onerror=null;this.src='https://franklymadear.github.io/jobs/logo2.png'">
+        <div style="text-align:center;font-weight:800;color:#0f766e;margin-top:8px;font-size:0.95rem;">🛠️ Βρες τον Μάστορά σου</div>
+      </a>
+
+      <!-- Στηρίξτε την προσπάθειά μας -->
+      <div class="kofi-goal-card">
+        <div class="kofi-goal-card-inner">
+          <div class="kofi-goal-top">
+            <span class="kofi-goal-emoji">💙</span>
+            <div>
+              <div class="kofi-goal-title">Στηρίξτε την προσπάθειά μας!</div>
+              <div class="kofi-goal-desc">Κάθε δωρεά μας βοηθά να διατηρούμε τη σελίδα δωρεάν και να ανταποδίδουμε στους χρήστες μας με Premium αγγελίες, δωροεπιταγές και προβολή.</div>
+            </div>
+          </div>
+          <div class="kofi-live-bar">
+            <iframe
+              src="https://ko-fi.com/streamalerts/goaloverlay/sa_d99fac7d-3908-4c1d-97c2-98e751a7195c"
+              title="Στόχος στήριξης"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              class="kofi-live-iframe">
+            </iframe>
+          </div>
+          <div class="kofi-goal-meta" style="margin-top:10px;">
+            <a href="https://ko-fi.com/franklymadear/goal?g=10" target="_blank" rel="noopener" class="kofi-goal-cta" style="text-decoration:none;">Στήριξε τώρα →</a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1799,35 +1850,8 @@
       }, 5000);
     }
 
-    /** Αντίστροφη μέτρηση προσφοράς Οκτωβρίου έως 31/10/2026 */
-    function startPromoCountdown() {
-      var els = [
-        document.getElementById("promoCountdown"),
-        document.getElementById("welcomePromoCountdown")
-      ].filter(Boolean);
-      if (!els.length) return;
-      var end = new Date(2026, 9, 31, 23, 59, 59); // Οκτ = μήνας 9
-      function tick() {
-        var now = new Date();
-        var diff = end - now;
-        var html;
-        if (diff <= 0) {
-          html = '<span class="cd-label">Η προσφορά Οκτωβρίου έληξε</span>Ευχαριστούμε!';
-          if (window._promoCdTimer) clearInterval(window._promoCdTimer);
-        } else {
-          var d = Math.floor(diff / 86400000);
-          var h = Math.floor((diff % 86400000) / 3600000);
-          var m = Math.floor((diff % 3600000) / 60000);
-          var s = Math.floor((diff % 60000) / 1000);
-          html = '<span class="cd-label">Λήγει σε</span>' +
-            d + 'η ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-        }
-        els.forEach(function(el) { el.innerHTML = html; });
-      }
-      tick();
-      if (window._promoCdTimer) clearInterval(window._promoCdTimer);
-      window._promoCdTimer = setInterval(tick, 1000);
-    }
+    /** Προσφορά Οκτωβρίου αφαιρέθηκε */
+    function startPromoCountdown() { /* no-op */ }
 
     function showSpeechBubble() { return; // disabled – bubble removed
       
